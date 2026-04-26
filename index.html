@@ -285,7 +285,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
       <div class="field">
         <label>APIC — common: opening balance ($)</label>
         <input type="number" id="apic-cs" value="880000" oninput="recalcAndSave()">
-        <div class="explain-block hint-exp" style="border-left:2px solid var(--amber-border);padding-left:8px;color:var(--amber)"><strong>Only manual input for APIC.</strong> Normally APIC = cash − par, always a result. We enter it here only because prior-year transactions are unavailable. Any issuance this year calculates APIC automatically. <span class="goto-link" onclick="showPage('taccounts')" style="color:var(--blue)">→ See T-account</span> <span class="goto-link" onclick="showPage('bs')" style="color:var(--blue)">→ See balance sheet</span></div>
+        <div class="explain-block hint-exp" style="border-left:2px solid var(--amber-border);padding-left:8px;color:var(--text2)"><strong style="color:var(--amber)">Why is APIC an input here?</strong> In any real transaction, APIC is never something you figure out first — it is always what's left over after subtracting par value from the cash received. The only reason you're typing it in here is that this opening balance represents years of prior issuances we don't have the details for. Think of it as a number you're reading off last year's balance sheet, not calculating. <strong>For any stock issued this year, the app calculates APIC automatically — you will never enter it yourself.</strong> <span class="goto-link" onclick="showPage('taccounts')" style="color:var(--blue)">→ T-account</span> <span class="goto-link" onclick="showPage('bs')" style="color:var(--blue)">→ Balance sheet</span></div>
       </div>
     </div>
   </div>
@@ -391,7 +391,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <h2>Transactions</h2>
     <p>Add each transaction. They sort by date automatically — the financial math always processes in chronological order regardless of entry order. Every transaction shows what it affects and why immediately below it.</p>
   </div>
-  <div class="info-box" style="margin-bottom:14px"><strong>Note on prices:</strong> Enter price <em>per share</em>, not a lump total. If a problem gives you total cash received (e.g. "$18,600 for 4,000 shares"), divide first: $18,600 ÷ 4,000 = $4.65/share.</div>
+  <div class="info-box" style="margin-bottom:14px"><strong>Note on prices:</strong> Enter price <em>per share</em>, not a lump total. If a problem gives you total cash received for a block of shares, divide total ÷ shares first to get the per-share price.</div>
   <div id="tx-list"></div>
   <button class="btn btn-primary" onclick="addTx()">+ Add transaction</button>
 </div>
@@ -409,7 +409,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 <div id="page-dividends" class="page">
   <div class="page-header">
     <h2>Dividend calculator</h2>
-    <p>Every declared dividend fully worked out. Preferred is always paid first. Common uses outstanding shares only — never issued shares. The most common exam mistake is using 28,000 instead of 25,000 when 3,000 are in treasury.</p>
+    <p>Every declared dividend fully worked out. Preferred is always paid first and uses shares issued. Common uses outstanding shares only — issued minus treasury. The share counts used in each calculation are shown explicitly so you can verify them.</p>
   </div>
   <div id="div-output"></div>
 </div>
@@ -427,7 +427,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 <div id="page-taccounts" class="page">
   <div class="page-header">
     <h2>T-accounts</h2>
-    <p>Each account's opening balance, every transaction posted to it, and the ending balance. Bold = opening. Blue = transactions this year. Normal side (Dr or Cr) is the account's natural balance side.</p>
+    <p>The stockholders' equity accounts only — opening balances and every transaction posted in date order. Bold = opening balance. Blue = this year's activity. Cash is an asset account and is excluded here since we are focused on the equity section.</p>
   </div>
   <div id="taccount-output"></div>
 </div>
@@ -954,15 +954,16 @@ function renderDividends(entries,state,psRatePct,psPar,psRate,arrearsYears,psCum
         ${e.totalYears>1?`<div class="warn-box">Cumulative preferred: ${e.arrearsYears} year(s) of skipped dividends must be paid in full before common shareholders receive anything this year.</div>`:''}
       </div>`;
     }else{
+      const hasTreasury=e.treasury>0;
       return`<div class="card">
         <div class="card-label" style="color:var(--green)">Common dividend — ${e.date}</div>
         <div class="calc-explainer" style="background:var(--green-bg);border-color:var(--green-border)">
           <div class="label" style="color:var(--green)">Calculation</div>
           <div class="calc-step"><span class="op">&nbsp;</span><span class="desc">Dividend declared per share</span><span class="formula">$${e.rate}/share</span><span class="result">$${e.rate}/share</span></div>
-          <div class="calc-step"><span class="op">×</span><span class="desc">Outstanding shares (issued ${fmts(e.issued)} − treasury ${fmts(e.treasury)}) — NOT the issued total</span><span class="formula">= ${fmts(e.shares)} shares</span><span class="result">${fmts(e.shares)}</span></div>
+          <div class="calc-step"><span class="op">×</span><span class="desc">Outstanding shares${hasTreasury?' (issued '+fmts(e.issued)+' − treasury '+fmts(e.treasury)+')':' ('+fmts(e.shares)+' issued, none in treasury)'} — NOT the issued total</span><span class="formula">= ${fmts(e.shares)} shares</span><span class="result">${fmts(e.shares)}</span></div>
           <div class="calc-step" style="border-top:1px solid var(--green-border);padding-top:8px;margin-top:4px"><span class="op">=</span><span class="desc" style="font-weight:600">Total common dividend</span><span class="result" style="font-size:15px">${fmtd(e.total)}</span></div>
         </div>
-        <div class="info-box">The most common mistake: using ${fmts(e.issued)} (issued) instead of ${fmts(e.shares)} (outstanding). Treasury shares are owned by the company — paying dividends on them would mean the company pays itself.</div>
+        ${hasTreasury?`<div class="info-box">Watch out: this problem has ${fmts(e.treasury)} shares in treasury. Using ${fmts(e.issued)} (issued) instead of ${fmts(e.shares)} (outstanding) would overstate the dividend by ${fmtd((e.issued-e.shares)*e.rate)}. Treasury shares are owned by the company — it cannot pay dividends to itself.</div>`:''}
       </div>`;
     }
   }).join('');
@@ -970,7 +971,7 @@ function renderDividends(entries,state,psRatePct,psPar,psRate,arrearsYears,psCum
 
 function renderTAccounts(tData){
   const el=document.getElementById('taccount-output');
-  const accts=['cs','apicCs','ps','apicPs','re','ts','div','divPay','cash'];
+  const accts=['cs','apicCs','ps','apicPs','re','ts','div','divPay'];
   el.innerHTML='<div class="t-grid">'+accts.map(key=>{
     const a=tData[key];
     const drE=a.entries.filter(e=>e.side==='dr');
