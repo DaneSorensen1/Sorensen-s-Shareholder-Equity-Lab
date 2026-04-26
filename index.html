@@ -149,6 +149,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
   <div class="sidebar-brand">
     <h1>Equity Lab</h1>
     <p>Stockholders' Equity Explorer</p>
+    <p style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:5px;font-family:var(--sans);">Mr. Sorensen — Accounting</p>
     <div class="save-indicator" id="save-indicator">auto-save: off</div>
   </div>
   <div class="nav-section">Start</div>
@@ -235,7 +236,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
       <strong style="color:var(--amber);">Two ways to start:</strong> Load a preloaded class problem using the buttons in the bottom-left sidebar, or build your own from scratch beginning with Opening Balances. On the Opening Balances page there is a toggle for field explanations — <strong>it starts OFF</strong>, which is the right place to begin. Flip it ON if you're unsure what a field means, then back OFF when you're ready to work.
     </div>
 
-    <div style="display:flex;gap:10px;">
+    <div style="background:var(--red-bg);border:2px solid var(--red-border);border-radius:var(--radius);padding:18px 22px;margin-bottom:24px;">
+      <div style="font-size:15px;font-weight:600;color:var(--red);margin-bottom:8px;">A note from Mr. Sorensen</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.75;">This tool is available for practice and review <strong>outside of class</strong>. During class, the link will be disabled except for the last 10–15 minutes of select sessions. <strong>The goal is for you to understand the concepts first</strong> — work through problems by hand, make mistakes, and figure out why. Use this tool afterward to check your work, see the connections between journal entries and the balance sheet, and experiment with changing numbers. Relying on it during instruction will undermine your own understanding.</div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <button class="btn btn-primary" onclick="showPage('setup')" style="font-size:14px;padding:10px 24px;">Start — Opening Balances →</button>
       <button class="btn btn-secondary" onclick="loadAlpha();showPage('setup');" style="font-size:13px;">Load Alpha Corporation</button>
       <button class="btn btn-secondary" onclick="loadShelby();showPage('setup');" style="font-size:13px;">Load Shelby Corporation</button>
