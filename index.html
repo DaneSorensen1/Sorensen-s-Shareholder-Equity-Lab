@@ -196,88 +196,126 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 
 <!-- PAGE 0: WELCOME -->
 <div id="page-welcome" class="page active">
-  <div style="max-width:680px;padding-top:8px;">
-    <div style="font-size:11px;font-family:var(--mono);color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Stockholders' Equity Explorer</div>
-    <h2 style="font-size:26px;font-weight:600;letter-spacing:-0.03em;margin-bottom:10px;">Sorensen's Equity Lab</h2>
-    <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:28px;">Enter a company's opening equity balances and transactions, and this tool generates the journal entries, T-accounts, dividend calculations, and balance sheet automatically — all connected, all updating in real time. Use it to work through assigned problems, or experiment by changing numbers and seeing what happens.</p>
+  <div style="max-width:760px;padding-top:6px;">
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--text);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">1</div>
-        <div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Opening Balances</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Enter the company's equity accounts as of January 1 — the starting point before any transactions this year.</div>
-        </div>
+    <!-- Compact header -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;gap:16px">
+      <div>
+        <h2 style="font-size:22px;font-weight:600;letter-spacing:-0.02em;margin-bottom:4px">Sorensen's Equity Lab</h2>
+        <p style="font-size:13px;color:var(--text2);line-height:1.6;margin:0">Pick your task below. The tool generates journal entries, T-accounts, and the balance sheet as you work — all connected.</p>
       </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--text);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">2</div>
-        <div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Add Transactions</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Add each event — stock issuances, buybacks, dividends, splits. Each one shows its effect and reasoning immediately below it.</div>
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">3</div>
-        <div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Journal Entries</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Every transaction as a proper journal entry — debits left, credits indented right, math shown for each line, totals verified. Links back to transactions and forward to T-accounts.</div>
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">4</div>
-        <div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Share Tracker</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5;">See issued, treasury, and outstanding share counts update at every step. Outstanding shares is what drives common dividends — not issued shares.</div>
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">5</div>
-        <div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Dividend Calculator</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Every declared dividend worked out step by step — preferred first, then common, with the exact formula and share counts shown.</div>
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">6</div>
-        <div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">T-Accounts</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Every active equity account with opening balances and all transactions posted in chronological order. Click any entry to jump to its journal entry.</div>
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;grid-column:1/-1;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">7</div>
-        <div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Balance Sheet — Equity Section</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5;">The final formatted equity section, built from everything above. Updates live with every change. Includes a breakdown showing exactly how the total is assembled.</div>
-        </div>
+      <div style="background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--radius);padding:10px 14px;min-width:200px;flex-shrink:0">
+        <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Class policy</div>
+        <div style="font-size:11px;color:var(--text2);line-height:1.55">Work problems by hand first. Use this to check your work and see the connections — enabled last 10–15 min of select sessions only.</div>
       </div>
     </div>
 
-    <div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;font-size:12px;color:var(--text2);line-height:1.7;">
-      <strong style="color:var(--amber);">Two ways to start:</strong> Load a preloaded class problem using the buttons in the bottom-left sidebar, or build your own from scratch beginning with Opening Balances. On the Opening Balances page there is a toggle for field explanations — <strong>it starts OFF</strong>, which is the right place to begin. Flip it ON if you're unsure what a field means, then back OFF when you're ready to work.
+    <!-- PROBLEM TYPE SELECTOR -->
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">What are you working on?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+
+      <!-- 1: Dividend allocation -->
+      <div style="background:var(--purple-bg);border:2px solid var(--purple-border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:18px">÷</div>
+        <div style="font-size:13px;font-weight:600;color:var(--purple)">Dividend allocation</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.5;flex:1">How much goes to preferred vs. common? Works with or without opening balances.</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Foster Grant · arrears problems</div>
+        <button class="btn" onclick="startBlank('dividends')" style="background:var(--purple);color:#fff;font-size:12px;padding:7px 0;width:100%">Open calculator →</button>
+      </div>
+
+      <!-- 2: Single journal entry -->
+      <div style="background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:18px">📝</div>
+        <div style="font-size:13px;font-weight:600">Stock issuance JE</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.5;flex:1">Record an issuance and see the full journal entry — par split, APIC, cash. Back into shares or price from totals.</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Malibu Beachwear (d) · Peabody (1)</div>
+        <button class="btn btn-secondary" onclick="startBlank('transactions')" style="font-size:12px;padding:7px 0;width:100%">Go to transactions →</button>
+      </div>
+
+      <!-- 3: Treasury stock -->
+      <div style="background:var(--red-bg);border:2px solid var(--red-border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:18px">🔄</div>
+        <div style="font-size:13px;font-weight:600;color:var(--red)">Treasury stock</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.5;flex:1">Repurchase or reissue shares. See cost method accounting, how outstanding changes, and the balance sheet impact.</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Malibu Beachwear (a) · Alpha Corp</div>
+        <button class="btn btn-secondary" onclick="startBlank('transactions')" style="font-size:12px;padding:7px 0;width:100%;border-color:var(--red-border);color:var(--red)">Go to transactions →</button>
+      </div>
+
+      <!-- 4: Full equity problem -->
+      <div style="background:var(--surface);border:2px solid var(--text);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:18px">📊</div>
+        <div style="font-size:13px;font-weight:600">Full equity problem</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.5;flex:1">Opening balances → transactions → JE → T-accounts → balance sheet. The complete picture.</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Peabody Corp · Malibu Beachwear</div>
+        <button class="btn btn-primary" onclick="startBlank('setup')" style="font-size:12px;padding:7px 0;width:100%">Start from balances →</button>
+      </div>
+
+      <!-- 5: Balance sheet only -->
+      <div style="background:var(--green-bg);border:2px solid var(--green-border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:18px">⚖️</div>
+        <div style="font-size:13px;font-weight:600;color:var(--green)">Balance sheet</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.5;flex:1">Enter known balances and get the formatted equity section instantly. Useful for practice or before/after comparisons.</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Stanley Corp · Peabody (required 2)</div>
+        <button class="btn btn-secondary" onclick="startBlank('setup')" style="font-size:12px;padding:7px 0;width:100%;border-color:var(--green-border);color:var(--green)">Enter balances →</button>
+      </div>
+
+      <!-- 6: Stock split -->
+      <div style="background:var(--teal-bg);border:2px solid var(--teal-border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:18px">✂️</div>
+        <div style="font-size:13px;font-weight:600;color:var(--teal)">Stock split</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.5;flex:1">See how a split doubles shares and halves par — but changes no dollar totals. Before and after on the balance sheet.</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Stanley Corp 2-for-1</div>
+        <button class="btn btn-secondary" onclick="startBlank('setup')" style="font-size:12px;padding:7px 0;width:100%;border-color:var(--teal-border);color:var(--teal)">Enter balances →</button>
+      </div>
+
     </div>
 
-    <div style="background:var(--red-bg);border:2px solid var(--red-border);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;">
-      <div style="font-size:13px;font-weight:600;color:var(--red);margin-bottom:6px;">Class use policy</div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.75;">This tool will be disabled during class except for the last 10–15 minutes of select sessions. Work through problems by hand first — use this to check your work, see the connections, and experiment afterward.</div>
+    <!-- Class examples row -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)">
+      <span style="font-size:12px;color:var(--text3);font-weight:500;flex-shrink:0">Load class example:</span>
+      <button class="btn btn-secondary btn-sm" onclick="loadAlpha();showPage('setup')">Alpha Corporation</button>
+      <button class="btn btn-secondary btn-sm" onclick="loadShelby();showPage('setup')">Shelby Corporation</button>
+      <span style="font-size:11px;color:var(--text3);margin-left:4px">Full opening balances + transactions pre-loaded</span>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
-      <div style="background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:18px 20px">
-        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:8px">Full equity problem</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:14px">Stock issuances, treasury stock, dividends, T-accounts, and balance sheet. Start from opening balances and add transactions.</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="showPage('setup')" style="font-size:13px;">Start blank →</button>
-          <button class="btn btn-secondary btn-sm" onclick="loadAlpha();showPage('setup');">Load Alpha Corp</button>
-          <button class="btn btn-secondary btn-sm" onclick="loadShelby();showPage('setup');">Load Shelby Corp</button>
+    <!-- Collapsible: How all 7 tabs connect -->
+    <details style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+      <summary style="padding:12px 16px;font-size:13px;font-weight:600;cursor:pointer;background:var(--surface);list-style:none;display:flex;justify-content:space-between;align-items:center;user-select:none">
+        <span>How all 7 tabs connect (not required for focused problems)</span>
+        <span style="font-size:11px;color:var(--text3);font-weight:400">click to expand ▸</span>
+      </summary>
+      <div style="padding:16px;background:var(--surface2);display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</div>
+          <div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Opening Balances</div><div style="font-size:11px;color:var(--text2);line-height:1.4">The equity accounts as of Jan. 1 — starting point for the year.</div></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</div>
+          <div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Add Transactions</div><div style="font-size:11px;color:var(--text2);line-height:1.4">Each event shows its effect immediately. Use the floating panel.</div></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</div>
+          <div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Journal Entries</div><div style="font-size:11px;color:var(--text2);line-height:1.4">Auto-generated. Debit/credit format with math shown. Links to T-accounts.</div></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">4</div>
+          <div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Share Tracker</div><div style="font-size:11px;color:var(--text2);line-height:1.4">Issued vs. treasury vs. outstanding at each event. Common dividends use outstanding only.</div></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">5</div>
+          <div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Dividend Calculator</div><div style="font-size:11px;color:var(--text2);line-height:1.4">Preferred paid first. Arrears handled automatically. Per-share shown for both types.</div></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">6</div>
+          <div><div style="font-size:12px;font-weight:600;margin-bottom:2px">T-Accounts</div><div style="font-size:11px;color:var(--text2);line-height:1.4">Only active equity accounts shown. Chronological. Click any entry to see its JE.</div></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;gap:10px;align-items:flex-start;grid-column:1/-1">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">7</div>
+          <div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Balance Sheet — Equity Section</div><div style="font-size:11px;color:var(--text2);line-height:1.4">Formatted and live. Preferred and treasury sections appear only when relevant. Breakdown shows how the total is built.</div></div>
         </div>
       </div>
-      <div style="background:var(--purple-bg);border:2px solid var(--purple-border);border-radius:var(--radius);padding:18px 20px">
-        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--purple);margin-bottom:8px">Quick dividend split</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:14px">Just need to know how much goes to preferred vs. common? Enter par value, rate, shares, and total declared — get the answer instantly.</div>
-        <button class="btn" onclick="showPage('dividends')" style="font-size:13px;background:var(--purple);color:#fff;">Open dividend calculator →</button>
-      </div>
-    </div>
+    </details>
+
   </div>
 </div>
 
@@ -305,24 +343,24 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <div class="field-grid grid-2" style="margin-bottom:12px">
       <div class="field">
         <label>Par / stated value ($)</label>
-        <input type="number" id="cs-par" value="2" step="0.01" oninput="recalcAndSave()">
+        <input type="number" id="cs-par" value="0" step="0.01" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">A legal minimum per share set in the charter — not the market price. Usually $1–$5. Its only job: split issuance proceeds into Common Stock (par × shares) and APIC (everything above par).</div>
       </div>
       <div class="field">
         <label>Authorized shares</label>
-        <input type="number" id="cs-auth" value="900000" oninput="recalcAndSave()">
+        <input type="number" id="cs-auth" value="0" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">The maximum number of shares the company decided to allow in its charter when it incorporated. <strong>No journal entry is ever made for authorized shares.</strong> Appears only as a disclosure on the balance sheet. <span class="goto-link" onclick="showPage('bs')">→ See balance sheet</span></div>
       </div>
     </div>
     <div class="field-grid grid-2">
       <div class="field">
         <label>Shares in this opening balance</label>
-        <input type="number" id="cs-issued" value="300000" oninput="recalcAndSave()">
+        <input type="number" id="cs-issued" value="0" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">Total shares given out in all prior years. The Common Stock dollar balance (par × shares) is calculated automatically — you provide the count, the app derives the dollars. <span class="goto-link" onclick="showPage('taccounts')">→ See T-account</span></div>
       </div>
       <div class="field">
         <label>APIC — common: opening balance ($)</label>
-        <input type="number" id="apic-cs" value="880000" oninput="recalcAndSave()">
+        <input type="number" id="apic-cs" value="0" oninput="recalcAndSave()">
         <div class="explain-block hint-exp" style="border-left:2px solid var(--amber-border);padding-left:8px;color:var(--text2)"><strong style="color:var(--amber)">Why is APIC an input here?</strong> In any real transaction, APIC is never something you figure out first — it is always what's left over after subtracting par value from the cash received. The only reason you're typing it in here is that this opening balance represents years of prior issuances we don't have the details for. Think of it as a number you're reading off last year's balance sheet, not calculating. <strong>For any stock issued this year, the app calculates APIC automatically — you will never enter it yourself.</strong> <span class="goto-link" onclick="showPage('taccounts')" style="color:var(--blue)">→ T-account</span> <span class="goto-link" onclick="showPage('bs')" style="color:var(--blue)">→ Balance sheet</span></div>
       </div>
     </div>
@@ -336,12 +374,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <div class="field-grid grid-3">
       <div class="field">
         <label>Treasury shares in this opening balance</label>
-        <input type="number" id="ts-shares" value="25000" oninput="recalcAndSave()">
+        <input type="number" id="ts-shares" value="0" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">Reduces outstanding shares immediately. Outstanding = issued − treasury. <span class="goto-link" onclick="showPage('shares')">→ See share tracker</span></div>
       </div>
       <div class="field">
         <label>Total cost of those shares ($)</label>
-        <input type="number" id="ts-cost" value="140000" oninput="recalcAndSave()">
+        <input type="number" id="ts-cost" value="0" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">What the company paid to repurchase these shares. Appears as (140,000) — a deduction — on the balance sheet.</div>
       </div>
       <div class="field">
@@ -360,37 +398,37 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <div class="field-grid grid-2" style="margin-bottom:12px">
       <div class="field">
         <label>Par value ($)</label>
-        <input type="number" id="ps-par" value="100" oninput="recalcAndSave()">
+        <input type="number" id="ps-par" value="0" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">Same concept as common par — legal minimum, used for the issuance split. Preferred par is often $100 because it doubles as the dividend base.</div>
       </div>
       <div class="field">
         <label>Annual dividend rate (%)</label>
-        <input type="number" id="ps-rate" value="7" step="0.01" oninput="recalcAndSave()">
+        <input type="number" id="ps-rate" value="0" step="0.01" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">Fixed rate. Formula: rate % × par × shares issued. e.g. 7% × $100 × 5,000 = $35,000/yr. Does not change with company profits. <span class="goto-link" onclick="showPage('dividends')">→ See dividend calculator</span></div>
       </div>
     </div>
     <div class="field-grid grid-2" style="margin-bottom:12px">
       <div class="field">
         <label>Authorized shares</label>
-        <input type="number" id="ps-auth" value="8000" oninput="recalcAndSave()">
+        <input type="number" id="ps-auth" value="0" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">The maximum number of preferred shares the company set in its charter. Not recorded in any account — appears as a disclosure on the balance sheet only.</div>
       </div>
       <div class="field">
         <label>Shares in this opening balance</label>
-        <input type="number" id="ps-issued" value="5000" oninput="recalcAndSave()">
+        <input type="number" id="ps-issued" value="0" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">All preferred shares issued in prior years. Typically no treasury stock for preferred — all issued shares are outstanding.</div>
       </div>
     </div>
     <div class="field-grid grid-3">
       <div class="field">
         <label>APIC — preferred: opening balance ($)</label>
-        <input type="number" id="apic-ps" value="15000" oninput="recalcAndSave()">
+        <input type="number" id="apic-ps" value="0" oninput="recalcAndSave()">
         <div class="explain-block hint-exp" style="border-left:2px solid var(--amber-border);padding-left:8px;color:var(--amber)">Prior years only — same logic as APIC-common. Its own account, never mixed with APIC-common. New preferred issuances calculate APIC automatically. <span class="goto-link" onclick="showPage('taccounts')" style="color:var(--blue)">→ See T-account</span></div>
       </div>
       <div class="field">
         <label>Cumulative preferred?</label>
         <select id="ps-cumul" oninput="recalcAndSave()">
-          <option value="yes">Yes — arrears accumulate</option>
+          <option value="no">No — arrears accumulate</option>
           <option value="no">No — skipped dividends are lost</option>
         </select>
         <div class="explain-block hint-exp"><strong>Cumulative:</strong> Skipped dividends become <em>arrears</em> — owed in a future year before common gets anything. <strong>Non-cumulative:</strong> Skipped and gone. Most preferred is cumulative. <span class="goto-link" onclick="showPage('dividends')">→ See dividend calculator</span></div>
@@ -408,12 +446,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <div class="field-grid grid-2">
       <div class="field">
         <label>Retained earnings in this opening balance ($)</label>
-        <input type="number" id="re-open" value="900000" oninput="recalcAndSave()">
+        <input type="number" id="re-open" value="0" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">All net income ever earned, minus all dividends ever paid. Increases with income, decreases with dividends. <strong>Not a cash account</strong> — it's accumulated ownership interest. <span class="goto-link" onclick="showPage('taccounts')">→ See T-account</span> <span class="goto-link" onclick="showPage('bs')">→ See balance sheet</span></div>
       </div>
       <div class="field">
         <label>Company name</label>
-        <input type="text" id="co-name" value="Alpha Corporation" oninput="recalcAndSave()">
+        <input type="text" id="co-name" value="My Company" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">Appears on the balance sheet header.</div>
       </div>
     </div>
@@ -1807,20 +1845,29 @@ function loadShelby(){
 
 function resetAll(){
   if(!confirm('Clear all data and start fresh?'))return;
-  transactions=[];txId=0;currentSnapshot=null;clearGlows();pendingTx=null;highlightedTxId=null;const pp=document.getElementById("pending-panel");if(pp)pp.remove();
+  startBlank('setup');
+}
+
+function startBlank(dest){
+  transactions=[];txId=0;currentSnapshot=null;clearGlows();
+  pendingTx=null;highlightedTxId=null;
+  const pp=document.getElementById('pending-panel');if(pp)pp.remove();
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
-  ['cs-par','cs-auth','cs-issued','apic-cs','ts-shares','ts-cost','ps-par','ps-rate','ps-auth','ps-issued','apic-ps','arrears','re-open'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='0';});
-  document.getElementById('ps-cumul').value='no';
-  document.getElementById('co-name').value='My Company';
-  renderTxList();recalc();showPage('setup');
+  // Zero all setup fields
+  ['cs-par','cs-auth','cs-issued','apic-cs','ts-shares','ts-cost',
+   'ps-par','ps-rate','ps-auth','ps-issued','apic-ps','arrears','re-open'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='0';
+  });
+  const cumEl=document.getElementById('ps-cumul');if(cumEl)cumEl.value='no';
+  const nameEl=document.getElementById('co-name');if(nameEl)nameEl.value='My Company';
+  renderTxList();recalc();
+  showPage(dest||'setup');
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 const loaded=loadSavedState();
-if(!loaded){
-  // Start blank — presets available in sidebar or welcome page
-  renderTxList();recalc();
-}
+if(loaded){renderTxList();recalc();}
+// else fields are already at their HTML default values (0 / "My Company")
 renderAllocYearList();
 renderAllocator();
 document.getElementById('page-setup').classList.add('explain-hidden');
