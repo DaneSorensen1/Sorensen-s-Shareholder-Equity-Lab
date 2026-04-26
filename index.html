@@ -98,6 +98,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .t-entry.open{color:var(--text);font-weight:500;}
 .t-entry.new{color:var(--blue);}
 .t-balance{display:flex;justify-content:space-between;padding:5px 10px;background:var(--surface2);border-top:2px solid var(--border2);font-size:12px;font-weight:600;font-family:var(--mono);}
+.t-entry.ta-entry[data-je-id]{cursor:pointer;}
 .t-entry.ta-entry:hover{background:var(--amber-bg);color:var(--amber)!important;}
 .t-entry.ta-entry:hover span{color:var(--amber)!important;}
 .bs-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px 30px;}
@@ -441,20 +442,28 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 
   <!-- DIVIDEND ALLOCATOR -->
   <div class="card" style="border-color:var(--purple-border);margin-bottom:24px">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
       <div class="card-label" style="color:var(--purple);margin-bottom:0">Dividend allocation calculator</div>
-      <div style="font-size:11px;color:var(--text3)">Pulls preferred settings from Opening Balances</div>
+      <div style="font-size:11px;color:var(--text3)">Works standalone or with Opening Balances</div>
     </div>
-    <div class="field-grid grid-3" style="margin-bottom:14px">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.6;">For any problem where you know the <em>total dividends declared</em> and need to split them between preferred and common. Fill in the fields below — preferred info auto-populates from Opening Balances if you've entered it there.</div>
+
+    <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Preferred stock details</div>
+    <div class="field-grid grid-4" style="margin-bottom:14px">
       <div class="field">
-        <label>Common shares outstanding</label>
-        <input type="number" id="alloc-cs-shares" placeholder="e.g. 80000" oninput="renderAllocator()">
-        <div class="hint">Shares receiving common dividends</div>
+        <label>Par value ($)</label>
+        <input type="number" id="alloc-par" placeholder="e.g. 100" oninput="renderAllocator()">
+        <div class="hint">From Opening Balances if blank</div>
+      </div>
+      <div class="field">
+        <label>Annual dividend rate (%)</label>
+        <input type="number" id="alloc-rate" placeholder="e.g. 7" step="0.01" oninput="renderAllocator()">
+        <div class="hint">From Opening Balances if blank</div>
       </div>
       <div class="field">
         <label>Preferred shares outstanding</label>
         <input type="number" id="alloc-ps-shares" placeholder="e.g. 14000" oninput="renderAllocator()">
-        <div class="hint">Auto-filled from Opening Balances if blank</div>
+        <div class="hint">From Opening Balances if blank</div>
       </div>
       <div class="field">
         <label>Cumulative preferred?</label>
@@ -464,7 +473,21 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
         </select>
       </div>
     </div>
-    <div id="alloc-year-list" style="margin-bottom:12px"></div>
+    <div class="field-grid grid-2" style="margin-bottom:14px">
+      <div class="field">
+        <label>Common shares outstanding</label>
+        <input type="number" id="alloc-cs-shares" placeholder="e.g. 80000" oninput="renderAllocator()">
+        <div class="hint">Shares receiving common dividends</div>
+      </div>
+      <div class="field" id="alloc-arrears-wrap" style="display:none">
+        <label>Prior years' dividends skipped (arrears)</label>
+        <input type="number" id="alloc-arrears" value="0" min="0" oninput="renderAllocator()">
+        <div class="hint">Years preferred dividend was not paid before the first year below</div>
+      </div>
+    </div>
+
+    <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Years to calculate</div>
+    <div id="alloc-year-list" style="margin-bottom:10px"></div>
     <button class="btn btn-secondary btn-sm" onclick="addAllocYear()">+ Add year</button>
     <div id="alloc-output" style="margin-top:16px"></div>
   </div>
@@ -487,7 +510,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 <div id="page-taccounts" class="page">
   <div class="page-header">
     <h2>T-accounts</h2>
-    <p>Equity accounts only. Entries flow top-to-bottom in chronological order. <strong>Click any entry to jump to the journal entry that created it.</strong> Bold = opening balance. Blue = this year's activity.</p>
+    <p>Equity accounts only. Entries flow top-to-bottom in chronological order. Any entry showing a small blue <strong style="color:var(--blue);font-family:var(--mono);font-size:11px">JE</strong> tag is clickable — it will jump to and highlight the journal entry that created it.</p>
   </div>
   <div id="taccount-output"></div>
 </div>
@@ -704,8 +727,17 @@ let allocYears=[{id:0,year:'2024',total:''},{id:1,year:'2025',total:''}];
 let allocYearId=2;
 
 function addAllocYear(){
-  const nextYear=allocYears.length>0?parseInt(allocYears[allocYears.length-1].year)+1:new Date().getFullYear();
-  allocYears.push({id:allocYearId++,year:String(nextYear),total:''});
+  // default to the same year as existing transactions, or current year
+  let defaultYear=new Date().getFullYear();
+  if(transactions.length>0){
+    const years=transactions.filter(t=>t.date).map(t=>parseInt(t.date.substring(0,4))).filter(y=>!isNaN(y));
+    if(years.length>0)defaultYear=Math.max(...years);
+  }
+  if(allocYears.length>0){
+    const lastYear=parseInt(allocYears[allocYears.length-1].year);
+    if(!isNaN(lastYear))defaultYear=lastYear+1;
+  }
+  allocYears.push({id:allocYearId++,year:String(defaultYear),total:''});
   renderAllocYearList();renderAllocator();
 }
 function removeAllocYear(id){
@@ -736,30 +768,48 @@ function renderAllocYearList(){
 }
 
 function renderAllocator(){
-  // sync year list inputs back to data
-  allocYears.forEach(y=>{
-    const inputs=document.querySelectorAll('#alloc-year-list input');
-    // already handled via oninput
-  });
   const el=document.getElementById('alloc-output');
   if(!el)return;
 
-  const psShares=parseFloat(document.getElementById('alloc-ps-shares')?.value)||g('ps-issued')||0;
-  const csShares=parseFloat(document.getElementById('alloc-cs-shares')?.value)||0;
-  const psPar=g('ps-par')||100;
-  const psRate=g('ps-rate')/100||0.07;
+  // Pull from allocator fields first, fall back to Opening Balances
+  const fv=id=>parseFloat(document.getElementById(id)?.value)||0;
+  const psPar=fv('alloc-par')||g('ps-par')||0;
+  const psRateRaw=fv('alloc-rate')||g('ps-rate')||0;
+  const psRate=psRateRaw/100;
+  const psShares=fv('alloc-ps-shares')||g('ps-issued')||0;
+  const csShares=fv('alloc-cs-shares')||0;
   const cumul=document.getElementById('alloc-cumul')?.value==='yes';
+  const priorArrears=fv('alloc-arrears')||0;
+
+  // show/hide arrears field based on cumulative
+  const arrearsWrap=document.getElementById('alloc-arrears-wrap');
+  if(arrearsWrap)arrearsWrap.style.display=cumul?'':'none';
+
+  // Auto-fill inputs from Opening Balances if empty (non-destructive)
+  function autoFill(id,val){
+    const el=document.getElementById(id);
+    if(el&&!el.value&&val)el.placeholder='e.g. '+val+' (from Opening Balances)';
+  }
+  autoFill('alloc-par',g('ps-par')||'');
+  autoFill('alloc-rate',g('ps-rate')||'');
+  autoFill('alloc-ps-shares',g('ps-issued')||'');
+
   const annualPref=psShares*psPar*psRate;
   const perShare=psPar*psRate;
+  // round rate for display to avoid float imprecision
+  const psRateDisplay=parseFloat(psRateRaw.toFixed(8));
 
   if(!psShares||!csShares){
-    el.innerHTML='<div class="info-box">Enter common and preferred shares outstanding above to see the allocation.</div>';return;
+    el.innerHTML=`<div class="info-box">Enter common and preferred shares outstanding above${!psPar||!psRateRaw?' and preferred par value and rate':''} to see the allocation.</div>`;return;
+  }
+  if(!psPar||!psRateRaw){
+    el.innerHTML='<div class="info-box">Enter preferred par value and annual rate above to calculate the preferred dividend.</div>';return;
   }
   if(!allocYears.some(y=>parseFloat(y.total)>0)){
     el.innerHTML='<div class="info-box">Enter at least one year\'s total dividends declared above.</div>';return;
   }
 
-  let arrearsOwed=0;
+  let arrearsOwed=priorArrears*annualPref;
   let rows=[];
 
   allocYears.forEach((y,i)=>{
@@ -772,12 +822,12 @@ function renderAllocator(){
         prefGet=owedThisYear;
         commonGet=total-owedThisYear;
         arrearsCarried=0;
-      } else {
+      }else{
         prefGet=total;
         commonGet=0;
         arrearsCarried=owedThisYear-total;
       }
-    } else {
+    }else{
       prefGet=Math.min(total,annualPref);
       commonGet=Math.max(0,total-prefGet);
       arrearsCarried=0;
@@ -793,17 +843,16 @@ function renderAllocator(){
 
   el.innerHTML=`
   <div style="font-size:12px;color:var(--text2);margin-bottom:10px;padding:10px 12px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm)">
-    Annual preferred dividend: ${psRate*100}% × $${psPar} par × ${fmts(psShares)} shares = <strong>${fmtd(annualPref)}/year</strong> ($${perShare.toFixed(2)}/share)
-    ${cumul?'&nbsp;|&nbsp; <strong>Cumulative</strong> — arrears must be paid before common gets anything':'&nbsp;|&nbsp; <strong>Non-cumulative</strong> — only current year owed'}
+    Annual preferred dividend: ${psRateDisplay}% × $${psPar} par × ${fmts(psShares)} shares = <strong>${fmtd(annualPref)}/year</strong> ($${perShare.toFixed(2)}/share)
+    &nbsp;|&nbsp; ${cumul?'<strong>Cumulative</strong> — arrears must be paid before common gets anything':'<strong>Non-cumulative</strong> — only current year owed'}
+    ${cumul&&priorArrears>0?` &nbsp;|&nbsp; ${priorArrears} prior year(s) in arrears = ${fmtd(priorArrears*annualPref)} owed at start`:''}
   </div>
   <div style="overflow-x:auto">
   <table style="width:100%;border-collapse:collapse;font-size:13px">
-    <thead>
-      <tr style="border-bottom:2px solid var(--border2)">
-        <th style="text-align:left;padding:8px 12px;font-size:11px;letter-spacing:0.05em;color:var(--text3);text-transform:uppercase;font-weight:600"></th>
-        ${rows.map(r=>`<th style="text-align:right;padding:8px 12px;font-size:11px;letter-spacing:0.05em;color:var(--text3);text-transform:uppercase;font-weight:600">${r.year}</th>`).join('')}
-      </tr>
-    </thead>
+    <thead><tr style="border-bottom:2px solid var(--border2)">
+      <th style="text-align:left;padding:8px 12px;font-size:11px;letter-spacing:0.05em;color:var(--text3);text-transform:uppercase;font-weight:600"></th>
+      ${rows.map(r=>`<th style="text-align:right;padding:8px 12px;font-size:11px;letter-spacing:0.05em;color:var(--text3);text-transform:uppercase;font-weight:600">${r.year}</th>`).join('')}
+    </tr></thead>
     <tbody>
       <tr style="border-bottom:1px solid var(--border)">
         <td style="padding:8px 12px;color:var(--text2)">Total dividends declared</td>
@@ -834,13 +883,13 @@ function renderAllocator(){
         ${rows.map(r=>`<td style="text-align:right;padding:8px 12px;font-family:var(--mono);font-size:12px;color:${r.arrearsCarried>0?'var(--amber)':'var(--text3)'}">${r.arrearsCarried>0?fmtd(r.arrearsCarried):'—'}</td>`).join('')}
       </tr>`:''}
     </tbody>
-  </table>
-  </div>
-  ${rows.map(r=>`<div style="margin-top:10px;font-size:12px;color:var(--text3);line-height:1.7;padding:8px 12px;background:var(--surface2);border-radius:var(--radius-sm)">
-    <strong style="color:var(--text2)">${r.year}:</strong> ${cumul&&r.prevArrears>0?`Preferred is owed ${fmtd(r.annualPref)} current + ${fmtd(r.prevArrears)} in arrears = ${fmtd(r.owedPref)} total. `:''}
-    ${r.total>0&&r.prefGet>=r.owedPref?`Full preferred obligation met. Common gets ${fmtd(r.total)} − ${fmtd(r.prefGet)} = ${fmtd(r.commonGet)}.`:''}
-    ${r.prefGet<r.owedPref&&r.total>0?`Only ${fmtd(r.total)} available — all goes to preferred. Common gets nothing. ${fmtd(r.arrearsCarried)} carries forward as arrears.`:''}
-    ${r.total===0?'No dividends declared this year.':''}
+  </table></div>
+  ${rows.map(r=>`<div style="margin-top:8px;font-size:12px;color:var(--text3);line-height:1.7;padding:8px 12px;background:var(--surface2);border-radius:var(--radius-sm)">
+    <strong style="color:var(--text2)">${r.year}:</strong>
+    ${cumul&&r.prevArrears>0?`Preferred owed = ${fmtd(r.annualPref)} current + ${fmtd(r.prevArrears)} arrears = ${fmtd(r.owedPref)}. `:''}
+    ${r.total>0&&r.prefGet>=r.owedPref?`Preferred fully paid. Common gets ${fmtd(r.total)} − ${fmtd(r.prefGet)} = ${fmtd(r.commonGet)}.`:''}
+    ${r.prefGet<r.owedPref&&r.total>0?`Only ${fmtd(r.total)} available — all to preferred. Common gets nothing. ${fmtd(r.arrearsCarried)} carries forward.`:''}
+    ${r.total===0?'No dividends declared.':''}
   </div>`).join('')}`;
 }
 
@@ -852,12 +901,18 @@ let highlightedTxId=null;
 
 function addTx(){
   if(pendingTx){
-    // focus existing panel instead of committing it prematurely
     const panel=document.getElementById('pending-panel');
     if(panel){panel.style.animation='none';panel.style.border='2px solid var(--blue)';setTimeout(()=>{panel.style.border='2px solid var(--amber-border)';},800);}
     return;
   }
-  pendingTx={id:txId++,type:'',date:'',fields:{}};
+  // detect default year from existing transactions
+  let defaultYear=new Date().getFullYear();
+  if(transactions.length>0){
+    const years=transactions.filter(t=>t.date).map(t=>parseInt(t.date.substring(0,4))).filter(y=>!isNaN(y));
+    if(years.length>0)defaultYear=Math.max(...years);
+  }
+  const defaultDate=`${defaultYear}-01-01`;
+  pendingTx={id:txId++,type:'',date:defaultDate,fields:{}};
   renderPendingPanel();
 }
 
@@ -1319,7 +1374,7 @@ function renderTxEffect(txId,pills,explanation,jeId){
     return`<span class="effect-pill ${cls}">${arrow} ${p.label}: ${p.val}</span>`;
   }).join('');
   const jeLink=jeId!=null
-    ?`<button onclick="jumpToJE(${jeId})" style="margin-left:auto;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);font-size:11px;font-family:var(--mono);padding:3px 10px;cursor:pointer;flex-shrink:0">→ See journal entry</button>`
+    ?`<button onclick="jumpToJE(${jeId})" style="margin-left:auto;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);font-size:12px;font-family:var(--sans);font-weight:500;padding:4px 12px;cursor:pointer;flex-shrink:0">Show journal entry →</button>`
     :'';
   el.innerHTML=`<div style="font-size:12px;color:var(--text3);margin-bottom:6px;line-height:1.65;border-left:2px solid var(--border2);padding-left:10px">${explanation}</div>
     <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px"><div class="effect-row" style="margin:0;flex:1">${pillHtml}</div>${jeLink}</div>`;
@@ -1341,14 +1396,14 @@ function renderJournals(journals){
     const drTotal=j.entries.filter(e=>e.dr!=null).reduce((s,e)=>s+e.dr,0);
     const crTotal=j.entries.filter(e=>e.cr!=null).reduce((s,e)=>s+e.cr,0);
     const txLink=j.txId!=null
-      ?`<span onclick="jumpToTx(${j.txId})" style="font-size:10px;color:var(--text3);cursor:pointer;font-family:var(--mono);margin-left:8px;text-decoration:underline" title="Jump to transaction">← Transaction</span>`
+      ?`<button onclick="jumpToTx(${j.txId})" style="font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);padding:3px 9px;cursor:pointer;font-family:var(--sans);font-weight:500;margin-left:8px" title="Show the transaction that created this entry">↩ Show transaction</button>`
       :'';
     return`<div class="je-block" id="je-${j.id}">
       <div class="je-header">
         <span class="je-date">${j.date}</span>
         <span class="je-type-tag">${j.type}</span>
         ${txLink}
-        <span style="margin-left:auto;font-size:10px;color:var(--text3);cursor:pointer;font-family:var(--mono)" onclick="jumpToTA(${j.id})" title="Highlight T-accounts affected by this entry">→ T-accounts</span>
+        <button onclick="jumpToTA(${j.id})" style="margin-left:auto;font-size:11px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 9px;cursor:pointer;font-family:var(--sans);font-weight:500" title="Show affected T-accounts">Show in T-accounts →</button>
       </div>
       <table class="je-table">
         <thead><tr><th>Account</th><th class="right">Debit</th><th class="right">Credit</th></tr></thead>
@@ -1607,14 +1662,14 @@ function renderTAccounts(tData){
       <div class="t-cols">
         <div class="t-side"><div class="t-side-hd">Debit</div>
           ${rows.map(r=>r.dr
-            ?`<div class="t-entry ta-entry ${r.dr.open?'open':'new'}" ${r.dr.jeId!=null?`data-je-id="${r.dr.jeId}" onclick="jumpToJE(${r.dr.jeId})" title="Click → see journal entry" style="cursor:pointer"`:''}><span>${r.dr.label}</span><span>${fmt(r.dr.amt)}</span></div>`
+            ?`<div class="t-entry ta-entry ${r.dr.open?'open':'new'}" ${r.dr.jeId!=null?`data-je-id="${r.dr.jeId}" onclick="jumpToJE(${r.dr.jeId})" title="Show journal entry"`:''}><span>${r.dr.label}</span><span style="display:flex;align-items:center;gap:4px">${r.dr.amt?fmt(r.dr.amt):''}${r.dr.jeId!=null?'<span style="font-size:9px;color:var(--blue);opacity:0.6">JE</span>':''}</span></div>`
             :'<div class="t-entry" style="opacity:0.12">·</div>'
           ).join('')}
         </div>
         <div class="t-divider"></div>
         <div class="t-side"><div class="t-side-hd">Credit</div>
           ${rows.map(r=>r.cr
-            ?`<div class="t-entry ta-entry ${r.cr.open?'open':'new'}" ${r.cr.jeId!=null?`data-je-id="${r.cr.jeId}" onclick="jumpToJE(${r.cr.jeId})" title="Click → see journal entry" style="cursor:pointer"`:''}><span>${r.cr.label}</span><span>${fmt(r.cr.amt)}</span></div>`
+            ?`<div class="t-entry ta-entry ${r.cr.open?'open':'new'}" ${r.cr.jeId!=null?`data-je-id="${r.cr.jeId}" onclick="jumpToJE(${r.cr.jeId})" title="Show journal entry"`:''}><span>${r.cr.label}</span><span style="display:flex;align-items:center;gap:4px">${r.cr.amt?fmt(r.cr.amt):''}${r.cr.jeId!=null?'<span style="font-size:9px;color:var(--blue);opacity:0.6">JE</span>':''}</span></div>`
             :'<div class="t-entry" style="opacity:0.12">·</div>'
           ).join('')}
         </div>
