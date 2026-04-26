@@ -150,14 +150,6 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .toast-tab:hover{background:rgba(255,255,255,0.2);}
 .toast-progress{height:2px;background:rgba(255,255,255,0.12);border-radius:1px;margin-top:10px;overflow:hidden;}
 .toast-bar{height:100%;background:rgba(255,255,255,0.4);border-radius:1px;animation:toastProgress 10s linear forwards;}
-  .app{grid-template-columns:1fr;}
-  .sidebar{height:auto;position:relative;flex-direction:row;flex-wrap:wrap;padding:8px;gap:2px;}
-  .sidebar-brand{display:none;}.nav-section{display:none;}
-  .nav-item{padding:6px 10px;border-left:none;border-bottom:2px solid transparent;font-size:11px;}
-  .nav-item.active{border-bottom-color:#fff;border-left-color:transparent;}
-  .page{padding:14px;}.grid-3,.grid-4{grid-template-columns:1fr 1fr;}
-  .t-grid{grid-template-columns:1fr;}
-}
 </style>
 </head>
 <body>
@@ -168,18 +160,22 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <p>Stockholders' Equity Explorer</p>
     <div class="save-indicator" id="save-indicator">auto-save: off</div>
   </div>
-  <div class="nav-section">Start</div>
-  <div class="nav-item active" onclick="showPage('welcome')"><span class="num">→</span>Overview</div>
-  <div class="nav-section">Setup</div>
-  <div class="nav-item" onclick="showPage('setup')"><span class="num" style="background:#e8a020;color:#fff;">1</span>Opening Balances<span style="font-size:9px;background:rgba(232,160,32,0.25);color:#e8a020;border-radius:3px;padding:1px 5px;margin-left:auto;font-weight:600;letter-spacing:0.04em;">INPUT</span></div>
-  <div class="nav-section">Work Through It</div>
-  <div class="nav-item" onclick="showPage('transactions')"><span class="num" style="background:#e8a020;color:#fff;">2</span>Add Transactions<span style="font-size:9px;background:rgba(232,160,32,0.25);color:#e8a020;border-radius:3px;padding:1px 5px;margin-left:auto;font-weight:600;letter-spacing:0.04em;">INPUT</span></div>
-  <div class="nav-section" style="padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);">Auto-generated for you</div>
-  <div class="nav-item" onclick="showPage('shares')"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);">3</span>Share Tracker</div>
-  <div class="nav-item" onclick="showPage('dividends')"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);">4</span>Dividend Calculator</div>
-  <div class="nav-item" onclick="showPage('journals')"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);">5</span>Journal Entries</div>
-  <div class="nav-item" onclick="showPage('taccounts')"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);">6</span>T-Accounts</div>
-  <div class="nav-item" onclick="showPage('bs')"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);">7</span>Balance Sheet</div>
+  <div class="nav-item active" onclick="showPage('welcome')" style="margin-top:4px"><span class="num">→</span>Overview</div>
+
+  <div style="margin:10px 20px 0;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1)">
+    <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:#e8a020;text-transform:uppercase;margin-bottom:6px">You enter</div>
+    <div class="nav-item" onclick="showPage('setup')" style="padding-left:0;margin-left:0"><span class="num" style="background:#e8a020;color:#fff;">1</span>Opening Balances</div>
+    <div class="nav-item" onclick="showPage('transactions')" style="padding-left:0;margin-left:0"><span class="num" style="background:#e8a020;color:#fff;">2</span>Add Transactions</div>
+  </div>
+
+  <div style="margin:10px 20px 0;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1)">
+    <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:6px">Auto-generated</div>
+    <div class="nav-item" onclick="showPage('shares')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">3</span>Share Tracker</div>
+    <div class="nav-item" onclick="showPage('dividends')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">4</span>Dividend Calculator</div>
+    <div class="nav-item" onclick="showPage('journals')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">5</span>Journal Entries</div>
+    <div class="nav-item" onclick="showPage('taccounts')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">6</span>T-Accounts</div>
+    <div class="nav-item" onclick="showPage('bs')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">7</span>Balance Sheet</div>
+  </div>
   <div class="sidebar-footer">
     <button class="btn btn-secondary btn-full" onclick="loadAlpha()" style="font-size:12px;">Load Alpha Corporation</button>
     <button class="btn btn-secondary btn-full" onclick="loadShelby()" style="font-size:12px;">Load Shelby Corporation</button>
@@ -1049,117 +1045,79 @@ function renderJournals(journals){
 
 function renderShares(history){
   const el=document.getElementById('share-output');
-  const latest=history[history.length-1];
   const csAuth=g('cs-auth');
-  const unissued=Math.max(0,csAuth-latest.issued);
-  const issuedPct=csAuth>0?latest.issued/csAuth*100:50;
-  const outPct=latest.issued>0?latest.outstanding/latest.issued*100:100;
-  const tsPct=latest.issued>0?latest.treasury/latest.issued*100:0;
 
-  el.innerHTML=`
-  <div class="card" style="margin-bottom:20px">
-    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:14px">Share structure — ${latest.date}</div>
-
-    <div style="border:2px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:14px">
-      <div style="background:var(--surface2);padding:6px 10px;font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border)">
-        Authorized: ${fmts(csAuth)} shares (set in charter — never recorded in accounts)
+  function miniDiagram(h){
+    const unissued=Math.max(0,csAuth-h.issued);
+    const issuedPct=csAuth>0?Math.max(4,h.issued/csAuth*100):50;
+    const outPct=h.issued>0?Math.max(5,h.outstanding/h.issued*100):100;
+    const tsPct=h.issued>0?Math.max(0,h.treasury/h.issued*100):0;
+    const hasTreasury=h.treasury>0;
+    return`
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:4px">Authorized: ${fmts(csAuth)}</div>
+      <div style="height:10px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:3px">
+        <div style="height:100%;width:${issuedPct}%;background:#B5D4F4;border-right:2px solid #378ADD"></div>
       </div>
-      <div style="display:flex;height:80px">
-        <div style="width:${Math.max(issuedPct,20)}%;display:flex;flex-direction:column;border-right:2px solid var(--border2);flex-shrink:0">
-          <div style="background:var(--surface2);padding:3px 8px;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid var(--border);white-space:nowrap">Issued: ${fmts(latest.issued)}</div>
-          <div style="flex:1;display:flex">
-            <div style="width:${Math.max(outPct,5)}%;background:var(--green-bg);border-right:2px solid var(--green-border);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px">
-              <div style="font-size:10px;font-weight:600;color:var(--green);text-align:center;text-transform:uppercase;letter-spacing:0.04em">Outstanding</div>
-              <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--green)">${fmts(latest.outstanding)}</div>
-            </div>
-            ${latest.treasury>0?`<div style="width:${Math.max(tsPct,5)}%;background:var(--red-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px">
-              <div style="font-size:10px;font-weight:600;color:var(--red);text-align:center;text-transform:uppercase;letter-spacing:0.04em">Treasury</div>
-              <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--red)">${fmts(latest.treasury)}</div>
-            </div>`:''}
-          </div>
-        </div>
-        <div style="flex:1;background:var(--surface2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;min-width:0">
-          <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em">Unissued</div>
-          <div style="font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text3)">${fmts(unissued)}</div>
-        </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:12px">
+        <span style="color:#185FA5;font-weight:500">■ Issued: ${fmts(h.issued)}</span>
+        <span style="color:var(--text3)">Unissued: ${fmts(unissued)}</span>
       </div>
-    </div>
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:5px">Within issued</div>
+      <div style="display:flex;height:48px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border)">
+        <div style="width:${outPct}%;background:var(--green-bg);${hasTreasury?'border-right:2px solid var(--green-border);':''}display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 6px;overflow:hidden">
+          <div style="font-size:9px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap">Outstanding</div>
+          <div style="font-family:var(--mono);font-size:${h.outstanding>99999?'11':'13'}px;font-weight:600;color:var(--green)">${fmts(h.outstanding)}</div>
+        </div>
+        ${hasTreasury?`<div style="width:${tsPct}%;background:var(--red-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 4px;overflow:hidden;min-width:38px">
+          <div style="font-size:9px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap">Treasury</div>
+          <div style="font-family:var(--mono);font-size:${h.treasury>99999?'11':'13'}px;font-weight:600;color:var(--red)">${fmts(h.treasury)}</div>
+        </div>`:''}
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:6px">${fmts(h.issued)} issued − ${fmts(h.treasury)} treasury = <strong style="color:var(--green)">${fmts(h.outstanding)} outstanding</strong> <span style="color:var(--text3)">(used for common dividends)</span></div>`;
+  }
 
-    <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:12px">
-      <span style="color:var(--text2)">Outstanding (used for dividends):</span>
-      <strong style="color:var(--green);font-family:var(--mono)">${fmts(latest.outstanding)}</strong>
-      <span style="color:var(--text3)">= ${fmts(latest.issued)} issued − ${fmts(latest.treasury)} treasury</span>
-    </div>
-  </div>
-
-  <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:10px">Event log</div>
-
-  ${history.map((h,i)=>{
+  el.innerHTML=history.map((h,i)=>{
     const prev=i>0?history[i-1]:null;
     const issuedDiff=prev?h.issued-prev.issued:0;
     const treasuryDiff=prev?h.treasury-prev.treasury:0;
     const outDiff=prev?h.outstanding-prev.outstanding:0;
-    const issuedChanged=prev&&issuedDiff!==0;
-    const treasuryChanged=prev&&treasuryDiff!==0;
-    const outChanged=prev&&outDiff!==0;
     const parChanged=prev&&h.par!==prev.par;
     const isSplit=h.splitNote!==null;
     const isFirst=i===0;
+    const hasChanges=!isFirst&&(issuedDiff!==0||treasuryDiff!==0||outDiff!==0);
 
-    // badge: shows actual change to that number with appropriate framing
-    function badge(diff, goodDir){
-      // goodDir: 'up' means positive diff is good (green), 'down' means positive diff is bad (red/amber)
+    function badge(diff,goodDir){
       if(diff===0)return'';
-      const isPositive=diff>0;
-      let cls;
-      if(goodDir==='up') cls=isPositive?'pill-up':'pill-down';
-      else cls=isPositive?'pill-down':'pill-up'; // treasury going up = bad
-      return`<span class="effect-pill ${cls}" style="font-size:10px;padding:1px 7px">${isPositive?'+':''}${fmts(diff)}</span>`;
+      const isPos=diff>0;
+      const cls=goodDir==='up'?(isPos?'pill-up':'pill-down'):(isPos?'pill-down':'pill-up');
+      return`<span class="effect-pill ${cls}" style="font-size:10px;padding:1px 7px">${isPos?'+':''}${fmts(diff)}</span>`;
     }
 
-    function row(label, val, changed, diff, goodDir, color, note){
-      const dim=!isFirst&&!changed;
-      return`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);opacity:${dim?0.38:1}">
-        <div>
-          <span style="font-size:12px;color:${color||'var(--text)'}${changed?';font-weight:600':''}">${label}</span>
-          ${note?`<span style="font-size:11px;color:var(--text3);margin-left:6px">${note}</span>`:''}
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          ${changed?badge(diff,goodDir):''}
-          <span style="font-family:var(--mono);font-size:13px;font-weight:${isFirst||changed?600:400};color:${color||'var(--text)'}">${fmts(val)}</span>
-        </div>
-      </div>`;
-    }
-
-    const borderColor=isFirst?'var(--border2)':isSplit?'var(--teal)':issuedChanged?'var(--blue)':treasuryChanged?'var(--red)':'var(--border2)';
-
-    return`<div style="display:flex;gap:0;margin-bottom:8px" ${i===history.length-1?'id="share-latest"':''}>
-      <div style="width:3px;border-radius:2px;background:${borderColor};flex-shrink:0;margin-right:12px"></div>
-      <div style="flex:1;background:var(--surface);border:1px solid ${isSplit?'var(--teal-border)':'var(--border)'};border-radius:var(--radius);padding:12px 14px">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
-          <div>
-            <div style="font-size:12px;font-weight:600;color:var(--text)">${h.date}</div>
-            <div style="font-size:12px;color:var(--text2);margin-top:1px">${h.event}</div>
-          </div>
-          ${isFirst?`<span style="font-size:11px;color:var(--text3)">opening</span>`:''}
-          ${isSplit?`<span class="effect-pill pill-teal" style="font-size:10px">stock split</span>`:''}
-        </div>
-        ${isSplit?`<div class="split-box" style="font-size:11px;margin-bottom:8px">${h.splitNote} — no dollar amounts change</div>`:''}
-        ${row('Shares issued', h.issued, isFirst||issuedChanged, issuedDiff, 'up', 'var(--text)')}
-        ${row('Treasury shares', h.treasury, isFirst||treasuryChanged, treasuryDiff, 'down', 'var(--red)', treasuryChanged?(treasuryDiff>0?'← shares locked up':' ← shares returned'):'(held by company)')}
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;opacity:${!isFirst&&!outChanged?0.38:1}">
-          <span style="font-size:12px;color:var(--green);font-weight:${isFirst||outChanged?600:400}">= Outstanding <span style="font-weight:400;font-size:11px;color:var(--text3)">(used for dividends)</span></span>
-          <div style="display:flex;align-items:center;gap:8px">
-            ${outChanged?badge(outDiff,'up'):''}
-            <span style="font-family:var(--mono);font-size:13px;font-weight:${isFirst||outChanged?600:400};color:var(--green)">${fmts(h.outstanding)}</span>
+    return`<div style="margin-bottom:14px" ${i===history.length-1?'id="share-latest"':''}>
+      <div style="background:var(--surface);border:1px solid ${isSplit?'var(--teal-border)':'var(--border)'};border-radius:var(--radius);padding:14px 16px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+          <div style="font-size:13px;font-weight:600">${h.date}</div>
+          <div style="display:flex;gap:6px">
+            ${isSplit?'<span class="effect-pill pill-teal" style="font-size:10px">stock split</span>':''}
+            ${isFirst?'<span style="font-size:11px;color:var(--text3)">opening balances</span>':''}
           </div>
         </div>
-        ${parChanged?`<div style="font-size:11px;color:var(--teal);margin-top:6px;font-family:var(--mono);padding-top:6px;border-top:1px solid var(--border)">Par: ${fmtpar(prev.par)} → ${fmtpar(h.par)}</div>`:''}
-        ${isFirst?`<div style="font-size:11px;color:var(--text3);margin-top:6px;font-family:var(--mono);padding-top:6px;border-top:1px solid var(--border)">Par value: ${fmtpar(h.par)}</div>`:''}
+        <div style="font-size:12px;color:var(--text2);margin-bottom:12px">${h.event}</div>
+        ${isSplit?`<div class="split-box" style="font-size:11px;margin-bottom:10px">${h.splitNote} — dollar totals unchanged</div>`:''}
+        ${miniDiagram(h)}
+        ${hasChanges?`<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+          <span style="font-size:11px;color:var(--text3);font-weight:600">Changed:</span>
+          ${issuedDiff!==0?`<span style="font-size:12px;color:var(--text2)">Issued ${badge(issuedDiff,'up')}</span>`:''}
+          ${treasuryDiff!==0?`<span style="font-size:12px;color:var(--text2)">Treasury ${badge(treasuryDiff,'down')} <span style="font-size:11px;color:var(--text3)">${treasuryDiff>0?'shares locked up':'shares returned'}</span></span>`:''}
+          ${outDiff!==0?`<span style="font-size:12px;font-weight:600;color:var(--green)">Outstanding ${badge(outDiff,'up')}</span>`:''}
+        </div>`:''}
+        ${parChanged?`<div style="margin-top:8px;font-size:11px;color:var(--teal);font-family:var(--mono)">Par value: ${fmtpar(prev.par)} → ${fmtpar(h.par)}</div>`:''}
+        ${isFirst?`<div style="margin-top:8px;font-size:11px;color:var(--text3);font-family:var(--mono)">Par value: ${fmtpar(h.par)}</div>`:''}
       </div>
     </div>`;
-  }).join('')}`;
+  }).join('');
 }
+
 
 function renderDividends(entries,state,psRatePct,psPar,psRate,arrearsYears,psCumul){
   const el=document.getElementById('div-output');
