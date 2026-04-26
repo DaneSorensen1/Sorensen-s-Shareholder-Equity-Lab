@@ -98,7 +98,13 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .t-entry.open{color:var(--text);font-weight:500;}
 .t-entry.new{color:var(--blue);}
 .t-balance{display:flex;justify-content:space-between;padding:5px 10px;background:var(--surface2);border-top:2px solid var(--border2);font-size:12px;font-weight:600;font-family:var(--mono);}
-.t-entry.ta-entry[data-je-id]{cursor:pointer;}
+.lock-badge{font-size:13px;margin-top:2px;flex-shrink:0;}
+#global-lock-overlay{position:fixed;inset:0;background:rgba(20,18,15,0.96);z-index:9000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+#global-lock-overlay.active{display:flex;}
+.lock-overlay-icon{font-size:64px;}
+.lock-overlay-msg{font-size:20px;font-weight:600;color:#fff;letter-spacing:-0.02em;}
+.lock-overlay-sub{font-size:14px;color:rgba(255,255,255,0.45);max-width:340px;text-align:center;line-height:1.6;}
+
 .t-entry.ta-entry:hover{background:var(--amber-bg);color:var(--amber)!important;}
 .t-entry.ta-entry:hover span{color:var(--amber)!important;}
 .bs-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px 30px;}
@@ -190,53 +196,71 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
   <div style="margin:10px 20px 0;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1)">
     <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:6px">Class problems</div>
 
-    <!-- Always unlocked -->
-    <div onclick="loadTotalDiv()" style="padding:5px 0;cursor:pointer;opacity:0.9;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:5px">
-      <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:1px">Pg 9 — Dividend allocation</div>
-      <div>Total Dividend Declaration</div>
-    </div>
-    <div onclick="loadAlpha()" style="padding:5px 0;cursor:pointer;opacity:0.9;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:5px">
-      <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:1px">Pg 10–13 — Full equity</div>
-      <div>Alpha Corporation</div>
-    </div>
-    <div onclick="loadShelby()" style="padding:5px 0;cursor:pointer;opacity:0.9;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:5px">
-      <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:1px">Full equity</div>
-      <div>Shelby Corporation</div>
-    </div>
-
-    <!-- Locked problems -->
-    <div id="lock-malibu" onclick="tryUnlock('malibu')" style="padding:5px 0;cursor:not-allowed;opacity:0.4;font-size:12px;color:rgba(255,255,255,0.5);line-height:1.3;margin-bottom:5px;display:flex;justify-content:space-between;align-items:flex-start">
-      <div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:1px">JE + Balance Sheet</div>
-        <div>Malibu Beachwear</div>
+    <div id="class-problems-list">
+      <div onclick="loadTotalDiv()" style="padding:5px 0;cursor:pointer;opacity:0.9;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:5px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:1px">Dividend allocation</div>
+        <div>Total Dividend Declaration</div>
       </div>
-      <span id="lock-icon-malibu" style="font-size:13px;margin-top:2px">🔒</span>
-    </div>
-    <div id="lock-stanley" onclick="tryUnlock('stanley')" style="padding:5px 0;cursor:not-allowed;opacity:0.4;font-size:12px;color:rgba(255,255,255,0.5);line-height:1.3;margin-bottom:5px;display:flex;justify-content:space-between;align-items:flex-start">
-      <div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:1px">Stock split + Balance Sheet</div>
-        <div>Stanley Corp</div>
+      <div onclick="loadAlpha();showPage('setup')" style="padding:5px 0;cursor:pointer;opacity:0.9;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:5px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:1px">Full equity</div>
+        <div>Alpha Corporation</div>
       </div>
-      <span id="lock-icon-stanley" style="font-size:13px;margin-top:2px">🔒</span>
-    </div>
-    <div id="lock-fostergrant" onclick="tryUnlock('fostergrant')" style="padding:5px 0;cursor:not-allowed;opacity:0.4;font-size:12px;color:rgba(255,255,255,0.5);line-height:1.3;margin-bottom:5px;display:flex;justify-content:space-between;align-items:flex-start">
-      <div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:1px">Dividend allocation (arrears)</div>
-        <div>Foster Grant</div>
+      <div onclick="loadShelby();showPage('setup')" style="padding:5px 0;cursor:pointer;opacity:0.9;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:5px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:1px">Full equity</div>
+        <div>Shelby Corporation</div>
       </div>
-      <span id="lock-icon-fostergrant" style="font-size:13px;margin-top:2px">🔒</span>
+      <div id="locked-problem-malibu" onclick="loadIfUnlocked('malibu')" style="padding:5px 0;font-size:12px;color:rgba(255,255,255,0.5);line-height:1.3;margin-bottom:5px;display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:1px">JE + Balance Sheet</div>
+          <div>Malibu Beachwear</div>
+        </div>
+        <span class="lock-badge">🔒</span>
+      </div>
+      <div id="locked-problem-stanley" onclick="loadIfUnlocked('stanley')" style="padding:5px 0;font-size:12px;color:rgba(255,255,255,0.5);line-height:1.3;margin-bottom:5px;display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:1px">Stock split + Balance Sheet</div>
+          <div>Stanley Corp</div>
+        </div>
+        <span class="lock-badge">🔒</span>
+      </div>
+      <div id="locked-problem-fostergrant" onclick="loadIfUnlocked('fostergrant')" style="padding:5px 0;font-size:12px;color:rgba(255,255,255,0.5);line-height:1.3;margin-bottom:5px;display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:1px">Dividend allocation (arrears)</div>
+          <div>Foster Grant</div>
+        </div>
+        <span class="lock-badge">🔒</span>
+      </div>
     </div>
   </div>
 
   <div class="sidebar-footer">
     <button class="btn btn-danger btn-full" onclick="resetAll()" style="font-size:12px;">Clear everything</button>
-    <!-- Teacher unlock: click label 3x -->
-    <div id="teacher-btn" style="margin-top:8px;text-align:center;font-size:10px;color:rgba(255,255,255,0.2);cursor:pointer;padding:4px" onclick="teacherClick()" title="Teacher access">• • •</div>
+    <!-- Global lock toggle — triple-click to reveal -->
+    <div id="teacher-btn" style="margin-top:8px;text-align:center;font-size:10px;color:rgba(255,255,255,0.2);cursor:pointer;padding:4px" onclick="teacherClick()" title="Instructor access">• • •</div>
     <div id="teacher-unlock-wrap" style="display:none;margin-top:6px">
-      <input id="teacher-code" type="password" placeholder="code" style="width:100%;font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;box-sizing:border-box" onkeydown="if(event.key==='Enter')checkTeacherCode()">
+      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Instructor password</div>
+      <input id="teacher-code" type="password" placeholder="password" style="width:100%;font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;box-sizing:border-box" onkeydown="if(event.key==='Enter')checkTeacherCode()">
+    </div>
+    <div id="instructor-controls" style="display:none;margin-top:8px">
+      <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:6px">Instructor controls</div>
+      <div id="global-lock-status" style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px"></div>
+      <button id="global-lock-btn" onclick="toggleGlobalLock()" style="width:100%;font-size:12px;padding:6px;border-radius:4px;border:none;cursor:pointer;font-weight:600"></button>
+      <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px">Per-problem locks:</div>
+      <div style="display:flex;flex-direction:column;gap:3px;margin-top:4px">
+        <button onclick="toggleProblemLock('malibu')" id="pbtn-malibu" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);cursor:pointer;text-align:left">Malibu Beachwear 🔒</button>
+        <button onclick="toggleProblemLock('stanley')" id="pbtn-stanley" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);cursor:pointer;text-align:left">Stanley Corp 🔒</button>
+        <button onclick="toggleProblemLock('fostergrant')" id="pbtn-fostergrant" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);cursor:pointer;text-align:left">Foster Grant 🔒</button>
+      </div>
     </div>
   </div>
 </nav>
+
+<!-- GLOBAL LOCK OVERLAY -->
+<div id="global-lock-overlay">
+  <div class="lock-overlay-icon">🔒</div>
+  <div class="lock-overlay-msg">Tool is currently locked</div>
+  <div class="lock-overlay-sub">This tool is disabled during class. Work the problem by hand first — it will be unlocked for the last portion of class.</div>
+</div>
 
 <main class="main">
 
@@ -274,7 +298,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
         <div style="font-size:18px">📝</div>
         <div style="font-size:13px;font-weight:600">Stock issuance JE</div>
         <div style="font-size:12px;color:var(--text2);line-height:1.5;flex:1">Record an issuance and see the full journal entry — par split, APIC, cash. Back into shares or price from totals.</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Malibu Beachwear (d) · Peabody (1)</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Malibu Beachwear (d) · Alpha Corp</div>
         <button class="btn btn-secondary" onclick="startBlank('transactions')" style="font-size:12px;padding:7px 0;width:100%">Go to transactions →</button>
       </div>
 
@@ -292,7 +316,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
         <div style="font-size:18px">📊</div>
         <div style="font-size:13px;font-weight:600">Full equity problem</div>
         <div style="font-size:12px;color:var(--text2);line-height:1.5;flex:1">Opening balances → transactions → JE → T-accounts → balance sheet. The complete picture.</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Peabody Corp · Malibu Beachwear</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Malibu Beachwear · Alpha Corp</div>
         <button class="btn btn-primary" onclick="startBlank('setup')" style="font-size:12px;padding:7px 0;width:100%">Start from balances →</button>
       </div>
 
@@ -301,7 +325,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
         <div style="font-size:18px">⚖️</div>
         <div style="font-size:13px;font-weight:600;color:var(--green)">Balance sheet</div>
         <div style="font-size:12px;color:var(--text2);line-height:1.5;flex:1">Enter known balances and get the formatted equity section instantly. Useful for practice or before/after comparisons.</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Stanley Corp · Peabody (required 2)</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Examples: Stanley Corp · Malibu Beachwear</div>
         <button class="btn btn-secondary" onclick="startBlank('setup')" style="font-size:12px;padding:7px 0;width:100%;border-color:var(--green-border);color:var(--green)">Enter balances →</button>
       </div>
 
@@ -389,24 +413,24 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <div class="field-grid grid-2" style="margin-bottom:12px">
       <div class="field">
         <label>Par / stated value ($)</label>
-        <input type="number" id="cs-par" value="0" step="0.01" oninput="recalcAndSave()">
+        <input type="number" id="cs-par" placeholder="e.g. 1" step="0.01" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">A legal minimum per share set in the charter — not the market price. Usually $1–$5. Its only job: split issuance proceeds into Common Stock (par × shares) and APIC (everything above par).</div>
       </div>
       <div class="field">
         <label>Authorized shares</label>
-        <input type="number" id="cs-auth" value="0" oninput="recalcAndSave()">
+        <input type="number" id="cs-auth" placeholder="e.g. 500,000" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">The maximum number of shares the company decided to allow in its charter when it incorporated. <strong>No journal entry is ever made for authorized shares.</strong> Appears only as a disclosure on the balance sheet. <span class="goto-link" onclick="showPage('bs')">→ See balance sheet</span></div>
       </div>
     </div>
     <div class="field-grid grid-2">
       <div class="field">
         <label>Shares in this opening balance</label>
-        <input type="number" id="cs-issued" value="0" oninput="recalcAndSave()">
+        <input type="number" id="cs-issued" placeholder="e.g. 205,000" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">Total shares given out in all prior years. The Common Stock dollar balance (par × shares) is calculated automatically — you provide the count, the app derives the dollars. <span class="goto-link" onclick="showPage('taccounts')">→ See T-account</span></div>
       </div>
       <div class="field">
         <label>APIC — common: opening balance ($)</label>
-        <input type="number" id="apic-cs" value="0" oninput="recalcAndSave()">
+        <input type="number" id="apic-cs" placeholder="e.g. 880,000" oninput="recalcAndSave()">
         <div class="explain-block hint-exp" style="border-left:2px solid var(--amber-border);padding-left:8px;color:var(--text2)"><strong style="color:var(--amber)">Why is APIC an input here?</strong> In any real transaction, APIC is never something you figure out first — it is always what's left over after subtracting par value from the cash received. The only reason you're typing it in here is that this opening balance represents years of prior issuances we don't have the details for. Think of it as a number you're reading off last year's balance sheet, not calculating. <strong>For any stock issued this year, the app calculates APIC automatically — you will never enter it yourself.</strong> <span class="goto-link" onclick="showPage('taccounts')" style="color:var(--blue)">→ T-account</span> <span class="goto-link" onclick="showPage('bs')" style="color:var(--blue)">→ Balance sheet</span></div>
       </div>
     </div>
@@ -420,12 +444,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <div class="field-grid grid-3">
       <div class="field">
         <label>Treasury shares in this opening balance</label>
-        <input type="number" id="ts-shares" value="0" oninput="recalcAndSave()">
+        <input type="number" id="ts-shares" placeholder="e.g. 25,000" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">Reduces outstanding shares immediately. Outstanding = issued − treasury. <span class="goto-link" onclick="showPage('shares')">→ See share tracker</span></div>
       </div>
       <div class="field">
         <label>Total cost of those shares ($)</label>
-        <input type="number" id="ts-cost" value="0" oninput="recalcAndSave()">
+        <input type="number" id="ts-cost" placeholder="e.g. 140,000" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">What the company paid to repurchase these shares. Appears as (140,000) — a deduction — on the balance sheet.</div>
       </div>
       <div class="field">
@@ -444,31 +468,31 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <div class="field-grid grid-2" style="margin-bottom:12px">
       <div class="field">
         <label>Par value ($)</label>
-        <input type="number" id="ps-par" value="0" oninput="recalcAndSave()">
+        <input type="number" id="ps-par" placeholder="e.g. 100" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">Same concept as common par — legal minimum, used for the issuance split. Preferred par is often $100 because it doubles as the dividend base.</div>
       </div>
       <div class="field">
         <label>Annual dividend rate (%)</label>
-        <input type="number" id="ps-rate" value="0" step="0.01" oninput="recalcAndSave()">
+        <input type="number" id="ps-rate" placeholder="e.g. 7" step="0.01" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">Fixed rate. Formula: rate % × par × shares issued. e.g. 7% × $100 × 5,000 = $35,000/yr. Does not change with company profits. <span class="goto-link" onclick="showPage('dividends')">→ See dividend calculator</span></div>
       </div>
     </div>
     <div class="field-grid grid-2" style="margin-bottom:12px">
       <div class="field">
         <label>Authorized shares</label>
-        <input type="number" id="ps-auth" value="0" oninput="recalcAndSave()">
+        <input type="number" id="ps-auth" placeholder="e.g. 10,000" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">The maximum number of preferred shares the company set in its charter. Not recorded in any account — appears as a disclosure on the balance sheet only.</div>
       </div>
       <div class="field">
         <label>Shares in this opening balance</label>
-        <input type="number" id="ps-issued" value="0" oninput="recalcAndSave()">
+        <input type="number" id="ps-issued" placeholder="e.g. 5,000" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">All preferred shares issued in prior years. Typically no treasury stock for preferred — all issued shares are outstanding.</div>
       </div>
     </div>
     <div class="field-grid grid-3">
       <div class="field">
         <label>APIC — preferred: opening balance ($)</label>
-        <input type="number" id="apic-ps" value="0" oninput="recalcAndSave()">
+        <input type="number" id="apic-ps" placeholder="e.g. 15,000" oninput="recalcAndSave()">
         <div class="explain-block hint-exp" style="border-left:2px solid var(--amber-border);padding-left:8px;color:var(--amber)">Prior years only — same logic as APIC-common. Its own account, never mixed with APIC-common. New preferred issuances calculate APIC automatically. <span class="goto-link" onclick="showPage('taccounts')" style="color:var(--blue)">→ See T-account</span></div>
       </div>
       <div class="field">
@@ -481,7 +505,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
       </div>
       <div class="field">
         <label>Prior years' dividends skipped</label>
-        <input type="number" id="arrears" value="0" min="0" oninput="recalcAndSave()">
+        <input type="number" id="arrears" placeholder="0" min="0" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">Arrears are <strong>not</strong> a balance sheet liability — they're a note disclosure only. But when a dividend is declared, all arrears must be paid first. Enter years skipped before this year.</div>
       </div>
     </div>
@@ -492,12 +516,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <div class="field-grid grid-2">
       <div class="field">
         <label>Retained earnings in this opening balance ($)</label>
-        <input type="number" id="re-open" value="0" oninput="recalcAndSave()">
+        <input type="number" id="re-open" placeholder="e.g. 900,000" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">All net income ever earned, minus all dividends ever paid. Increases with income, decreases with dividends. <strong>Not a cash account</strong> — it's accumulated ownership interest. <span class="goto-link" onclick="showPage('taccounts')">→ See T-account</span> <span class="goto-link" onclick="showPage('bs')">→ See balance sheet</span></div>
       </div>
       <div class="field">
         <label>Company name</label>
-        <input type="text" id="co-name" value="My Company" oninput="recalcAndSave()">
+        <input type="text" id="co-name" placeholder="Company name" oninput="recalcAndSave()">
         <div class="explain-block hint-exp">Appears on the balance sheet header.</div>
       </div>
     </div>
@@ -653,7 +677,6 @@ const TX_TYPES=[
   {val:'declare_pref',    label:'Declare preferred cash dividend'},
   {val:'pay_dividends',   label:'Pay declared dividends (cash)'},
   {val:'close_dividends', label:'Close dividends → retained earnings (year-end)'},
-  {val:'net_income',      label:'Record net income'},
 ];
 const TX_FIELDS={
   issue_common:    [{id:'shares',label:'Shares issued',ph:'4000'},{id:'price',label:'Issue price/share ($)',ph:'18.00'}],
@@ -665,7 +688,6 @@ const TX_FIELDS={
   declare_pref:    [{id:'years',label:'Years to pay (incl. current)',ph:'1',default:'1'}],
   pay_dividends:   [],
   close_dividends: [],
-  net_income:      [{id:'amount',label:'Net income ($)',ph:'120000'}],
 };
 
 let transactions=[], txId=0;
@@ -1434,20 +1456,6 @@ function recalc(){
         renderTxEffect(tx.id,[],'No dividends to close.');
       }
     }
-    else if(tx.type==='net_income'){
-      if(!amount){renderTxEffect(tx.id,[],'Enter the net income amount to generate this journal entry.');return;}
-      const jid=jeCounter++;
-      state.re+=amount;
-      journals.push({id:jid,txId:tx.id,date:d,type:'Record net income',entries:[
-        {acct:'Income summary',dr:amount,note:'Closing income to equity'},
-        {acct:'Retained earnings',cr:amount,note:'Earnings kept in the company increase equity'},
-      ]});
-      post('re','cr',amount,d,jid);
-      renderTxEffect(tx.id,[
-        {label:'Retained earnings',dir:'up',val:'+'+fmtd(amount)},
-        {label:'Total equity',dir:'up',val:'+'+fmtd(amount)},
-      ],'Net income earned this year flows into retained earnings, increasing total stockholders\' equity by the same amount.',jid);
-    }
   });
 
   renderJournals(journals);
@@ -1869,8 +1877,75 @@ function showPage(name){
   setTimeout(applyGlowClasses,40);
 }
 
-// ── TEACHER UNLOCK ────────────────────────────────────────────────────────────
-let teacherClicks=0,teacherUnlocked=false;
+// ── LOCK SYSTEM ───────────────────────────────────────────────────────────────
+const LOCK_KEY='equity-lab-locks-v1';
+const INSTRUCTOR_PASSWORD='sorensen';
+let instructorMode=false;
+let lockState={global:false,problems:{malibu:true,stanley:true,fostergrant:true}};
+
+// Shared storage helpers (work in Claude artifact; graceful fallback elsewhere)
+async function saveLockState(){
+  try{await window.storage.set(LOCK_KEY,JSON.stringify(lockState),true);}
+  catch(e){try{localStorage.setItem(LOCK_KEY,JSON.stringify(lockState));}catch(e2){}}
+}
+async function loadLockState(){
+  try{
+    const r=await window.storage.get(LOCK_KEY,true);
+    if(r&&r.value)return JSON.parse(r.value);
+  }catch(e){
+    try{const r=localStorage.getItem(LOCK_KEY);if(r)return JSON.parse(r);}catch(e2){}
+  }
+  return null;
+}
+
+function applyLockState(){
+  // Global overlay
+  const overlay=document.getElementById('global-lock-overlay');
+  if(overlay)overlay.classList.toggle('active',lockState.global&&!instructorMode);
+
+  // Per-problem items
+  ['malibu','stanley','fostergrant'].forEach(name=>{
+    const el=document.getElementById('locked-problem-'+name);
+    const btn=document.getElementById('pbtn-'+name);
+    const locked=lockState.problems[name];
+    if(el){
+      el.style.opacity=locked?'0.4':'0.9';
+      el.style.cursor=locked?'not-allowed':'pointer';
+      const badge=el.querySelector('.lock-badge');
+      if(badge)badge.textContent=locked?'🔒':'🔓';
+    }
+    if(btn)btn.textContent=(locked?'🔒 ':'🔓 ')+{malibu:'Malibu Beachwear',stanley:'Stanley Corp',fostergrant:'Foster Grant'}[name];
+  });
+
+  // Global lock button
+  const glb=document.getElementById('global-lock-btn');
+  const gls=document.getElementById('global-lock-status');
+  if(glb){
+    if(lockState.global){
+      glb.textContent='🔓 Unlock tool for students';
+      glb.style.background='rgba(76,175,80,0.3)';glb.style.color='#81c784';
+    }else{
+      glb.textContent='🔒 Lock tool (block all students)';
+      glb.style.background='rgba(232,160,32,0.3)';glb.style.color='#e8a020';
+    }
+  }
+  if(gls)gls.textContent=lockState.global?'⚠️ Tool is locked for students':'✓ Tool is accessible to students';
+}
+
+async function initLocks(){
+  const saved=await loadLockState();
+  if(saved)lockState=saved;
+  applyLockState();
+  // Poll every 8 seconds for shared state changes (students see lock/unlock in ~8s)
+  setInterval(async()=>{
+    if(!instructorMode){
+      const saved=await loadLockState();
+      if(saved){lockState=saved;applyLockState();}
+    }
+  },8000);
+}
+
+let teacherClicks=0;
 function teacherClick(){
   teacherClicks++;
   if(teacherClicks>=3){
@@ -1883,25 +1958,39 @@ function teacherClick(){
 }
 function checkTeacherCode(){
   const inp=document.getElementById('teacher-code');
-  if(inp&&inp.value.toLowerCase()==='sorensen'){
-    teacherUnlocked=true;
-    ['malibu','stanley','fostergrant'].forEach(name=>{
-      const el=document.getElementById('lock-'+name);
-      const icon=document.getElementById('lock-icon-'+name);
-      if(el){el.style.opacity='0.9';el.style.cursor='pointer';}
-      if(icon)icon.textContent='🔓';
-    });
+  if(!inp)return;
+  if(inp.value.toLowerCase()===INSTRUCTOR_PASSWORD){
+    instructorMode=true;
+    inp.value='';
     const wrap=document.getElementById('teacher-unlock-wrap');
     if(wrap)wrap.style.display='none';
+    const ctrl=document.getElementById('instructor-controls');
+    if(ctrl)ctrl.style.display='block';
+    // Remove overlay so instructor can see content
+    const overlay=document.getElementById('global-lock-overlay');
+    if(overlay)overlay.classList.remove('active');
+    applyLockState();
+  }else{
     inp.value='';
-  }else if(inp){
-    inp.value='';
-    inp.placeholder='wrong code';
-    setTimeout(()=>{inp.placeholder='code';},2000);
+    inp.placeholder='wrong password';
+    setTimeout(()=>{inp.placeholder='password';},2000);
   }
 }
-function tryUnlock(name){
-  if(!teacherUnlocked)return;
+
+async function toggleGlobalLock(){
+  lockState.global=!lockState.global;
+  await saveLockState();
+  applyLockState();
+}
+
+async function toggleProblemLock(name){
+  lockState.problems[name]=!lockState.problems[name];
+  await saveLockState();
+  applyLockState();
+}
+
+function loadIfUnlocked(name){
+  if(lockState.problems[name]&&!instructorMode){return;}
   if(name==='malibu')loadMalibu();
   else if(name==='stanley')loadStanley();
   else if(name==='fostergrant')loadFosterGrant();
@@ -1957,7 +2046,6 @@ function loadShelby(){
   [{type:'issue_common',date:'2024-01-15',fields:{shares:'28000',price:'28'}},
    {type:'issue_preferred',date:'2024-01-20',fields:{shares:'19000',price:'38'}},
    {type:'buy_treasury',date:'2024-02-01',fields:{shares:'3000',price:'25'}},
-   {type:'net_income',date:'2024-12-31',fields:{amount:'158000'}},
    {type:'declare_pref',date:'2024-12-31',fields:{years:'1'}},
    {type:'declare_common',date:'2024-12-31',fields:{rate:'1'}},
    {type:'close_dividends',date:'2024-12-31',fields:{}}
@@ -1983,7 +2071,6 @@ function loadMalibu(){
    {type:'declare_common',date:'2024-03-15',fields:{rate:(260000/90000).toFixed(6)}},
    {type:'pay_dividends',date:'2024-04-01',fields:{}},
    {type:'issue_common',date:'2024-06-01',fields:{shares:'100000',price:'2'}},
-   {type:'net_income',date:'2024-12-31',fields:{amount:'270000'}},
    {type:'close_dividends',date:'2024-12-31',fields:{}}
   ].forEach(t=>transactions.push({id:txId++,...t}));
   renderTxList();recalcAndSave();showPage('setup');
@@ -2046,9 +2133,9 @@ function startBlank(dest){
 // ── INIT ─────────────────────────────────────────────────────────────────────
 const loaded=loadSavedState();
 if(loaded){renderTxList();recalc();}
-// else fields are already at their HTML default values (0 / "My Company")
 renderAllocYearList();
 renderAllocator();
+initLocks();
 document.getElementById('page-setup').classList.add('explain-hidden');
 const toggleBtn=document.getElementById('explain-toggle');
 const toggleLbl=document.getElementById('explain-label');
