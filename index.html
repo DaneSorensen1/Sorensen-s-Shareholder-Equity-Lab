@@ -421,7 +421,8 @@ function renderTxList(){
     el.innerHTML='<div class="empty"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg><p>No transactions yet. Click "+ Add transaction" above.</p></div>';
     return;
   }
-  el.innerHTML=transactions.map(tx=>{
+  const display=[...transactions].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  el.innerHTML=display.map(tx=>{
     const flds=TX_FIELDS[tx.type]||[];
     return `<div class="tx-item">
       <div class="tx-item-header">
