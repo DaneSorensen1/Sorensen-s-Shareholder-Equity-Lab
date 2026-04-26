@@ -171,13 +171,17 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <h2>Opening balances</h2>
     <p>Enter the company's stockholders' equity accounts as of January 1 — the starting point before any transactions this year. Your work saves automatically to this browser.</p>
   </div>
+  <div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:14px 18px;margin-bottom:18px;font-size:13px;line-height:1.7;color:var(--text2)">
+    <div style="font-weight:600;color:var(--amber);margin-bottom:5px">Why are we entering some numbers manually here?</div>
+    These opening balances come from a balance sheet dated before our study period begins. They are the <em>result</em> of transactions that already happened in prior years — we just don't have those individual transactions in this exercise. <strong>APIC is the most important example:</strong> in real life it would never be typed in directly — it would always be the automatic result of (cash received) minus (par value). The only reason it appears as an input here is that we are starting mid-story. Every transaction you add below will calculate APIC automatically. The opening fields are prior history only.
+  </div>
   <div class="card">
     <div class="card-label">Common stock</div>
     <div class="field-grid grid-4">
       <div class="field"><label>Par / stated value ($)</label><input type="number" id="cs-par" value="2" step="0.01" oninput="recalcAndSave()"><div class="hint">Set by state charter. Usually small ($1–$5). Not market price.</div></div>
       <div class="field"><label>Authorized shares</label><input type="number" id="cs-auth" value="900000" oninput="recalcAndSave()"><div class="hint">Permission to issue. Not recorded in any account.</div></div>
-      <div class="field"><label>Shares issued Jan. 1</label><input type="number" id="cs-issued" value="300000" oninput="recalcAndSave()"><div class="hint">Total shares ever given out to date.</div></div>
-      <div class="field"><label>APIC — common ($)</label><input type="number" id="apic-cs" value="880000" oninput="recalcAndSave()"><div class="hint">Amounts paid above par on all past issuances.</div></div>
+      <div class="field"><label>Shares issued Jan. 1</label><input type="number" id="cs-issued" value="300000" oninput="recalcAndSave()"><div class="hint">Total shares given out in all prior years combined. The dollar amount (par × shares) is calculated automatically.</div></div>
+      <div class="field"><label>APIC — common: opening balance ($)</label><input type="number" id="apic-cs" value="880000" oninput="recalcAndSave()"><div class="hint" style="color:var(--amber);border-left:2px solid var(--amber-border);padding-left:6px;margin-top:3px">This is the only place APIC is entered manually. It represents amounts accumulated from issuances in prior years — history we don't have transactions for. Any new stock issued this year will calculate its own APIC automatically (cash minus par). You would never enter APIC for a current-year transaction.</div></div>
     </div>
   </div>
   <div class="card">
@@ -197,7 +201,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
       <div class="field"><label>Shares issued Jan. 1</label><input type="number" id="ps-issued" value="5000" oninput="recalcAndSave()"></div>
     </div>
     <div class="field-grid grid-3">
-      <div class="field"><label>APIC — preferred ($)</label><input type="number" id="apic-ps" value="15000" oninput="recalcAndSave()"></div>
+      <div class="field"><label>APIC — preferred: opening balance ($)</label><input type="number" id="apic-ps" value="15000" oninput="recalcAndSave()"><div class="hint" style="color:var(--amber);border-left:2px solid var(--amber-border);padding-left:6px;margin-top:3px">Same reason as APIC-common above — prior years' history only. New preferred issuances this year calculate APIC automatically.</div></div>
       <div class="field"><label>Cumulative?</label>
         <select id="ps-cumul" oninput="recalcAndSave()"><option value="yes">Yes — arrears accumulate</option><option value="no">No</option></select>
         <div class="hint">Cumulative = skipped dividends must be paid before common gets anything.</div>
