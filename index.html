@@ -139,7 +139,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .tx-new{animation:txCommit 0.25s ease,txHighlight 10s ease}
 .pending-panel{position:fixed;top:50%;right:28px;transform:translateY(-50%);width:400px;background:var(--surface);border:2px solid var(--amber-border);border-radius:var(--radius);box-shadow:0 12px 40px rgba(0,0,0,0.18);z-index:500;padding:18px 20px;max-height:85vh;overflow-y:auto;}
 .pending-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
-.pending-badge{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);border-radius:3px;padding:2px 7px;}{0%,100%{background:rgba(232,160,32,0.12)}50%{background:rgba(232,160,32,0.32)}}
+.pending-badge{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);border-radius:3px;padding:2px 7px;}
+@keyframes navGlowPulse{0%,100%{background:rgba(232,160,32,0.12)}50%{background:rgba(232,160,32,0.32)}}
 @keyframes elemGlowPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,160,32,0)}50%{box-shadow:0 0 0 4px rgba(232,160,32,0.55)}}
 @keyframes elemGlowGreen{0%,100%{box-shadow:0 0 0 0 rgba(26,107,60,0)}50%{box-shadow:0 0 0 4px rgba(26,107,60,0.5)}}
 @keyframes elemGlowRed{0%,100%{box-shadow:0 0 0 0 rgba(184,50,50,0)}50%{box-shadow:0 0 0 4px rgba(184,50,50,0.5)}}
@@ -217,29 +218,29 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
         <div style="width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">3</div>
         <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Journal Entries</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Every transaction as a proper journal entry — debits left, credits indented right, math shown for each line, totals verified. Links back to transactions and forward to T-accounts.</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">4</div>
+        <div>
           <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Share Tracker</div>
           <div style="font-size:12px;color:var(--text2);line-height:1.5;">See issued, treasury, and outstanding share counts update at every step. Outstanding shares is what drives common dividends — not issued shares.</div>
         </div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">4</div>
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">5</div>
         <div>
           <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Dividend Calculator</div>
           <div style="font-size:12px;color:var(--text2);line-height:1.5;">Every declared dividend worked out step by step — preferred first, then common, with the exact formula and share counts shown.</div>
         </div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
-        <div style="width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">5</div>
-        <div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Journal Entries</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Every transaction as a proper journal entry — debits left, credits indented right, math shown for each line, totals verified.</div>
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
         <div style="width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">6</div>
         <div>
           <div style="font-size:13px;font-weight:600;margin-bottom:3px;">T-Accounts</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Every account with opening balances and all transactions posted. Bold = opening balance. Blue = this year's activity.</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Every active equity account with opening balances and all transactions posted in chronological order. Click any entry to jump to its journal entry.</div>
         </div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;grid-column:1/-1;">
@@ -584,7 +585,7 @@ function toggleExplain(){
 // ── GLOW / CHANGE DETECTION ──────────────────────────────────────────────────
 let currentSnapshot=null, pendingGlowData=null, glowTimer=null;
 
-const TAB_LABELS={shares:'3 — Share Tracker',dividends:'4 — Dividends',journals:'5 — Journals',taccounts:'6 — T-Accounts',bs:'7 — Balance Sheet'};
+const TAB_LABELS={journals:'3 — Journal Entries',shares:'4 — Share Tracker',dividends:'5 — Dividends',taccounts:'6 — T-Accounts',bs:'7 — Balance Sheet'};
 
 function buildSnapshot(state,journals,divEntries){
   const contrib=state.csParAmt+state.apicCs+state.psParAmt+state.apicPs;
@@ -850,7 +851,12 @@ let pendingTx=null;
 let highlightedTxId=null;
 
 function addTx(){
-  if(pendingTx){commitPending();return;}
+  if(pendingTx){
+    // focus existing panel instead of committing it prematurely
+    const panel=document.getElementById('pending-panel');
+    if(panel){panel.style.animation='none';panel.style.border='2px solid var(--blue)';setTimeout(()=>{panel.style.border='2px solid var(--amber-border)';},800);}
+    return;
+  }
   pendingTx={id:txId++,type:'',date:'',fields:{}};
   renderPendingPanel();
 }
@@ -858,7 +864,9 @@ function addTx(){
 function commitPending(){
   if(!pendingTx)return;
   if(!pendingTx.date||!pendingTx.type){
-    // can't commit without date and type
+    // highlight missing fields
+    const panel=document.getElementById('pending-panel');
+    if(panel){panel.style.border='2px solid var(--red)';setTimeout(()=>{panel.style.border='2px solid var(--amber-border)';},800);}
     return;
   }
   const tx={...pendingTx};
@@ -885,8 +893,14 @@ function setPendingType(val){
 function setPendingDate(val){
   if(!pendingTx)return;
   pendingTx.date=val;
-  renderPendingPanel();
-  if(val&&pendingTx.type)commitPending();
+  // update just the commit button state without rebuilding entire panel
+  const btn=document.querySelector('#pending-panel .btn-primary');
+  if(btn){
+    const ready=val&&pendingTx.type;
+    btn.disabled=!ready;
+    btn.style.opacity=ready?'1':'0.4';
+    btn.style.cursor=ready?'pointer':'not-allowed';
+  }
 }
 
 function setPendingField(key,val){
@@ -1062,6 +1076,7 @@ function recalc(){
     const amount=parseFloat(f.amount)||0;
 
     if(tx.type==='issue_common'){
+      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares issued and issue price to generate this journal entry.');return;}
       const jid=jeCounter++;
       const cash=shares*price,par=shares*state.currentCsPar,apic=cash-par;
       state.csIssued+=shares;state.csParAmt+=par;state.apicCs+=apic;
@@ -1080,6 +1095,7 @@ function recalc(){
       ],'Step 1: Cash = '+fmts(shares)+' × $'+price+' = '+fmtd(cash)+'.  Step 2: Par = '+fmts(shares)+' × '+fmtpar(state.currentCsPar)+' = '+fmtd(par)+'.  Step 3: APIC = '+fmtd(cash)+' − '+fmtd(par)+' = '+fmtd(apic)+'.',jid);
     }
     else if(tx.type==='buy_treasury'){
+      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares repurchased and price paid to generate this journal entry.');return;}
       const jid=jeCounter++;
       const cost=shares*price;
       state.tsShares+=shares;state.tsCost+=cost;
@@ -1096,6 +1112,7 @@ function recalc(){
       ],'Cost method: record the full price paid. No par split needed. '+fmts(shares)+' × $'+price+' = '+fmtd(cost)+'. Total equity decreases.',jid);
     }
     else if(tx.type==='reissue_treasury'){
+      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares reissued and reissue price to generate this journal entry.');return;}
       const jid=jeCounter++;
       const proceeds=shares*price;
       const avgCost=state.tsShares>0?state.tsCost/state.tsShares:0;
@@ -1125,6 +1142,7 @@ function recalc(){
       ],diff>=0?'Proceeds ($'+proceeds.toLocaleString()+') exceed cost basis ($'+basis.toFixed(0)+') — gain of $'+Math.abs(diff).toFixed(0)+' goes to APIC, not income.':'Proceeds ($'+proceeds.toLocaleString()+') below cost basis ($'+basis.toFixed(0)+') — shortfall of $'+Math.abs(diff).toFixed(0)+' reduces retained earnings.',jid);
     }
     else if(tx.type==='issue_preferred'){
+      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares issued and issue price to generate this journal entry.');return;}
       const jid=jeCounter++;
       const cash=shares*price,par=shares*psPar,apic=cash-par;
       state.psIssued+=shares;state.psParAmt+=par;state.apicPs+=apic;
@@ -1151,6 +1169,7 @@ function recalc(){
         const newIssued=Math.round(oldIssued*ratio);
         const newTreasury=Math.round(oldTreasury*ratio);
         state.csIssued=newIssued;state.tsShares=newTreasury;state.currentCsPar=newPar;
+        state.splitFactor=(state.splitFactor||1)*ratio;
         journals.push({id:jid,txId:tx.id,date:d,type:'Stock split ('+ratio+'-for-1) — MEMO ENTRY ONLY',entries:[
           {acct:'Memo: Common stock split '+ratio+'-for-1',dr:null,cr:null,
            note:'No dollar amounts change. Par reduced from '+fmtpar(oldPar)+' to '+fmtpar(newPar)+'. Shares multiplied by '+ratio+'.'},
@@ -1167,6 +1186,7 @@ function recalc(){
       }
     }
     else if(tx.type==='declare_common'){
+      if(!rate){renderTxEffect(tx.id,[],'Enter the dividend amount per share to generate this journal entry.');return;}
       const jid=jeCounter++;
       const curOut=state.csIssued-state.tsShares;
       const total=rate*curOut;
@@ -1244,6 +1264,7 @@ function recalc(){
       }
     }
     else if(tx.type==='net_income'){
+      if(!amount){renderTxEffect(tx.id,[],'Enter the net income amount to generate this journal entry.');return;}
       const jid=jeCounter++;
       state.re+=amount;
       journals.push({id:jid,txId:tx.id,date:d,type:'Record net income',entries:[
@@ -1452,6 +1473,8 @@ function renderShares(history, prefHistory, state, psIssuedOpen, psPar, psAuth, 
 
   const eventLog=allEvents.map(({type,h,i,prev})=>{
     const isFirst=i===0;
+    // Skip rendering the opening card if everything is zero (new company starting from scratch)
+    if(isFirst&&h.issued===0&&(!h.treasury||h.treasury===0))return'';
     const isCS=type==='common';
     const color=isCS?'#185FA5':'var(--purple)';
     const colorBg=isCS?'#EEF4FC':'var(--purple-bg)';
@@ -1546,7 +1569,12 @@ function renderDividends(entries,state,psRatePct,psPar,psRate,arrearsYears,psCum
 function renderTAccounts(tData){
   const el=document.getElementById('taccount-output');
   const accts=['cs','apicCs','ps','apicPs','re','ts','div'];
-  el.innerHTML='<div class="t-grid">'+accts.map(key=>{
+  const activeAccts=accts.filter(key=>{
+    const a=tData[key];
+    return a.open>0||a.entries.length>0;
+  });
+  if(!activeAccts.length){el.innerHTML='<div class="empty"><p>No equity accounts have activity yet.</p></div>';return;}
+  el.innerHTML='<div class="t-grid">'+activeAccts.map(key=>{
     const a=tData[key];
     // Build chronological entry list — merge dr/cr into one timeline, paired by time slot
     // Each slot: {dr: entry|null, cr: entry|null}
@@ -1599,9 +1627,11 @@ function renderTAccounts(tData){
 function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
   const el=document.getElementById('bs-output');
   const outstanding=state.csIssued-state.tsShares;
-  const contrib=state.csParAmt+state.apicCs+state.psParAmt+state.apicPs;
+  const hasPreferred=state.psParAmt>0||state.apicPs>0||state.psIssued>0;
+  const hasTreasury=state.tsCost>0||state.tsShares>0;
+  const contrib=state.csParAmt+state.apicCs+(hasPreferred?state.psParAmt+state.apicPs:0);
   const subtotal=contrib+state.re;
-  const total=subtotal-state.tsCost;
+  const total=subtotal-(hasTreasury?state.tsCost:0);
   const parChanged=state.currentCsPar!==csPar;
   el.innerHTML=`<div class="bs-wrap">
     <div class="bs-company">${coName}</div>
@@ -1611,11 +1641,12 @@ function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
     <div class="bs-row" id="bs-cs">
       <div>
         <div>Common stock, ${fmtpar(state.currentCsPar)} par${parChanged?' (post-split)':''}</div>
-        <div class="bs-disclosure">${fmts(csAuth*(state.splitFactor||1))} authorized &nbsp;|&nbsp; ${fmts(state.csIssued)} issued &nbsp;|&nbsp; ${fmts(outstanding)} outstanding</div>
+        <div class="bs-disclosure">${fmts(Math.round(csAuth*(state.splitFactor||1)))} authorized &nbsp;|&nbsp; ${fmts(state.csIssued)} issued &nbsp;|&nbsp; ${fmts(outstanding)} outstanding</div>
       </div>
       <div class="bs-amt">${fmtd(state.csParAmt)}</div>
     </div>
     <div class="bs-row bs-row-indent" id="bs-apiccs"><span>Additional paid-in capital — common</span><span class="bs-amt">${fmtd(state.apicCs)}</span></div>
+    ${hasPreferred?`
     <div class="bs-row" id="bs-ps" style="margin-top:7px">
       <div>
         <div>Preferred stock, ${psRatePct}%, $${psPar} par${psCumul?' (cumulative)':''}</div>
@@ -1623,23 +1654,24 @@ function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
       </div>
       <div class="bs-amt">${fmtd(state.psParAmt)}</div>
     </div>
-    <div class="bs-row bs-row-indent" id="bs-apicps"><span>Additional paid-in capital — preferred</span><span class="bs-amt">${fmtd(state.apicPs)}</span></div>
+    <div class="bs-row bs-row-indent" id="bs-apicps"><span>Additional paid-in capital — preferred</span><span class="bs-amt">${fmtd(state.apicPs)}</span></div>`:''}
     <div class="bs-subtotal"><span style="padding-left:18px">Total contributed capital</span><span>${fmtd(contrib)}</span></div>
     <div class="bs-section-hd">Retained earnings</div>
     <div class="bs-row" id="bs-re"><span>Retained earnings</span><span class="bs-amt">${fmtd(state.re)}</span></div>
     <div class="bs-subtotal"><span>Subtotal</span><span>${fmtd(subtotal)}</span></div>
+    ${hasTreasury?`
     <div class="bs-section-hd">Treasury stock</div>
     <div class="bs-row" id="bs-ts">
       <div><div class="neg">Treasury stock — common, at cost</div><div class="bs-disclosure neg">${fmts(state.tsShares)} shares</div></div>
       <div class="bs-amt neg">(${fmt(state.tsCost)})</div>
-    </div>
+    </div>`:''}
     <div class="bs-total" id="bs-total"><span>Total stockholders' equity</span><span>${fmtd(total)}</span></div>
   </div>
   <div class="calc-explainer" style="margin-top:14px">
     <div class="label">How the total is assembled</div>
     <div class="calc-step"><span class="op">&nbsp;</span><span class="desc">Contributed capital (all stock issuances)</span><span class="result">${fmtd(contrib)}</span></div>
     <div class="calc-step"><span class="op">+</span><span class="desc">Retained earnings (income kept, minus dividends)</span><span class="result">${fmtd(state.re)}</span></div>
-    <div class="calc-step"><span class="op">−</span><span class="desc">Treasury stock (cash used to buy shares back)</span><span class="result neg">${fmtd(state.tsCost)}</span></div>
+    ${hasTreasury?`<div class="calc-step"><span class="op">−</span><span class="desc">Treasury stock (cash used to buy shares back)</span><span class="result neg">${fmtd(state.tsCost)}</span></div>`:''}
     <div class="calc-step"><span class="op">=</span><span class="desc" style="font-weight:600">Total stockholders' equity</span><span class="result" style="font-size:16px">${fmtd(total)}</span></div>
   </div>`;
 }
