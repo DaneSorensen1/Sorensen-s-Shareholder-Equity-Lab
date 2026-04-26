@@ -262,10 +262,21 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
       <div style="font-size:13px;color:var(--text2);line-height:1.75;">This tool will be disabled during class except for the last 10–15 minutes of select sessions. Work through problems by hand first — use this to check your work, see the connections, and experiment afterward.</div>
     </div>
 
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="btn btn-primary" onclick="showPage('setup')" style="font-size:14px;padding:10px 24px;">Start — Opening Balances →</button>
-      <button class="btn btn-secondary" onclick="loadAlpha();showPage('setup');" style="font-size:13px;">Load Alpha Corporation</button>
-      <button class="btn btn-secondary" onclick="loadShelby();showPage('setup');" style="font-size:13px;">Load Shelby Corporation</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <div style="background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:18px 20px">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:8px">Full equity problem</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:14px">Stock issuances, treasury stock, dividends, T-accounts, and balance sheet. Start from opening balances and add transactions.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="showPage('setup')" style="font-size:13px;">Start blank →</button>
+          <button class="btn btn-secondary btn-sm" onclick="loadAlpha();showPage('setup');">Load Alpha Corp</button>
+          <button class="btn btn-secondary btn-sm" onclick="loadShelby();showPage('setup');">Load Shelby Corp</button>
+        </div>
+      </div>
+      <div style="background:var(--purple-bg);border:2px solid var(--purple-border);border-radius:var(--radius);padding:18px 20px">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--purple);margin-bottom:8px">Quick dividend split</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:14px">Just need to know how much goes to preferred vs. common? Enter par value, rate, shares, and total declared — get the answer instantly.</div>
+        <button class="btn" onclick="showPage('dividends')" style="font-size:13px;background:var(--purple);color:#fff;">Open dividend calculator →</button>
+      </div>
     </div>
   </div>
 </div>
@@ -843,9 +854,10 @@ function renderAllocator(){
 
   el.innerHTML=`
   <div style="font-size:12px;color:var(--text2);margin-bottom:10px;padding:10px 12px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm)">
-    Annual preferred dividend: ${psRateDisplay}% × $${psPar} par × ${fmts(psShares)} shares = <strong>${fmtd(annualPref)}/year</strong> ($${perShare.toFixed(2)}/share)
-    &nbsp;|&nbsp; ${cumul?'<strong>Cumulative</strong> — arrears must be paid before common gets anything':'<strong>Non-cumulative</strong> — only current year owed'}
-    ${cumul&&priorArrears>0?` &nbsp;|&nbsp; ${priorArrears} prior year(s) in arrears = ${fmtd(priorArrears*annualPref)} owed at start`:''}
+    Annual preferred dividend: ${psRateDisplay}% × $${psPar} par × ${fmts(psShares)} shares = <strong>${fmtd(annualPref)}/year</strong>
+    &nbsp;·&nbsp; <strong style="color:var(--purple)">$${perShare.toFixed(2)} per preferred share</strong>
+    &nbsp;·&nbsp; ${cumul?'<strong>Cumulative</strong> — arrears must be paid before common gets anything':'<strong>Non-cumulative</strong> — only current year owed'}
+    ${cumul&&priorArrears>0?` &nbsp;·&nbsp; ${priorArrears} prior year(s) in arrears = ${fmtd(priorArrears*annualPref)} owed at start`:''}
   </div>
   <div style="overflow-x:auto">
   <table style="width:100%;border-collapse:collapse;font-size:13px">
@@ -866,17 +878,17 @@ function renderAllocator(){
         <td style="padding:8px 12px;color:var(--purple);font-weight:600">Preferred receives <span style="font-weight:400;font-size:11px">(paid first)</span></td>
         ${rows.map(r=>`<td style="text-align:right;padding:8px 12px;font-family:var(--mono);font-weight:600;color:var(--purple)">${fmtd(r.prefGet)}</td>`).join('')}
       </tr>
-      <tr style="border-bottom:1px solid var(--border)">
-        <td style="padding:6px 12px;color:var(--text3);font-size:12px;padding-left:24px">Per preferred share</td>
-        ${rows.map(r=>`<td style="text-align:right;padding:6px 12px;font-family:var(--mono);font-size:12px;color:var(--text3)">$${r.prefPerShare.toFixed(2)}/share</td>`).join('')}
+      <tr style="border-bottom:2px solid var(--purple-border);background:var(--purple-bg)">
+        <td style="padding:5px 12px 8px;color:var(--purple);font-size:12px;padding-left:24px;font-weight:600">Per preferred share</td>
+        ${rows.map(r=>`<td style="text-align:right;padding:5px 12px 8px;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--purple)">$${r.prefPerShare.toFixed(2)}</td>`).join('')}
       </tr>
       <tr style="border-bottom:1px solid var(--border);background:var(--green-bg)">
         <td style="padding:8px 12px;color:var(--green);font-weight:600">Common receives <span style="font-weight:400;font-size:11px">(remainder)</span></td>
         ${rows.map(r=>`<td style="text-align:right;padding:8px 12px;font-family:var(--mono);font-weight:600;color:${r.commonGet>0?'var(--green)':'var(--text3)'}">${r.commonGet>0?fmtd(r.commonGet):'$0'}</td>`).join('')}
       </tr>
-      <tr style="border-bottom:1px solid var(--border)">
-        <td style="padding:6px 12px;color:var(--text3);font-size:12px;padding-left:24px">Per common share</td>
-        ${rows.map(r=>`<td style="text-align:right;padding:6px 12px;font-family:var(--mono);font-size:12px;color:var(--text3)">$${r.commonPerShare.toFixed(2)}/share</td>`).join('')}
+      <tr style="border-bottom:2px solid var(--green-border);background:var(--green-bg)">
+        <td style="padding:5px 12px 8px;color:var(--green);font-size:12px;padding-left:24px;font-weight:600">Per common share</td>
+        ${rows.map(r=>`<td style="text-align:right;padding:5px 12px 8px;font-family:var(--mono);font-size:13px;font-weight:600;color:${r.commonGet>0?'var(--green)':'var(--text3)'}">${r.commonGet>0?'$'+r.commonPerShare.toFixed(2):'—'}</td>`).join('')}
       </tr>
       ${cumul?`<tr style="background:var(--amber-bg)">
         <td style="padding:8px 12px;color:var(--amber);font-size:12px">Arrears carried forward</td>
@@ -887,8 +899,8 @@ function renderAllocator(){
   ${rows.map(r=>`<div style="margin-top:8px;font-size:12px;color:var(--text3);line-height:1.7;padding:8px 12px;background:var(--surface2);border-radius:var(--radius-sm)">
     <strong style="color:var(--text2)">${r.year}:</strong>
     ${cumul&&r.prevArrears>0?`Preferred owed = ${fmtd(r.annualPref)} current + ${fmtd(r.prevArrears)} arrears = ${fmtd(r.owedPref)}. `:''}
-    ${r.total>0&&r.prefGet>=r.owedPref?`Preferred fully paid. Common gets ${fmtd(r.total)} − ${fmtd(r.prefGet)} = ${fmtd(r.commonGet)}.`:''}
-    ${r.prefGet<r.owedPref&&r.total>0?`Only ${fmtd(r.total)} available — all to preferred. Common gets nothing. ${fmtd(r.arrearsCarried)} carries forward.`:''}
+    ${r.total>0&&r.prefGet>=r.owedPref?`Preferred fully paid ($${r.prefPerShare.toFixed(2)}/share). Common gets ${fmtd(r.total)} − ${fmtd(r.prefGet)} = ${fmtd(r.commonGet)} ($${r.commonPerShare.toFixed(2)}/share).`:''}
+    ${r.prefGet<r.owedPref&&r.total>0?`Only ${fmtd(r.total)} available — all to preferred ($${r.prefPerShare.toFixed(2)}/share). Common gets nothing. ${fmtd(r.arrearsCarried)} carries forward.`:''}
     ${r.total===0?'No dividends declared.':''}
   </div>`).join('')}`;
 }
@@ -1489,7 +1501,7 @@ function renderShares(history, prefHistory, state, psIssuedOpen, psPar, psAuth, 
       <div style="display:flex;height:42px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border)">
         ${hasTreasury&&treasury>0?`
         <div style="width:${outPct}%;background:${colorBg};border-right:2px solid ${colorBorder};display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 4px;overflow:hidden">
-          <div style="font-size:9px;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap">Outstanding</div>
+          <div style="font-size:9px;font-weight:700;color:${color};text-transform:uppercase;white-space:nowrap">Outstanding</div>
           <div style="font-family:var(--mono);font-size:12px;font-weight:600;color:${color}">${fmts(h.outstanding)}</div>
         </div>
         <div style="width:${tsPct}%;background:var(--red-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 4px;overflow:hidden;min-width:34px">
@@ -1504,13 +1516,63 @@ function renderShares(history, prefHistory, state, psIssuedOpen, psPar, psAuth, 
       <div style="font-size:11px;color:var(--text2);margin-top:5px">${hasTreasury&&treasury>0?fmts(h.issued)+' issued − '+fmts(treasury)+' treasury = <strong style="color:'+color+'">'+fmts(h.outstanding||0)+' outstanding</strong>':'<strong style="color:'+color+'">'+fmts(h.issued)+'</strong> shares outstanding'}</div>`;
   }
 
-  // Build event cards - merge common and preferred timelines by date
-  const allEvents=[];
-  if(hasCommon) history.forEach((h,i)=>allEvents.push({type:'common',h,i,prev:i>0?history[i-1]:null}));
-  if(hasPreferred) prefHistory.forEach((h,i)=>allEvents.push({type:'preferred',h,i,prev:i>0?prefHistory[i-1]:null}));
-  allEvents.sort((a,b)=>a.h.date.localeCompare(b.h.date));
+  function buildEventLog(evHistory, type, auth, color, colorBg, colorBorder){
+    return evHistory.map((h,i)=>{
+      const prev=i>0?evHistory[i-1]:null;
+      const isFirst=i===0;
+      // skip all-zero opening card for new companies
+      if(isFirst&&h.issued===0&&(!h.treasury||h.treasury===0))return'';
+      const isCS=type==='common';
+      const isSplit=isCS&&h.splitNote!=null;
 
-  // Current state summary at top
+      let issuedDiff=0,treasuryDiff=0,outDiff=0;
+      if(prev){
+        issuedDiff=h.issued-prev.issued;
+        if(isCS){treasuryDiff=(h.treasury||0)-(prev.treasury||0);outDiff=(h.outstanding||0)-(prev.outstanding||0);}
+      }
+      const hasChanges=!isFirst&&(issuedDiff!==0||(isCS&&(treasuryDiff!==0||outDiff!==0)));
+
+      function badge(diff,goodDir){
+        if(diff===0)return'';
+        const isPos=diff>0;
+        const cls=goodDir==='up'?(isPos?'pill-up':'pill-down'):(isPos?'pill-down':'pill-up');
+        return`<span class="effect-pill ${cls}" style="font-size:10px;padding:1px 6px">${isPos?'+':''}${fmts(diff)}</span>`;
+      }
+
+      const links=h.jeId!=null?`<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+        ${h.txId!=null?`<button onclick="jumpToTx(${h.txId})" style="font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 8px;cursor:pointer;color:var(--text2);font-family:var(--sans)">↩ Transaction</button>`:''}
+        <button onclick="jumpToJE(${h.jeId})" style="font-size:11px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:3px 8px;cursor:pointer;color:var(--blue);font-family:var(--sans)">Journal entry →</button>
+      </div>`:'';
+
+      return`<div style="margin-bottom:10px">
+        <div style="background:var(--surface);border:1px solid ${isSplit?'var(--teal-border)':'var(--border)'};border-left:3px solid ${color};border-radius:var(--radius);padding:11px 13px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px">
+            <div style="font-size:12px;font-weight:600">${h.date}</div>
+            <div style="display:flex;gap:5px">
+              ${isSplit?'<span class="effect-pill pill-teal" style="font-size:10px">split</span>':''}
+              ${isFirst?'<span style="font-size:11px;color:var(--text3)">opening</span>':''}
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:9px">${h.event}</div>
+          ${isSplit?`<div class="split-box" style="font-size:11px;margin-bottom:8px">${h.splitNote}</div>`:''}
+          ${miniDiagram(
+            isCS?h:{issued:h.issued,outstanding:h.issued,treasury:0},
+            auth,'Outstanding',color,colorBg,colorBorder,isCS&&((h.treasury||0)>0)
+          )}
+          ${hasChanges?`<div style="margin-top:8px;padding-top:7px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+            <span style="font-size:11px;color:var(--text3);font-weight:600">Changed:</span>
+            ${issuedDiff!==0?`<span style="font-size:11px">Issued ${badge(issuedDiff,'up')}</span>`:''}
+            ${isCS&&treasuryDiff!==0?`<span style="font-size:11px">Treasury ${badge(treasuryDiff,'down')} <span style="color:var(--text3)">${treasuryDiff>0?'locked up':'returned'}</span></span>`:''}
+            ${isCS&&outDiff!==0?`<span style="font-size:11px;font-weight:600;color:${color}">Outstanding ${badge(outDiff,'up')}</span>`:''}
+            ${!isCS&&issuedDiff!==0?`<span style="font-size:11px;font-weight:600;color:${color}">Outstanding ${badge(issuedDiff,'up')}</span>`:''}
+          </div>`:''}
+          ${links}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Current state summary cards
   const latestCS=hasCommon?history[history.length-1]:null;
   const latestPS=hasPreferred?prefHistory[prefHistory.length-1]:null;
 
@@ -1522,70 +1584,31 @@ function renderShares(history, prefHistory, state, psIssuedOpen, psPar, psAuth, 
     ${hasPreferred?`<div class="card" style="border-color:var(--purple-border);margin-bottom:0">
       <div style="font-size:11px;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">Preferred stock — current</div>
       ${miniDiagram({issued:latestPS.issued,outstanding:latestPS.issued,treasury:0},psAuth,'Outstanding','var(--purple)','var(--purple-bg)','var(--purple-border)',false)}
-      <div style="margin-top:8px;font-size:11px;color:var(--text3);font-family:var(--mono)">$${psPar} par, ${psRatePct}%${psCumul?' (cumulative)':''}</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--text3);font-family:var(--mono)">$${psPar} par · ${parseFloat(psRatePct.toFixed(8))}%${psCumul?' (cumulative)':''}</div>
     </div>`:''}
   </div>`;
 
-  const eventLog=allEvents.map(({type,h,i,prev})=>{
-    const isFirst=i===0;
-    // Skip rendering the opening card if everything is zero (new company starting from scratch)
-    if(isFirst&&h.issued===0&&(!h.treasury||h.treasury===0))return'';
-    const isCS=type==='common';
-    const color=isCS?'#185FA5':'var(--purple)';
-    const colorBg=isCS?'#EEF4FC':'var(--purple-bg)';
-    const colorBorder=isCS?'#B5D4F4':'var(--purple-border)';
-    const isSplit=isCS&&h.splitNote!=null;
+  // Separate event logs per type — side by side when both exist
+  const commonLog=hasCommon?buildEventLog(history,'common',csAuth,'#185FA5','#EEF4FC','#B5D4F4'):'';
+  const prefLog=hasPreferred?buildEventLog(prefHistory,'preferred',psAuth,'var(--purple)','var(--purple-bg)','var(--purple-border)'):'';
 
-    let issuedDiff=0,treasuryDiff=0,outDiff=0;
-    if(!isFirst&&prev){
-      issuedDiff=h.issued-prev.issued;
-      if(isCS){treasuryDiff=h.treasury-prev.treasury;outDiff=h.outstanding-prev.outstanding;}
-    }
-    const hasChanges=!isFirst&&(issuedDiff!==0||(isCS&&(treasuryDiff!==0||outDiff!==0)));
-
-    function badge(diff,goodDir){
-      if(diff===0)return'';
-      const isPos=diff>0;
-      const cls=goodDir==='up'?(isPos?'pill-up':'pill-down'):(isPos?'pill-down':'pill-up');
-      return`<span class="effect-pill ${cls}" style="font-size:10px;padding:1px 7px">${isPos?'+':''}${fmts(diff)}</span>`;
-    }
-
-    const txJeLinks=h.jeId!=null?`<div style="display:flex;gap:8px;margin-top:8px">
-      ${h.txId!=null?`<button onclick="jumpToTx(${h.txId})" style="font-size:11px;font-family:var(--mono);background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px 8px;cursor:pointer;color:var(--text2)">← Transaction</button>`:''}
-      <button onclick="jumpToJE(${h.jeId})" style="font-size:11px;font-family:var(--mono);background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:3px 8px;cursor:pointer;color:var(--blue)">→ Journal entry</button>
-    </div>`:'';
-
-    return`<div style="margin-bottom:12px">
-      <div style="background:var(--surface);border:1px solid ${isSplit?'var(--teal-border)':'var(--border)'};border-left:3px solid ${color};border-radius:var(--radius);padding:12px 14px">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
-          <div style="font-size:12px;font-weight:600">${h.date} <span style="font-size:11px;font-weight:400;color:${color};margin-left:6px">${isCS?'Common':'Preferred'}</span></div>
-          <div style="display:flex;gap:5px">
-            ${isSplit?'<span class="effect-pill pill-teal" style="font-size:10px">stock split</span>':''}
-            ${isFirst?'<span style="font-size:11px;color:var(--text3)">opening</span>':''}
-          </div>
-        </div>
-        <div style="font-size:12px;color:var(--text2);margin-bottom:10px">${h.event}</div>
-        ${isSplit?`<div class="split-box" style="font-size:11px;margin-bottom:8px">${h.splitNote}</div>`:''}
-        ${miniDiagram(
-          isCS?h:{issued:h.issued,outstanding:h.issued,treasury:0},
-          isCS?csAuth:psAuth,
-          isCS?'Outstanding':'Outstanding',
-          color,colorBg,colorBorder,
-          isCS&&(h.treasury>0)
-        )}
-        ${hasChanges?`<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:8px;align-items:center">
-          <span style="font-size:11px;color:var(--text3);font-weight:600">Changed:</span>
-          ${issuedDiff!==0?`<span style="font-size:12px;color:var(--text2)">Issued ${badge(issuedDiff,'up')}</span>`:''}
-          ${isCS&&treasuryDiff!==0?`<span style="font-size:12px;color:var(--text2)">Treasury ${badge(treasuryDiff,'down')} <span style="font-size:11px;color:var(--text3)">${treasuryDiff>0?'locked up':'returned'}</span></span>`:''}
-          ${isCS&&outDiff!==0?`<span style="font-size:12px;font-weight:600;color:#185FA5">Outstanding ${badge(outDiff,'up')}</span>`:''}
-          ${!isCS&&issuedDiff!==0?`<span style="font-size:12px;font-weight:600;color:var(--purple)">Preferred outstanding ${badge(issuedDiff,'up')}</span>`:''}
-        </div>`:''}
-        ${txJeLinks}
+  let eventSection;
+  if(hasCommon&&hasPreferred){
+    eventSection=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#185FA5;margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid #B5D4F4">Common stock events</div>
+        ${commonLog||'<div style="font-size:12px;color:var(--text3);padding:8px 0">No changes recorded.</div>'}
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--purple);margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid var(--purple-border)">Preferred stock events</div>
+        ${prefLog||'<div style="font-size:12px;color:var(--text3);padding:8px 0">No changes recorded.</div>'}
       </div>
     </div>`;
-  }).join('');
+  }else{
+    eventSection=`<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:10px">Event log</div>`+(commonLog||prefLog);
+  }
 
-  el.innerHTML=summaryGrid+`<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:10px">Event log</div>`+eventLog;
+  el.innerHTML=summaryGrid+eventSection;
 }
 
 
@@ -1794,9 +1817,10 @@ function resetAll(){
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 const loaded=loadSavedState();
-if(!loaded)loadAlpha();
-renderTxList();
-recalc();
+if(!loaded){
+  // Start blank — presets available in sidebar or welcome page
+  renderTxList();recalc();
+}
 renderAllocYearList();
 renderAllocator();
 document.getElementById('page-setup').classList.add('explain-hidden');
