@@ -51,6 +51,11 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .field input,.field select{font-family:var(--mono);font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);outline:none;transition:border-color 0.15s;}
 .field input:focus,.field select:focus{border-color:var(--blue);background:#fff;}
 .field .hint{font-size:11px;color:var(--text3);line-height:1.4;}
+.explain-block{font-size:12px;line-height:1.65;color:var(--text2);}
+.hint-exp{margin-top:5px;padding:6px 8px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);}
+.goto-link{display:inline;font-size:11px;font-family:var(--mono);color:var(--blue);cursor:pointer;text-decoration:underline;margin-left:4px;white-space:nowrap;}
+.goto-link:hover{opacity:0.75;}
+.explain-hidden .explain-block{display:none;}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;}
 .btn-primary{background:var(--text);color:#fff;}
 .btn-primary:hover{background:#333;}
@@ -169,53 +174,140 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 <div id="page-setup" class="page active">
   <div class="page-header">
     <h2>Opening balances</h2>
-    <p>Enter the company's stockholders' equity accounts as of January 1 — the starting point before any transactions this year. Your work saves automatically to this browser.</p>
+    <p>Enter the company's equity accounts as of January 1. Your work saves automatically.</p>
   </div>
-  <div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:14px 18px;margin-bottom:18px;font-size:13px;line-height:1.7;color:var(--text2)">
-    <div style="font-weight:600;color:var(--amber);margin-bottom:5px">Why are we entering some numbers manually here?</div>
-    These opening balances come from a balance sheet dated before our study period begins. They are the <em>result</em> of transactions that already happened in prior years — we just don't have those individual transactions in this exercise. <strong>APIC is the most important example:</strong> in real life it would never be typed in directly — it would always be the automatic result of (cash received) minus (par value). The only reason it appears as an input here is that we are starting mid-story. Every transaction you add below will calculate APIC automatically. The opening fields are prior history only.
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);">
+    <div style="font-size:13px;color:var(--text2)">Show explanations &amp; concept notes</div>
+    <button id="explain-toggle" onclick="toggleExplain()" style="display:flex;align-items:center;gap:10px;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--text);color:#fff;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;">
+      <span id="explain-knob" style="width:18px;height:18px;border-radius:50%;background:#fff;display:inline-block;transition:all 0.2s;"></span>
+      <span id="explain-label">ON</span>
+    </button>
   </div>
+
+  <div class="explain-block" style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:13px 17px;margin-bottom:16px;font-size:12px;line-height:1.7;color:var(--text2)">
+    <strong style="color:var(--amber)">Why enter numbers manually here?</strong> These come from a prior-period balance sheet — the accumulated result of years of transactions we don't have. In every transaction you add below, values like APIC always calculate automatically. The opening fields are the only exception, and only because we're starting mid-story.
+  </div>
+
   <div class="card">
     <div class="card-label">Common stock</div>
-    <div class="field-grid grid-4">
-      <div class="field"><label>Par / stated value ($)</label><input type="number" id="cs-par" value="2" step="0.01" oninput="recalcAndSave()"><div class="hint">Set by state charter. Usually small ($1–$5). Not market price.</div></div>
-      <div class="field"><label>Authorized shares</label><input type="number" id="cs-auth" value="900000" oninput="recalcAndSave()"><div class="hint">Permission to issue. Not recorded in any account.</div></div>
-      <div class="field"><label>Shares issued Jan. 1</label><input type="number" id="cs-issued" value="300000" oninput="recalcAndSave()"><div class="hint">Total shares given out in all prior years combined. The dollar amount (par × shares) is calculated automatically.</div></div>
-      <div class="field"><label>APIC — common: opening balance ($)</label><input type="number" id="apic-cs" value="880000" oninput="recalcAndSave()"><div class="hint" style="color:var(--amber);border-left:2px solid var(--amber-border);padding-left:6px;margin-top:3px">This is the only place APIC is entered manually. It represents amounts accumulated from issuances in prior years — history we don't have transactions for. Any new stock issued this year will calculate its own APIC automatically (cash minus par). You would never enter APIC for a current-year transaction.</div></div>
+    <div class="field-grid grid-2" style="margin-bottom:12px">
+      <div class="field">
+        <label>Par / stated value ($)</label>
+        <input type="number" id="cs-par" value="2" step="0.01" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">A legal minimum per share set in the charter — not the market price. Usually $1–$5. Its only job: split issuance proceeds into Common Stock (par × shares) and APIC (everything above par).</div>
+      </div>
+      <div class="field">
+        <label>Authorized shares</label>
+        <input type="number" id="cs-auth" value="900000" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">State-granted permission to issue up to this many shares. <strong>No journal entry is ever made for authorized shares.</strong> Appears only as a disclosure on the balance sheet. <span class="goto-link" onclick="showPage('bs')">→ See balance sheet</span></div>
+      </div>
+    </div>
+    <div class="field-grid grid-2">
+      <div class="field">
+        <label>Shares issued Jan. 1</label>
+        <input type="number" id="cs-issued" value="300000" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">Total shares given out in all prior years. The Common Stock dollar balance (par × shares) is calculated automatically — you provide the count, the app derives the dollars. <span class="goto-link" onclick="showPage('taccounts')">→ See T-account</span></div>
+      </div>
+      <div class="field">
+        <label>APIC — common: opening balance ($)</label>
+        <input type="number" id="apic-cs" value="880000" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp" style="border-left:2px solid var(--amber-border);padding-left:8px;color:var(--amber)"><strong>Only manual input for APIC.</strong> Normally APIC = cash − par, always a result. We enter it here only because prior-year transactions are unavailable. Any issuance this year calculates APIC automatically. <span class="goto-link" onclick="showPage('taccounts')" style="color:var(--blue)">→ See T-account</span> <span class="goto-link" onclick="showPage('bs')" style="color:var(--blue)">→ See balance sheet</span></div>
+      </div>
     </div>
   </div>
+
   <div class="card">
     <div class="card-label">Treasury stock (opening)</div>
+    <div class="explain-block" style="background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.65">
+      <strong style="color:var(--red)">What treasury stock is:</strong> Shares the company issued and then bought back. Now held by the company itself — not outstanding, no dividends, no votes. It's a <em>contra-equity</em> account: shown as a deduction in the equity section (in parentheses). Cost method: record what was paid, no par split needed. <span class="goto-link" onclick="showPage('bs')">→ See on balance sheet</span> <span class="goto-link" onclick="showPage('taccounts')">→ See T-account</span>
+    </div>
     <div class="field-grid grid-3">
-      <div class="field"><label>Shares held Jan. 1</label><input type="number" id="ts-shares" value="25000" oninput="recalcAndSave()"><div class="hint">Shares repurchased and held by the company.</div></div>
-      <div class="field"><label>Total cost ($)</label><input type="number" id="ts-cost" value="140000" oninput="recalcAndSave()"><div class="hint">What the company paid to buy these shares back.</div></div>
-      <div class="field"><label>Avg cost / share (auto)</label><input type="text" id="ts-avg" readonly style="background:#f5f4f0;color:var(--text3)"><div class="hint">Used when reissuing treasury shares.</div></div>
+      <div class="field">
+        <label>Shares held Jan. 1</label>
+        <input type="number" id="ts-shares" value="25000" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">Reduces outstanding shares immediately. Outstanding = issued − treasury. <span class="goto-link" onclick="showPage('shares')">→ See share tracker</span></div>
+      </div>
+      <div class="field">
+        <label>Total cost ($)</label>
+        <input type="number" id="ts-cost" value="140000" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">What the company paid to repurchase these shares. Appears as (140,000) — a deduction — on the balance sheet.</div>
+      </div>
+      <div class="field">
+        <label>Avg cost / share (auto)</label>
+        <input type="text" id="ts-avg" readonly style="background:#f5f4f0;color:var(--text3)">
+        <div class="explain-block hint-exp">Used when reissuing treasury shares. Proceeds above avg cost → APIC. Proceeds below → reduce retained earnings.</div>
+      </div>
     </div>
   </div>
+
   <div class="card">
     <div class="card-label">Preferred stock</div>
-    <div class="field-grid grid-4" style="margin-bottom:10px">
-      <div class="field"><label>Par value ($)</label><input type="number" id="ps-par" value="100" oninput="recalcAndSave()"></div>
-      <div class="field"><label>Dividend rate (%)</label><input type="number" id="ps-rate" value="7" step="0.01" oninput="recalcAndSave()"><div class="hint">Annual rate × par = dividend per share per year.</div></div>
-      <div class="field"><label>Authorized shares</label><input type="number" id="ps-auth" value="8000" oninput="recalcAndSave()"></div>
-      <div class="field"><label>Shares issued Jan. 1</label><input type="number" id="ps-issued" value="5000" oninput="recalcAndSave()"></div>
+    <div class="explain-block" style="background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.65">
+      <strong style="color:var(--purple)">What preferred stock is:</strong> A separate class with a <em>fixed</em> dividend — paid first, before common gets anything. Its own par value, its own APIC (never mixed with common). Dividend formula: <strong>rate % × par × shares issued</strong>. Does not depend on company earnings. <span class="goto-link" onclick="showPage('dividends')">→ See dividend calculator</span>
+    </div>
+    <div class="field-grid grid-2" style="margin-bottom:12px">
+      <div class="field">
+        <label>Par value ($)</label>
+        <input type="number" id="ps-par" value="100" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">Same concept as common par — legal minimum, used for the issuance split. Preferred par is often $100 because it doubles as the dividend base.</div>
+      </div>
+      <div class="field">
+        <label>Annual dividend rate (%)</label>
+        <input type="number" id="ps-rate" value="7" step="0.01" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">Fixed rate. Formula: rate % × par × shares issued. e.g. 7% × $100 × 5,000 = $35,000/yr. Does not change with company profits. <span class="goto-link" onclick="showPage('dividends')">→ See dividend calculator</span></div>
+      </div>
+    </div>
+    <div class="field-grid grid-2" style="margin-bottom:12px">
+      <div class="field">
+        <label>Authorized shares</label>
+        <input type="number" id="ps-auth" value="8000" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">State permission only. Not recorded in any account — appears as a disclosure on the balance sheet only.</div>
+      </div>
+      <div class="field">
+        <label>Shares issued Jan. 1</label>
+        <input type="number" id="ps-issued" value="5000" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">All preferred shares issued in prior years. Typically no treasury stock for preferred — all issued shares are outstanding.</div>
+      </div>
     </div>
     <div class="field-grid grid-3">
-      <div class="field"><label>APIC — preferred: opening balance ($)</label><input type="number" id="apic-ps" value="15000" oninput="recalcAndSave()"><div class="hint" style="color:var(--amber);border-left:2px solid var(--amber-border);padding-left:6px;margin-top:3px">Same reason as APIC-common above — prior years' history only. New preferred issuances this year calculate APIC automatically.</div></div>
-      <div class="field"><label>Cumulative?</label>
-        <select id="ps-cumul" oninput="recalcAndSave()"><option value="yes">Yes — arrears accumulate</option><option value="no">No</option></select>
-        <div class="hint">Cumulative = skipped dividends must be paid before common gets anything.</div>
+      <div class="field">
+        <label>APIC — preferred: opening balance ($)</label>
+        <input type="number" id="apic-ps" value="15000" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp" style="border-left:2px solid var(--amber-border);padding-left:8px;color:var(--amber)">Prior years only — same logic as APIC-common. Its own account, never mixed with APIC-common. New preferred issuances calculate APIC automatically. <span class="goto-link" onclick="showPage('taccounts')" style="color:var(--blue)">→ See T-account</span></div>
       </div>
-      <div class="field"><label>Prior years' dividends skipped</label><input type="number" id="arrears" value="0" min="0" oninput="recalcAndSave()"><div class="hint">Years preferred dividend was not paid before this year.</div></div>
+      <div class="field">
+        <label>Cumulative preferred?</label>
+        <select id="ps-cumul" oninput="recalcAndSave()">
+          <option value="yes">Yes — arrears accumulate</option>
+          <option value="no">No — skipped dividends are lost</option>
+        </select>
+        <div class="explain-block hint-exp"><strong>Cumulative:</strong> Skipped dividends become <em>arrears</em> — owed in a future year before common gets anything. <strong>Non-cumulative:</strong> Skipped and gone. Most preferred is cumulative. <span class="goto-link" onclick="showPage('dividends')">→ See dividend calculator</span></div>
+      </div>
+      <div class="field">
+        <label>Prior years' dividends skipped</label>
+        <input type="number" id="arrears" value="0" min="0" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">Arrears are <strong>not</strong> a balance sheet liability — they're a note disclosure only. But when a dividend is declared, all arrears must be paid first. Enter years skipped before this year.</div>
+      </div>
     </div>
   </div>
+
   <div class="card">
-    <div class="card-label">Other</div>
+    <div class="card-label">Retained earnings &amp; company</div>
     <div class="field-grid grid-2">
-      <div class="field"><label>Retained earnings Jan. 1 ($)</label><input type="number" id="re-open" value="900000" oninput="recalcAndSave()"><div class="hint">Accumulated earnings kept in the company over all prior years.</div></div>
-      <div class="field"><label>Company name</label><input type="text" id="co-name" value="Alpha Corporation" oninput="recalcAndSave()"></div>
+      <div class="field">
+        <label>Retained earnings Jan. 1 ($)</label>
+        <input type="number" id="re-open" value="900000" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">All net income ever earned, minus all dividends ever paid. Increases with income, decreases with dividends. <strong>Not a cash account</strong> — it's accumulated ownership interest. <span class="goto-link" onclick="showPage('taccounts')">→ See T-account</span> <span class="goto-link" onclick="showPage('bs')">→ See balance sheet</span></div>
+      </div>
+      <div class="field">
+        <label>Company name</label>
+        <input type="text" id="co-name" value="Alpha Corporation" oninput="recalcAndSave()">
+        <div class="explain-block hint-exp">Appears on the balance sheet header.</div>
+      </div>
     </div>
   </div>
+
   <div id="setup-summary" class="calc-explainer"></div>
   <button class="btn btn-primary" onclick="showPage('transactions')">Next: add transactions →</button>
 </div>
@@ -340,6 +432,23 @@ function loadSavedState(){
     return true;
   }catch(e){return false;}
 }
+let explainOn=true;
+function toggleExplain(){
+  explainOn=!explainOn;
+  const btn=document.getElementById('explain-toggle');
+  const lbl=document.getElementById('explain-label');
+  const setup=document.getElementById('page-setup');
+  if(explainOn){
+    setup.classList.remove('explain-hidden');
+    btn.style.background='var(--text)';
+    lbl.textContent='ON';
+  }else{
+    setup.classList.add('explain-hidden');
+    btn.style.background='var(--text3)';
+    lbl.textContent='OFF';
+  }
+}
+
 function recalcAndSave(){recalc();saveState();}
 
 // ── TRANSACTIONS ─────────────────────────────────────────────────────────────
