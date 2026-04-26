@@ -134,7 +134,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .empty p{font-size:13px;margin-top:8px;}
 .concept-box{border-radius:var(--radius);padding:14px 18px;margin-bottom:12px;font-size:12px;line-height:1.7;}
 .concept-box .concept-title{font-weight:600;font-size:13px;margin-bottom:6px;}
-@keyframes navGlowPulse{0%,100%{background:rgba(232,160,32,0.12)}50%{background:rgba(232,160,32,0.32)}}
+@keyframes txCommit{0%{opacity:0;transform:scale(0.97)}100%{opacity:1;transform:scale(1)}}
+@keyframes txHighlight{0%,100%{box-shadow:0 0 0 0 rgba(232,160,32,0)} 20%{box-shadow:0 0 0 5px rgba(232,160,32,0.7)} 80%{box-shadow:0 0 0 5px rgba(232,160,32,0.5)}}
+.tx-new{animation:txCommit 0.25s ease,txHighlight 10s ease}
+.pending-panel{position:fixed;top:50%;right:28px;transform:translateY(-50%);width:400px;background:var(--surface);border:2px solid var(--amber-border);border-radius:var(--radius);box-shadow:0 12px 40px rgba(0,0,0,0.18);z-index:500;padding:18px 20px;max-height:85vh;overflow-y:auto;}
+.pending-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.pending-badge{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);border-radius:3px;padding:2px 7px;}{0%,100%{background:rgba(232,160,32,0.12)}50%{background:rgba(232,160,32,0.32)}}
 @keyframes elemGlowPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,160,32,0)}50%{box-shadow:0 0 0 4px rgba(232,160,32,0.55)}}
 @keyframes elemGlowGreen{0%,100%{box-shadow:0 0 0 0 rgba(26,107,60,0)}50%{box-shadow:0 0 0 4px rgba(26,107,60,0.5)}}
 @keyframes elemGlowRed{0%,100%{box-shadow:0 0 0 0 rgba(184,50,50,0)}50%{box-shadow:0 0 0 4px rgba(184,50,50,0.5)}}
@@ -401,7 +406,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     </div>
   </div>
 
-  <div id="setup-summary" class="calc-explainer"></div>
+  <div id="setup-summary" class="calc-explainer" style="background:var(--amber-bg);border-color:var(--amber-border)">
+    <div style="font-size:10px;color:var(--text3);font-weight:500;margin-bottom:10px;letter-spacing:0.06em">Color matches the section above that contributes it</div>
+  </div>
 </div>
 
 <!-- PAGE 2: TRANSACTIONS -->
@@ -839,10 +846,97 @@ function renderAllocator(){
 function recalcAndSave(){recalc();saveState();}
 
 // ── TRANSACTIONS ─────────────────────────────────────────────────────────────
+let pendingTx=null;
+let highlightedTxId=null;
+
 function addTx(){
-  transactions.push({id:txId++,type:'issue_common',date:'2024-02-02',fields:{}});
-  renderTxList();recalcAndSave();
+  if(pendingTx){commitPending();return;}
+  pendingTx={id:txId++,type:'',date:'',fields:{}};
+  renderPendingPanel();
 }
+
+function commitPending(){
+  if(!pendingTx)return;
+  if(!pendingTx.date||!pendingTx.type){
+    // can't commit without date and type
+    return;
+  }
+  const tx={...pendingTx};
+  transactions.push(tx);
+  highlightedTxId=tx.id;
+  setTimeout(()=>{highlightedTxId=null;},10000);
+  closePending();
+  renderTxList();
+  recalcAndSave();
+}
+
+function closePending(){
+  pendingTx=null;
+  const panel=document.getElementById('pending-panel');
+  if(panel)panel.remove();
+}
+
+function setPendingType(val){
+  if(!pendingTx)return;
+  pendingTx.type=val;pendingTx.fields={};
+  renderPendingPanel();
+}
+
+function setPendingDate(val){
+  if(!pendingTx)return;
+  pendingTx.date=val;
+  renderPendingPanel();
+  if(val&&pendingTx.type)commitPending();
+}
+
+function setPendingField(key,val){
+  if(!pendingTx)return;
+  pendingTx.fields[key]=val;
+}
+
+function renderPendingPanel(){
+  let panel=document.getElementById('pending-panel');
+  if(!panel){
+    panel=document.createElement('div');
+    panel.id='pending-panel';
+    panel.className='pending-panel';
+    document.body.appendChild(panel);
+  }
+  const tx=pendingTx;
+  const flds=TX_FIELDS[tx.type]||[];
+  panel.innerHTML=`
+    <div class="pending-panel-header">
+      <div>
+        <div style="font-size:14px;font-weight:600">New transaction</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Set date and type to add to sequence</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="pending-badge">Pending</span>
+        <button onclick="closePending()" style="background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer;padding:0;line-height:1">&times;</button>
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Transaction type</label>
+      <select oninput="setPendingType(this.value)" style="font-family:var(--mono);font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);width:100%">
+        <option value="" disabled ${!tx.type?'selected':''}>— select type —</option>
+        ${TX_TYPES.map(x=>`<option value="${x.val}"${x.val===tx.type?' selected':''}>${x.label}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Date</label>
+      <input type="date" value="${tx.date}" oninput="setPendingDate(this.value)" style="font-family:var(--mono);font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);width:100%">
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">Transaction will insert into the correct date order when both fields are filled.</div>
+    </div>
+    ${flds.map(f=>`<div class="field" style="margin-bottom:10px">
+      <label>${f.label}</label>
+      <input type="number" placeholder="${f.ph||''}" oninput="setPendingField('${f.id}',this.value)" style="font-family:var(--mono);font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);width:100%">
+    </div>`).join('')}
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-primary btn-full" onclick="commitPending()" ${!tx.date||!tx.type?'disabled style="opacity:0.4;cursor:not-allowed"':''}>Add to sequence</button>
+      <button class="btn btn-secondary" onclick="closePending()">Cancel</button>
+    </div>`;
+}
+
 function removeTx(id){
   transactions=transactions.filter(t=>t.id!==id);
   renderTxList();recalcAndSave();
@@ -855,22 +949,32 @@ function setType(id,val){
 function setField(id,key,val){
   const t=transactions.find(x=>x.id===id);
   if(!t)return;
-  if(key==='date'){t.date=val;renderTxList();}
-  else t.fields[key]=val;
+  t.fields[key]=val;
   recalcAndSave();
+}
+function setDate(id,val){
+  const t=transactions.find(x=>x.id===id);
+  if(!t)return;
+  t.date=val;
+  recalcAndSave();
+}
+function setDateBlur(id){
+  // reorder the visual list on blur to avoid destroying focus mid-type
+  renderTxList();
 }
 
 function renderTxList(){
   const el=document.getElementById('tx-list');
   if(!transactions.length){
-    el.innerHTML='<div class="empty"><svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg><p>No transactions yet.</p></div>';
+    el.innerHTML='<div class="empty"><svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg><p>No transactions yet. Click "+ Add transaction" above.</p></div>';
     return;
   }
-  const display=[...transactions].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const display=[...transactions].sort((a,b)=>(a.date||'zzz').localeCompare(b.date||'zzz'));
   el.innerHTML=display.map(tx=>{
     const flds=TX_FIELDS[tx.type]||[];
     const isSplit=tx.type==='stock_split';
-    return`<div class="tx-item"${isSplit?' style="border-color:var(--teal-border)"':''}>
+    const isNew=tx.id===highlightedTxId;
+    return`<div class="tx-item${isNew?' tx-new':''}" id="tx-card-${tx.id}"${isSplit?' style="border-color:var(--teal-border)"':''}>
       <div class="tx-item-header"${isSplit?' style="background:var(--teal-bg)"':''}>
         <div class="tx-date-badge">${tx.date||'—'}</div>
         <div class="tx-type-label">${TX_TYPES.find(x=>x.val===tx.type)?.label||tx.type}</div>
@@ -880,7 +984,7 @@ function renderTxList(){
         <div class="tx-fields">
           <div class="field" style="min-width:128px">
             <label>Date</label>
-            <input type="date" value="${tx.date}" oninput="setField(${tx.id},'date',this.value)">
+            <input type="date" value="${tx.date}" oninput="setDate(${tx.id},this.value)" onblur="setDateBlur(${tx.id})">
           </div>
           <div class="field" style="min-width:200px;flex:2">
             <label>Transaction type</label>
@@ -890,7 +994,7 @@ function renderTxList(){
           </div>
           ${flds.map(f=>`<div class="field" style="min-width:120px;flex:1">
             <label>${f.label}</label>
-            <input type="number" placeholder="${f.ph||''}" value="${tx.fields[f.id]!==undefined?tx.fields[f.id]:(f.default||'')}" oninput="setField(${tx.id},'${f.id}',this.value)">
+            <input type="number" placeholder="${f.ph||''}" value="${tx.fields[f.id]!==undefined?tx.fields[f.id]:''}" oninput="setField(${tx.id},'${f.id}',this.value)">
           </div>`).join('')}
         </div>
         <div id="tx-effect-${tx.id}" style="margin-top:10px"></div>
@@ -1168,14 +1272,16 @@ function updateSetupSummary(csIssued,csPar,tsShares,tsCost,apicCs,psIssued,psPar
   const csParAmt=csIssued*csPar,psParAmt=psIssued*psPar;
   const contrib=csParAmt+apicCs+psParAmt+apicPs;
   const total=contrib+re-tsCost;
-  el.innerHTML=`<div class="label">Opening equity — January 1</div>
-    <div class="calc-step"><span class="op">&nbsp;</span><span class="desc">Common stock par (${fmts(csIssued)} sh × $${csPar})</span><span class="result">${fmtd(csParAmt)}</span></div>
-    <div class="calc-step"><span class="op">+</span><span class="desc">APIC — common</span><span class="result">${fmtd(apicCs)}</span></div>
-    <div class="calc-step"><span class="op">+</span><span class="desc">Preferred stock par (${fmts(psIssued)} sh × $${psPar})</span><span class="result">${fmtd(psParAmt)}</span></div>
-    <div class="calc-step"><span class="op">+</span><span class="desc">APIC — preferred</span><span class="result">${fmtd(apicPs)}</span></div>
-    <div class="calc-step"><span class="op">+</span><span class="desc">Retained earnings</span><span class="result">${fmtd(re)}</span></div>
-    <div class="calc-step"><span class="op">−</span><span class="desc">Treasury stock (${fmts(tsShares)} shares at cost)</span><span class="result neg">${fmtd(tsCost)}</span></div>
-    <div class="calc-step"><span class="op">=</span><span class="desc" style="font-weight:600">Total opening stockholders' equity</span><span class="result" style="font-size:15px">${fmtd(total)}</span></div>`;
+  // color-coded dot helper matching card border colors
+  const dot=(col)=>`<span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${col};margin-right:8px;flex-shrink:0;margin-top:3px"></span>`;
+  el.innerHTML=`<div class="label" style="color:var(--amber)">Opening equity — January 1</div>
+    <div class="calc-step">${dot('#185FA5')}<span class="desc">Common stock par (${fmts(csIssued)} sh × $${csPar})</span><span class="result">${fmtd(csParAmt)}</span></div>
+    <div class="calc-step" style="opacity:0.85">${dot('#185FA5')}<span class="desc">APIC — common</span><span class="result">${fmtd(apicCs)}</span></div>
+    <div class="calc-step">${dot('var(--purple)')}<span class="desc">Preferred stock par (${fmts(psIssued)} sh × $${psPar})</span><span class="result">${fmtd(psParAmt)}</span></div>
+    <div class="calc-step" style="opacity:0.85">${dot('var(--purple)')}<span class="desc">APIC — preferred</span><span class="result">${fmtd(apicPs)}</span></div>
+    <div class="calc-step">${dot('var(--green)')}<span class="desc">Retained earnings</span><span class="result">${fmtd(re)}</span></div>
+    <div class="calc-step">${dot('var(--red)')}<span class="desc">Treasury stock (${fmts(tsShares)} shares at cost)</span><span class="result neg">${fmtd(tsCost)}</span></div>
+    <div class="calc-step" style="padding-top:10px;border-top:1px solid var(--amber-border);margin-top:4px"><span class="op">=</span><span class="desc" style="font-weight:600">Total opening stockholders' equity</span><span class="result" style="font-size:15px">${fmtd(total)}</span></div>`;
 }
 
 function renderTxEffect(txId,pills,explanation){
@@ -1480,7 +1586,7 @@ function loadAlpha(){
     'arrears':0,'re-open':900000,'co-name':'Alpha Corporation'
   };
   Object.entries(d).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v;});
-  transactions=[];txId=0;currentSnapshot=null;clearGlows();
+  transactions=[];txId=0;currentSnapshot=null;clearGlows();pendingTx=null;highlightedTxId=null;const pp=document.getElementById("pending-panel");if(pp)pp.remove();
   [{type:'buy_treasury',date:'2024-02-02',fields:{shares:'1000',price:'7'}},
    {type:'issue_common',date:'2024-02-10',fields:{shares:'4000',price:'4.65'}},
    {type:'declare_common',date:'2024-06-01',fields:{rate:'0.60'}},
@@ -1500,7 +1606,7 @@ function loadShelby(){
     'arrears':0,'re-open':0,'co-name':'Shelby Corporation'
   };
   Object.entries(d).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v;});
-  transactions=[];txId=0;currentSnapshot=null;clearGlows();
+  transactions=[];txId=0;currentSnapshot=null;clearGlows();pendingTx=null;highlightedTxId=null;const pp=document.getElementById("pending-panel");if(pp)pp.remove();
   [{type:'issue_common',date:'2024-01-15',fields:{shares:'28000',price:'28'}},
    {type:'issue_preferred',date:'2024-01-20',fields:{shares:'19000',price:'38'}},
    {type:'buy_treasury',date:'2024-02-01',fields:{shares:'3000',price:'25'}},
@@ -1514,7 +1620,7 @@ function loadShelby(){
 
 function resetAll(){
   if(!confirm('Clear all data and start fresh?'))return;
-  transactions=[];txId=0;currentSnapshot=null;clearGlows();
+  transactions=[];txId=0;currentSnapshot=null;clearGlows();pendingTx=null;highlightedTxId=null;const pp=document.getElementById("pending-panel");if(pp)pp.remove();
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
   ['cs-par','cs-auth','cs-issued','apic-cs','ts-shares','ts-cost','ps-par','ps-rate','ps-auth','ps-issued','apic-ps','arrears','re-open'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='0';});
   document.getElementById('ps-cumul').value='no';
