@@ -971,7 +971,7 @@ function renderDividends(entries,state,psRatePct,psPar,psRate,arrearsYears,psCum
 
 function renderTAccounts(tData){
   const el=document.getElementById('taccount-output');
-  const accts=['cs','apicCs','ps','apicPs','re','ts','div','divPay'];
+  const accts=['cs','apicCs','ps','apicPs','re','ts','div'];
   el.innerHTML='<div class="t-grid">'+accts.map(key=>{
     const a=tData[key];
     const drE=a.entries.filter(e=>e.side==='dr');
