@@ -151,8 +151,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
     <p>Stockholders' Equity Explorer</p>
     <div class="save-indicator" id="save-indicator">auto-save: off</div>
   </div>
+  <div class="nav-section">Start</div>
+  <div class="nav-item active" onclick="showPage('welcome')"><span class="num">→</span>Overview</div>
   <div class="nav-section">Setup</div>
-  <div class="nav-item active" onclick="showPage('setup')"><span class="num">1</span>Opening Balances</div>
+  <div class="nav-item" onclick="showPage('setup')"><span class="num">1</span>Opening Balances</div>
   <div class="nav-section">Work Through It</div>
   <div class="nav-item" onclick="showPage('transactions')"><span class="num">2</span>Add Transactions</div>
   <div class="nav-item" onclick="showPage('shares')"><span class="num">3</span>Share Tracker</div>
@@ -169,6 +171,77 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 </nav>
 
 <main class="main">
+
+<!-- PAGE 0: WELCOME -->
+<div id="page-welcome" class="page active">
+  <div style="max-width:680px;padding-top:8px;">
+    <div style="font-size:11px;font-family:var(--mono);color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Stockholders' Equity Explorer</div>
+    <h2 style="font-size:26px;font-weight:600;letter-spacing:-0.03em;margin-bottom:10px;">Equity Lab</h2>
+    <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:28px;">Enter a company's opening equity balances and transactions, and this tool generates the journal entries, T-accounts, dividend calculations, and balance sheet automatically — all connected, all updating in real time. Use it to work through assigned problems, or experiment by changing numbers and seeing what happens.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--text);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">1</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Opening Balances</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Enter the company's equity accounts as of January 1 — the starting point before any transactions this year.</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--text);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">2</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Add Transactions</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Add each event — stock issuances, buybacks, dividends, splits. Each one shows its effect and reasoning immediately below it.</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">3</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Share Tracker</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5;">See issued, treasury, and outstanding share counts update at every step. Outstanding shares is what drives common dividends — not issued shares.</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">4</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Dividend Calculator</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Every declared dividend worked out step by step — preferred first, then common, with the exact formula and share counts shown.</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">5</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Journal Entries</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Every transaction as a proper journal entry — debits left, credits indented right, math shown for each line, totals verified.</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">6</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">T-Accounts</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5;">Every account with opening balances and all transactions posted. Bold = opening balance. Blue = this year's activity.</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;grid-column:1/-1;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;font-family:var(--mono);">7</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:3px;">Balance Sheet — Equity Section</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5;">The final formatted equity section, built from everything above. Updates live with every change. Includes a breakdown showing exactly how the total is assembled.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;font-size:12px;color:var(--text2);line-height:1.7;">
+      <strong style="color:var(--amber);">Two ways to start:</strong> Load a preloaded class problem using the buttons in the bottom-left sidebar, or build your own from scratch beginning with Opening Balances. On the Opening Balances page there is a toggle for field explanations — <strong>it starts OFF</strong>, which is the right place to begin. Flip it ON if you're unsure what a field means, then back OFF when you're ready to work.
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-primary" onclick="showPage('setup')" style="font-size:14px;padding:10px 24px;">Start — Opening Balances →</button>
+      <button class="btn btn-secondary" onclick="loadAlpha();showPage('setup');" style="font-size:13px;">Load Alpha Corporation</button>
+      <button class="btn btn-secondary" onclick="loadShelby();showPage('setup');" style="font-size:13px;">Load Shelby Corporation</button>
+    </div>
+  </div>
+</div>
 
 <!-- PAGE 1: SETUP -->
 <div id="page-setup" class="page active">
@@ -432,7 +505,7 @@ function loadSavedState(){
     return true;
   }catch(e){return false;}
 }
-let explainOn=true;
+let explainOn=false;
 function toggleExplain(){
   explainOn=!explainOn;
   const btn=document.getElementById('explain-toggle');
@@ -1046,6 +1119,12 @@ const loaded=loadSavedState();
 if(!loaded)loadAlpha();
 renderTxList();
 recalc();
+document.getElementById('page-setup').classList.add('explain-hidden');
+const toggleBtn=document.getElementById('explain-toggle');
+const toggleLbl=document.getElementById('explain-label');
+if(toggleBtn)toggleBtn.style.background='var(--text3)';
+if(toggleLbl)toggleLbl.textContent='OFF';
+showPage('welcome');
 </script>
 </body>
 </html>
