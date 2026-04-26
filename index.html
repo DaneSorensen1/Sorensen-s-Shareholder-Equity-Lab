@@ -1271,6 +1271,12 @@ function renderTxList(){
           </div>`).join('')}
         </div>
         <div id="tx-effect-${tx.id}" style="margin-top:10px"></div>
+        <div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px">
+          <button onclick="toggleTxExplain(${tx.id},'${tx.type}')" id="tx-explain-btn-${tx.id}" style="font-size:11px;background:none;border:none;color:var(--text3);cursor:pointer;padding:2px 0;display:flex;align-items:center;gap:5px">
+            <span id="tx-explain-arrow-${tx.id}">▸</span> How to think through this transaction
+          </button>
+          <div id="tx-explain-${tx.id}" style="display:none;margin-top:8px"></div>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -1335,7 +1341,7 @@ function recalc(){
     const amount=parseFloat(f.amount)||0;
 
     if(tx.type==='issue_common'){
-      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares issued and issue price to generate this journal entry.');return;}
+      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares and price to generate this entry.',null,tx.type);return;}
       const jid=jeCounter++;
       const cash=shares*price,par=shares*state.currentCsPar,apic=cash-par;
       state.csIssued+=shares;state.csParAmt+=par;state.apicCs+=apic;
@@ -1354,7 +1360,7 @@ function recalc(){
       ],'Step 1: Cash = '+fmts(shares)+' × $'+price+' = '+fmtd(cash)+'.  Step 2: Par = '+fmts(shares)+' × '+fmtpar(state.currentCsPar)+' = '+fmtd(par)+'.  Step 3: APIC = '+fmtd(cash)+' − '+fmtd(par)+' = '+fmtd(apic)+'.',jid);
     }
     else if(tx.type==='buy_treasury'){
-      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares repurchased and price paid to generate this journal entry.');return;}
+      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares repurchased and price paid.',null,tx.type);return;}
       const jid=jeCounter++;
       const cost=shares*price;
       state.tsShares+=shares;state.tsCost+=cost;
@@ -1371,7 +1377,7 @@ function recalc(){
       ],'Cost method: record the full price paid. No par split needed. '+fmts(shares)+' × $'+price+' = '+fmtd(cost)+'. Total equity decreases.',jid);
     }
     else if(tx.type==='reissue_treasury'){
-      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares reissued and reissue price to generate this journal entry.');return;}
+      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares reissued and reissue price.',null,tx.type);return;}
       const jid=jeCounter++;
       const proceeds=shares*price;
       const avgCost=state.tsShares>0?state.tsCost/state.tsShares:0;
@@ -1401,7 +1407,7 @@ function recalc(){
       ],diff>=0?'Proceeds ($'+proceeds.toLocaleString()+') exceed cost basis ($'+basis.toFixed(0)+') — gain of $'+Math.abs(diff).toFixed(0)+' goes to APIC, not income.':'Proceeds ($'+proceeds.toLocaleString()+') below cost basis ($'+basis.toFixed(0)+') — shortfall of $'+Math.abs(diff).toFixed(0)+' reduces retained earnings.',jid);
     }
     else if(tx.type==='issue_preferred'){
-      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares issued and issue price to generate this journal entry.');return;}
+      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares and price to generate this entry.',null,tx.type);return;}
       const jid=jeCounter++;
       const cash=shares*price,par=shares*psPar,apic=cash-par;
       state.psIssued+=shares;state.psParAmt+=par;state.apicPs+=apic;
@@ -1416,7 +1422,7 @@ function recalc(){
         {label:'Cash',dir:'up',val:fmtd(cash)},
         {label:'Preferred stock',dir:'up',val:fmtd(par)},
         {label:'APIC—preferred',dir:'up',val:fmtd(apic)},
-      ],'Same 3-step method as common: total cash → par → APIC. Note: APIC-Preferred is a separate account from APIC-Common.',jid);
+      ],'Same 3-step method as common: total cash → par → APIC. Note: APIC-Preferred is a separate account from APIC-Common.',jid,tx.type);
     }
     else if(tx.type==='stock_split'){
       const ratio=parseFloat(f.newshares)||2;
@@ -1441,11 +1447,11 @@ function recalc(){
           {label:'Total equity $',dir:'neutral',val:'UNCHANGED'},
           {label:'APIC',dir:'neutral',val:'UNCHANGED'},
           {label:'Retained earnings',dir:'neutral',val:'UNCHANGED'},
-        ],'A stock split is a MEMO ENTRY — no journal entry with dollar amounts. More shares, lower par, same total value.',jid);
+        ],'A stock split is a MEMO ENTRY — no journal entry with dollar amounts. More shares, lower par, same total value.',jid,tx.type);
       }
     }
     else if(tx.type==='declare_common'){
-      if(!rate){renderTxEffect(tx.id,[],'Enter the dividend amount per share to generate this journal entry.');return;}
+      if(!rate){renderTxEffect(tx.id,[],'Enter the dividend per share to generate this entry.',null,tx.type);return;}
       const jid=jeCounter++;
       const curOut=state.csIssued-state.tsShares;
       const total=rate*curOut;
@@ -1496,10 +1502,10 @@ function recalc(){
         renderTxEffect(tx.id,[
           {label:'Cash',dir:'down',val:fmtd(state.divBalance)},
           {label:'Dividends payable',dir:'up',val:'cleared (liability gone)'},
-        ],'Cash goes out. The Dividends Payable liability is removed. This does not affect retained earnings — that happened when dividends were declared, or at the year-end closing entry.',jid);
+        ],'Cash goes out. The Dividends Payable liability is removed. This does not affect retained earnings — that happened when dividends were declared, or at the year-end closing entry.',jid,tx.type);
         state.divBalance=0;
       }else{
-        renderTxEffect(tx.id,[],'No outstanding dividends payable at this date.');
+        renderTxEffect(tx.id,[],'No outstanding dividends payable at this date.',null,tx.type);
       }
     }
     else if(tx.type==='close_dividends'){
@@ -1517,14 +1523,14 @@ function recalc(){
         renderTxEffect(tx.id,[
           {label:'Retained earnings',dir:'down',val:'−'+fmtd(divBal)},
           {label:'Dividends account',dir:'neutral',val:'closed to $0'},
-        ],'Year-end closing: the Dividends account (a temporary account) is zeroed out by moving its balance into Retained Earnings. This is why dividends reduce retained earnings on the balance sheet.',jid);
+        ],'Year-end closing: the Dividends account (a temporary account) is zeroed out by moving its balance into Retained Earnings. This is why dividends reduce retained earnings on the balance sheet.',jid,tx.type);
       }else{
-        renderTxEffect(tx.id,[],'No dividends to close.');
+        renderTxEffect(tx.id,[],'No dividends to close.',null,tx.type);
       }
     }
     else if(tx.type==='declare_common_total'){
       const total=parseFloat(f.total)||0;
-      if(!total){renderTxEffect(tx.id,[],'Enter the total dividend amount to generate this journal entry.');return;}
+      if(!total){renderTxEffect(tx.id,[],'Enter the total dividend amount.',null,tx.type);return;}
       const curOut=state.csIssued-state.tsShares;
       const perShare=curOut>0?total/curOut:0;
       state.divDeclared+=total;state.divBalance+=total;
@@ -1543,7 +1549,7 @@ function recalc(){
     }
     else if(tx.type==='net_income'){
       const amount=parseFloat(f.amount)||0;
-      if(!amount){renderTxEffect(tx.id,[],'Enter the net income amount.');return;}
+      if(!amount){renderTxEffect(tx.id,[],'Enter the net income amount.',null,tx.type);return;}
       state.re+=amount;
       // No formal JE — income statement closing entries are not part of equity JE problems.
       // The RE T-account shows the effect; no journal entry is generated here.
@@ -1587,7 +1593,9 @@ function updateSetupSummary(csIssued,csPar,tsShares,tsCost,apicCs,psIssued,psPar
     <div class="calc-step" style="padding-top:10px;border-top:1px solid var(--amber-border);margin-top:4px"><span class="op">=</span><span class="desc" style="font-weight:600">Total opening stockholders' equity</span><span class="result" style="font-size:15px">${fmtd(total)}</span></div>`;
 }
 
-function renderTxEffect(txId,pills,explanation,jeId){
+const SHARE_TX_TYPES=new Set(['issue_common','buy_treasury','reissue_treasury','issue_preferred','stock_split']);
+
+function renderTxEffect(txId,pills,explanation,jeId,txType){
   const el=document.getElementById('tx-effect-'+txId);if(!el)return;
   if(!pills.length&&!explanation){el.innerHTML='';return;}
   const pillHtml=pills.map(p=>{
@@ -1596,10 +1604,13 @@ function renderTxEffect(txId,pills,explanation,jeId){
     return`<span class="effect-pill ${cls}">${arrow} ${p.label}: ${p.val}</span>`;
   }).join('');
   const jeLink=jeId!=null
-    ?`<button onclick="jumpToJE(${jeId})" style="margin-left:auto;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);font-size:12px;font-family:var(--sans);font-weight:500;padding:4px 12px;cursor:pointer;flex-shrink:0">Show journal entry →</button>`
+    ?`<button onclick="jumpToJE(${jeId})" style="background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);font-size:12px;font-family:var(--sans);font-weight:500;padding:4px 12px;cursor:pointer;flex-shrink:0">Show journal entry →</button>`
+    :'';
+  const sharesLink=SHARE_TX_TYPES.has(txType)
+    ?`<button onclick="showPage('shares')" style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);font-size:12px;font-family:var(--sans);font-weight:500;padding:4px 12px;cursor:pointer;flex-shrink:0">Show share tracker →</button>`
     :'';
   el.innerHTML=`<div style="font-size:12px;color:var(--text3);margin-bottom:6px;line-height:1.65;border-left:2px solid var(--border2);padding-left:10px">${explanation}</div>
-    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px"><div class="effect-row" style="margin:0;flex:1">${pillHtml}</div>${jeLink}</div>`;
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px"><div class="effect-row" style="margin:0;flex:1">${pillHtml}</div>${sharesLink}${jeLink}</div>`;
 }
 
 function renderJournals(journals){
@@ -2188,7 +2199,277 @@ function loadIfUnlocked(name){
   else if(name==='fostergrant')loadFosterGrant();
 }
 
-// ── CLASS PROBLEM LOADERS ─────────────────────────────────────────────────────
+// ── TRANSACTION EXPLANATION ENGINE ───────────────────────────────────────────
+const openExplains=new Set();
+function toggleTxExplain(txId,txType){
+  const el=document.getElementById('tx-explain-'+txId);
+  const arrow=document.getElementById('tx-explain-arrow-'+txId);
+  if(!el)return;
+  const isOpen=openExplains.has(txId);
+  if(isOpen){
+    el.style.display='none';openExplains.delete(txId);
+    if(arrow)arrow.textContent='▸';
+  }else{
+    const tx=transactions.find(t=>t.id===txId)||{type:txType,fields:{}};
+    el.innerHTML=buildTxExplanation(tx);
+    el.style.display='block';openExplains.add(txId);
+    if(arrow)arrow.textContent='▾';
+  }
+}
+
+function buildTxExplanation(tx){
+  const f=tx.fields||{};
+  const shares=parseFloat(f.shares)||null;
+  const price=parseFloat(f.price)||null;
+  const rate=parseFloat(f.rate)||null;
+  const total=parseFloat(f.total)||null;
+
+  // Read current state from fields
+  const csPar=g('cs-par');
+  const csIssuedOpen=g('cs-issued');
+  const tsSharesOpen=g('ts-shares');
+  const tsCostOpen=g('ts-cost');
+  const psPar=g('ps-par');
+  const psRateRaw=g('ps-rate');
+  const psCumul=gs('ps-cumul')==='yes';
+  const arrears=g('arrears');
+
+  function box(color, colorBg, colorBorder, html){
+    return`<div style="background:${colorBg};border:1px solid ${colorBorder};border-radius:var(--radius-sm);padding:11px 14px;font-size:12px;color:var(--text2);line-height:1.7">${html}</div>`;
+  }
+  function step(n,label,detail){
+    return`<div style="display:flex;gap:10px;margin-bottom:6px"><div style="width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${n}</div><div><strong>${label}</strong>${detail?'<br><span style="color:var(--text3)">'+detail+'</span>':''}</div></div>`;
+  }
+  function warn(msg){
+    return`<div style="background:var(--amber-bg);border-left:3px solid var(--amber);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:6px 10px;margin-top:6px;font-size:11px;color:var(--text2)">⚡ ${msg}</div>`;
+  }
+  function insight(msg){
+    return`<div style="background:var(--blue-bg);border-left:3px solid var(--blue);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:6px 10px;margin-top:6px;font-size:11px;color:var(--text2)">💡 ${msg}</div>`;
+  }
+
+  if(tx.type==='issue_common'){
+    const sEx=shares||'shares';const pEx=price||'price';const parEx=csPar||'par';
+    const cashEx=shares&&price?fmtd(shares*price):`${sEx} × $${pEx}`;
+    const parAmt=shares&&csPar?fmtd(shares*csPar):`${sEx} × $${parEx}`;
+    const apicEx=shares&&price&&csPar?fmtd(shares*price-shares*csPar):`${cashEx} − ${parAmt}`;
+    return box('','var(--surface2)','var(--border)',`
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Issuing common stock for cash</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> New shares are sold to investors. Cash comes in, and the equity section grows. The proceeds are always split between two equity accounts — Common Stock at par, and APIC for everything above par.</div>
+      <div style="font-weight:600;margin-bottom:8px;color:var(--blue)">The 3-step calculation:</div>
+      ${step(1,'Cash received',shares&&price?`${fmts(shares)} shares × $${price}/share = <strong>${cashEx}</strong>`:csPar?`shares × $${csPar} par value per share`:null)}
+      ${step(2,'Common Stock (par portion)',shares&&csPar?`${fmts(shares)} shares × $${csPar} par = <strong>${parAmt}</strong>`:`shares × $${parEx} par value = Common Stock amount`)}
+      ${step(3,'APIC — common (the remainder)',`Cash received − Common Stock par amount = <strong>${apicEx}</strong>`)}
+      <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
+        Dr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${cashEx}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Common Stock (par) &nbsp;&nbsp;&nbsp;&nbsp; ${parAmt}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; APIC — common &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${apicEx}
+      </div>
+      ${insight('APIC is never calculated first — it is always what is left after subtracting par from total cash. You cannot know APIC until you have calculated both Cash and Common Stock.')}
+      ${csPar>0&&price>0&&price<csPar?warn('Shares issued below par is unusual. If price < par, APIC would be negative — in practice this almost never happens in these problems.'):''}
+    `);
+  }
+
+  if(tx.type==='buy_treasury'){
+    const tsSharesCurrent=tsSharesOpen;
+    const avgCostCurrent=tsSharesOpen>0&&tsCostOpen>0?(tsCostOpen/tsSharesOpen).toFixed(2):'—';
+    const costEx=shares&&price?fmtd(shares*price):`${shares||'shares'} × $${price||'price'}`;
+    const newOutstanding=csIssuedOpen-tsSharesOpen-(shares||0);
+    return box('','var(--surface2)','var(--border)',`
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Purchasing treasury stock (buyback)</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> The company buys back its own previously issued shares. Those shares leave the public market and are held by the company. They are NOT retired — they still exist but cannot vote or receive dividends.</div>
+      <div style="font-weight:600;margin-bottom:8px;color:var(--blue)">Calculation (cost method):</div>
+      ${step(1,'Total cost',shares&&price?`${fmts(shares)} shares × $${price}/share = <strong>${costEx}</strong>`:'shares × price per share = Treasury Stock amount')}
+      ${step(2,'No par split needed','Unlike stock issuances, treasury stock is recorded at the total cost paid — no separation into par and APIC.')}
+      <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
+        Dr &nbsp; Treasury Stock (cost method) &nbsp; ${costEx}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${costEx}
+      </div>
+      <div style="margin-top:10px"><strong>Effect on share counts:</strong></div>
+      <div style="margin:4px 0;font-size:12px">Issued shares: unchanged (${fmts(csIssuedOpen)}) — buying back does not "un-issue" shares</div>
+      <div style="font-size:12px">Outstanding: ${fmts(csIssuedOpen)} issued − ${fmts(tsSharesOpen+(shares||0))} treasury = <strong>${fmts(Math.max(0,csIssuedOpen-tsSharesOpen-(shares||0)))} outstanding</strong></div>
+      ${insight('Treasury stock is a contra-equity account — it has a debit balance, which subtracts from total equity. The more treasury stock, the lower total stockholders\' equity.')}
+      ${warn('Outstanding shares (not issued shares) are what matter for common dividend calculations. After this purchase, common dividends will be based on the smaller outstanding count.')}
+    `);
+  }
+
+  if(tx.type==='reissue_treasury'){
+    const totalTsShares=tsSharesOpen;
+    const avgCost=totalTsShares>0&&tsCostOpen>0?tsCostOpen/totalTsShares:0;
+    const proceeds=shares&&price?shares*price:null;
+    const basisAmt=shares&&avgCost?shares*avgCost:null;
+    const diff=proceeds&&basisAmt?proceeds-basisAmt:null;
+    const aboveOrBelow=diff===null?'unknown':diff>0?'ABOVE':'BELOW';
+    return box('','var(--surface2)','var(--border)',`
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Reissuing treasury stock</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> Previously repurchased shares are sold back to the public. Cash comes in, and the treasury stock account is reduced. The difference between selling price and original cost goes to APIC or reduces RE — but is <em>never recorded as a gain or loss</em>.</div>
+      <div style="font-weight:600;margin-bottom:8px;color:var(--blue)">Step-by-step:</div>
+      ${step(1,'Cash received from reissue',shares&&price?`${fmts(shares)} shares × $${price}/share = <strong>${fmtd(proceeds)}</strong>`:'shares × reissue price')}
+      ${step(2,'Remove cost basis',avgCost>0?`${shares?fmts(shares):'shares'} × $${avgCost.toFixed(2)} avg cost = <strong>${basisAmt?fmtd(basisAmt):'basis'}</strong> removed from Treasury Stock`:`Average cost = Total treasury cost ÷ Total treasury shares held (${fmts(totalTsShares)} shares, $${fmts(tsCostOpen)} total)`)}
+      ${step(3,diff!==null?`Proceeds ${aboveOrBelow} cost — difference goes to ${diff>=0?'APIC':'Retained Earnings'}`:'Compare proceeds vs. cost basis',diff!==null?`${fmtd(Math.abs(diff))} ${diff>=0?'above → credited to APIC-common (NOT income)':'below → debited to Retained Earnings (not a loss)'}`:'If proceeds > basis: excess → APIC. If proceeds < basis: shortfall → reduces Retained Earnings.')}
+      <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
+        Dr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${proceeds?fmtd(proceeds):'proceeds'}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Treasury Stock &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${basisAmt?fmtd(basisAmt):'cost basis'}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; ${diff===null||diff>=0?'Cr':'Dr'} &nbsp; ${diff===null||diff>=0?'APIC — common':'Retained Earnings'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${diff!==null?fmtd(Math.abs(diff)):'difference'}
+      </div>
+      ${insight('A company can NEVER recognize a gain or loss on transactions involving its own stock. The difference is always routed through equity accounts (APIC or RE), never through income.')}
+    `);
+  }
+
+  if(tx.type==='issue_preferred'){
+    const parEx=psPar||'par';
+    const cashEx=shares&&price?fmtd(shares*price):`${shares||'shares'} × $${price||'price'}`;
+    const parAmt=shares&&psPar?fmtd(shares*psPar):`${shares||'shares'} × $${parEx}`;
+    const apicEx=shares&&price&&psPar?fmtd(shares*price-shares*psPar):`Cash − Preferred Stock par`;
+    return box('','var(--surface2)','var(--border)',`
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Issuing preferred stock for cash</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> New preferred shares are sold to investors. The same 3-step calculation as common stock — but the proceeds go into <em>separate preferred equity accounts</em>, never mixed with common accounts.</div>
+      <div style="font-weight:600;margin-bottom:8px;color:var(--purple)">The 3-step calculation (same logic as common):</div>
+      ${step(1,'Cash received',shares&&price?`${fmts(shares)} shares × $${price}/share = <strong>${cashEx}</strong>`:null)}
+      ${step(2,'Preferred Stock (par portion)',shares&&psPar?`${fmts(shares)} shares × $${psPar} par = <strong>${parAmt}</strong>`:`shares × $${parEx} par`)}
+      ${step(3,'APIC — preferred (the remainder)',`${cashEx} − ${parAmt} = <strong>${apicEx}</strong>`)}
+      <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
+        Dr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${cashEx}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Preferred Stock ($${parEx} par) &nbsp;&nbsp;&nbsp; ${parAmt}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; APIC — preferred &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${apicEx}
+      </div>
+      ${insight('APIC — Preferred is always tracked in its own separate account, never combined with APIC — Common. On the balance sheet, both APIC accounts appear, each labeled for their stock class.')}
+      ${psPar>0?`<div style="margin-top:8px;font-size:11px;color:var(--text3)">Preferred par in this problem: $${psPar}. Annual dividend rate: ${psRateRaw}% × $${psPar} = <strong>$${(psRateRaw*psPar/100).toFixed(2)}/share/year</strong></div>`:''}
+    `);
+  }
+
+  if(tx.type==='stock_split'){
+    const ratio=parseFloat(f.newshares)||2;
+    const newPar=csPar>0?(csPar/ratio).toFixed(4).replace(/\.?0+$/, ''):null;
+    return box('','var(--teal-bg)','var(--teal-border)',`
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--teal)">${ratio}-for-1 stock split</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> Every existing share is exchanged for ${ratio} new shares at a proportionally lower par value. The total market capitalization and all equity dollar balances stay exactly the same.</div>
+      <div style="font-weight:600;margin-bottom:8px;color:var(--teal)">What changes / what doesn't:</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;font-size:12px">
+        <div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);padding:8px"><strong style="color:var(--green)">Changes</strong><br>• Share count × ${ratio}<br>• Par value ÷ ${ratio}${csPar>0?` ($${csPar} → $${newPar??'new par'})`:''}<br>• Authorized shares × ${ratio}</div>
+        <div style="background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--radius-sm);padding:8px"><strong style="color:var(--red)">Unchanged</strong><br>• Common Stock $ balance<br>• APIC<br>• Retained Earnings<br>• Total equity</div>
+      </div>
+      <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;line-height:1.8">
+        <span style="color:var(--teal)">MEMO ENTRY ONLY — No debits or credits</span><br>
+        Record: ${ratio}-for-1 stock split. Par reduced from $${csPar||'X'} to $${newPar??'X/'+ratio}.
+      </div>
+      ${insight(`Why no JE? Because nothing of value changes hands. More shares at lower par multiplies out to the same dollar total: old par × old shares = new par × new shares. The Common Stock account balance is unchanged.`)}
+      ${warn('The market price per share typically halves after a 2-for-1 split. This is why shareholders aren\'t richer — they have twice as many shares worth half as much each.')}
+    `);
+  }
+
+  if(tx.type==='declare_common'){
+    // Figure out outstanding based on current state
+    const issuedNow=csIssuedOpen; // approximate - doesn't account for in-year issuances before this tx
+    const treasuryNow=tsSharesOpen;
+    const outNow=issuedNow-treasuryNow;
+    const totalDiv=rate&&outNow?fmtd(rate*outNow):null;
+    return box('','var(--surface2)','var(--border)',`
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Declaring a common dividend</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> The board of directors announces a dividend will be paid to common shareholders. This creates a <em>liability</em> (Dividends Payable) on the date of declaration — cash hasn't left yet, but the company is now obligated to pay.</div>
+      <div style="font-weight:600;margin-bottom:8px;color:var(--blue)">Calculation:</div>
+      ${step(1,'Identify outstanding shares',`<span style="font-family:var(--mono)">${fmts(issuedNow)} issued − ${fmts(treasuryNow)} treasury = <strong>${fmts(outNow)} outstanding</strong></span>`)}
+      ${step(2,'Calculate total dividend',rate?`$${rate}/share × ${fmts(outNow)} outstanding = <strong>${totalDiv}</strong>`:rate===null?'Enter $/share above to see the total':'No rate entered')}
+      <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
+        Dr &nbsp; Dividends &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${totalDiv||'total amount'}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Dividends Payable &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${totalDiv||'total amount'}
+      </div>
+      ${warn('OUTSTANDING shares only — NOT issued shares. Treasury stock cannot receive dividends because the company cannot pay dividends to itself. Always subtract treasury before multiplying.')}
+      ${insight('The Dividends account is temporary — it will be closed to Retained Earnings at year-end. Until then, RE on the balance sheet has not yet decreased; it decreases when dividends are closed.')}
+      ${treasuryNow>0?`<div style="margin-top:6px;font-size:11px;color:var(--text3)">In this problem: ${fmts(issuedNow)} issued − ${fmts(treasuryNow)} treasury = ${fmts(outNow)} shares eligible for dividends.</div>`:''}
+    `);
+  }
+
+  if(tx.type==='declare_common_total'){
+    const outNow=csIssuedOpen-tsSharesOpen;
+    const perShare=total&&outNow?'$'+(total/outNow).toFixed(4):null;
+    return box('','var(--surface2)','var(--border)',`
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Declaring a common dividend — total amount</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> A total dollar amount of dividends is declared to common shareholders. Same as the per-share declaration, but total is given directly. Per-share amount is calculated from outstanding shares.</div>
+      ${step(1,'Outstanding shares',`${fmts(csIssuedOpen)} issued − ${fmts(tsSharesOpen)} treasury = <strong>${fmts(outNow)} outstanding</strong>`)}
+      ${step(2,'Per-share amount (calculated)',total&&outNow?`${fmtd(total)} ÷ ${fmts(outNow)} shares = <strong>${perShare}/share</strong>`:'Total ÷ outstanding shares')}
+      <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
+        Dr &nbsp; Dividends &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${total?fmtd(total):'total'}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Dividends Payable &nbsp; ${total?fmtd(total):'total'}
+      </div>
+      ${warn('Treasury shares cannot receive dividends. Always use outstanding (issued minus treasury) as the share base.')}
+    `);
+  }
+
+  if(tx.type==='declare_pref'){
+    const years=parseFloat(f.years)||1;
+    const arrearsYrs=parseFloat(f.arrearsyears)||arrears||0;
+    const annual=psPar&&psRateRaw?psPar*(psRateRaw/100):null;
+    const annualTotal=annual&&g('ps-issued')?annual*g('ps-issued'):null;
+    const totalYears=years+arrearsYrs;
+    const totalDiv=annualTotal?fmtd(annualTotal*totalYears):null;
+    const hasCumulContext=psCumul||arrearsYrs>0;
+    return box('','var(--purple-bg)','var(--purple-border)',`
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--purple)">Declaring a preferred dividend</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> The board declares the periodic dividend owed to preferred shareholders. Preferred always gets paid first — before common shareholders receive anything. The amount is fixed by contract.</div>
+      <div style="font-weight:600;margin-bottom:8px;color:var(--purple)">Calculation:</div>
+      ${step(1,'Annual preferred dividend per share',annual?`${psRateRaw}% × $${psPar} par = <strong>$${annual.toFixed(2)}/share/year</strong>`:`Rate% × $${psPar||'par'} par`)}
+      ${step(2,'Annual total for all preferred shares',annualTotal?`$${annual?.toFixed(2)} × ${fmts(g('ps-issued'))} shares = <strong>${fmtd(annualTotal)}/year</strong>`:'Annual per share × preferred shares issued')}
+      ${hasCumulContext?step(3,'Total including arrears',arrearsYrs>0?`${arrearsYrs} skipped years + ${years} current = ${totalYears} years × ${annualTotal?fmtd(annualTotal):'annual'} = <strong>${totalDiv||'total'}</strong>`:`Current year only: <strong>${annualTotal?fmtd(annualTotal):'annual total'}</strong>`):step(3,'Total declared',annualTotal?`<strong>${fmtd(annualTotal)}</strong> (current year only)`:null)}
+      <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
+        Dr &nbsp; Dividends &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${totalDiv||'total'}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Dividends Payable &nbsp; ${totalDiv||'total'}
+      </div>
+      ${insight('Preferred uses ISSUED shares (not outstanding). Preferred stock almost never has treasury shares, so issued = outstanding for preferred.')}
+      ${hasCumulContext?warn(`Cumulative preferred: skipped dividends create "arrears" — all back dividends must be paid in full before common shareholders receive anything. Arrears are NOT a balance sheet liability, but they are disclosed in the notes.`):''}
+      ${psCumul&&arrears>0?`<div style="margin-top:6px;font-size:11px;color:var(--purple)">This problem has ${arrears} year(s) in arrears at the opening balance.</div>`:''}
+    `);
+  }
+
+  if(tx.type==='pay_dividends'){
+    return box('','var(--surface2)','var(--border)',`
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Paying declared dividends</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> The actual cash is sent to shareholders. This is step 2 of a two-step process — dividends must first be <em>declared</em> (which creates the liability), then <em>paid</em> (which eliminates it).</div>
+      <div style="font-weight:600;margin-bottom:8px;color:var(--blue)">The two-step dividend cycle:</div>
+      <div style="font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px">
+        <div style="margin-bottom:6px"><strong>Step 1 — Declaration date:</strong> Dr Dividends / Cr Dividends Payable → liability created</div>
+        <div><strong style="color:var(--blue)">Step 2 — Payment date (this transaction):</strong> Dr Dividends Payable / Cr Cash → liability cleared, cash leaves</div>
+      </div>
+      <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;line-height:1.8">
+        Dr &nbsp; Dividends Payable &nbsp; [amount from declaration]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [same amount]
+      </div>
+      ${insight('Paying dividends does NOT affect Retained Earnings directly. RE only decreases when dividends are closed at year-end. The payment simply converts a liability (Dividends Payable) into a cash outflow.')}
+      ${warn('If no dividends have been declared yet, there is nothing to pay — the Dividends Payable balance would be $0.')}
+    `);
+  }
+
+  if(tx.type==='close_dividends'){
+    return box('','var(--surface2)','var(--border)',`
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Closing dividends to retained earnings</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> At year-end, the Dividends account — a temporary account — is zeroed out by transferring its balance to Retained Earnings. This is why dividends reduce RE on the year-end balance sheet.</div>
+      <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;margin-bottom:8px;line-height:1.8">
+        Dr &nbsp; Retained Earnings &nbsp; [total dividends declared this year]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Dividends &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [same — resets Dividends to $0]
+      </div>
+      ${insight('The Dividends account is temporary — it accumulates dividend declarations during the year and then is closed to RE at year-end. After closing, the Dividends account balance is $0, ready for next year.')}
+      <div style="margin-top:8px;font-size:12px;color:var(--text2)"><strong>Why this matters for the balance sheet:</strong> Until this closing entry is recorded, RE on the balance sheet has not yet been reduced by dividends declared. The year-end balance sheet should always reflect this closing entry having been made.</div>
+    `);
+  }
+
+  if(tx.type==='net_income'){
+    const amount=parseFloat(f.amount)||null;
+    return box('','var(--green-bg)','var(--green-border)',`
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--green)">Net income — effect on retained earnings</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> Net income earned during the year increases Retained Earnings. In a complete accounting cycle this happens via income statement closing entries (revenue and expense accounts close to income summary, then to RE). In equity-focused problems, we capture just the final effect: RE increases by net income.</div>
+      <div style="font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px">
+        <strong>How RE builds up over the year:</strong><br>
+        Opening RE (Jan 1) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + ${fmtd(g('re-open'))}<br>
+        ${amount?`+ Net income &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + ${fmtd(amount)}`:'+ Net income &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + (enter amount above)'}<br>
+        − Dividends declared &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; − [from dividend transactions]<br>
+        = Ending RE (Dec 31) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = [shows on Balance Sheet tab]
+      </div>
+      ${insight('Net income is not a cash concept — it is the accounting profit for the period. A company can have large net income but low cash if most revenue was on credit, or vice versa.')}
+      <div style="margin-top:6px;font-size:11px;color:var(--text3)">Note: No formal journal entry is shown here because income statement closing entries are outside the scope of these equity problems. Only the RE effect is tracked.</div>
+    `);
+  }
+
+  return`<div style="font-size:12px;color:var(--text3);font-style:italic;padding:8px">No detailed explanation available for this transaction type.</div>`;
+}
 function setFields(d){Object.entries(d).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v;});}
 
 function clearAllData(){
