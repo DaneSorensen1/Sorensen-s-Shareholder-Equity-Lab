@@ -132,7 +132,24 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .empty p{font-size:13px;margin-top:8px;}
 .concept-box{border-radius:var(--radius);padding:14px 18px;margin-bottom:12px;font-size:12px;line-height:1.7;}
 .concept-box .concept-title{font-weight:600;font-size:13px;margin-bottom:6px;}
-@media(max-width:700px){
+@keyframes navGlowPulse{0%,100%{background:rgba(232,160,32,0.12)}50%{background:rgba(232,160,32,0.32)}}
+@keyframes elemGlowPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,160,32,0)}50%{box-shadow:0 0 0 4px rgba(232,160,32,0.55)}}
+@keyframes elemGlowGreen{0%,100%{box-shadow:0 0 0 0 rgba(26,107,60,0)}50%{box-shadow:0 0 0 4px rgba(26,107,60,0.5)}}
+@keyframes elemGlowRed{0%,100%{box-shadow:0 0 0 0 rgba(184,50,50,0)}50%{box-shadow:0 0 0 4px rgba(184,50,50,0.5)}}
+@keyframes toastIn{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes toastProgress{from{width:100%}to{width:0%}}
+.nav-glow-active{animation:navGlowPulse 0.9s ease-in-out infinite!important;color:#fff!important;}
+.elem-glow{animation:elemGlowPulse 0.9s ease-in-out infinite;border-radius:var(--radius);}
+.elem-glow-green{animation:elemGlowGreen 0.9s ease-in-out infinite;border-radius:var(--radius);}
+.elem-glow-red{animation:elemGlowRed 0.9s ease-in-out infinite;border-radius:var(--radius);}
+.change-toast{position:fixed;bottom:24px;right:24px;width:300px;background:var(--text);color:#f5f4f0;border-radius:var(--radius);padding:14px 16px;z-index:9999;animation:toastIn 0.2s ease;pointer-events:all;}
+.toast-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:12px;}
+.toast-row:last-of-type{border-bottom:none;}
+.toast-tabs{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;}
+.toast-tab{font-size:11px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);padding:3px 8px;border-radius:4px;cursor:pointer;font-family:var(--mono);border:none;transition:background 0.15s;}
+.toast-tab:hover{background:rgba(255,255,255,0.2);}
+.toast-progress{height:2px;background:rgba(255,255,255,0.12);border-radius:1px;margin-top:10px;overflow:hidden;}
+.toast-bar{height:100%;background:rgba(255,255,255,0.4);border-radius:1px;animation:toastProgress 10s linear forwards;}
   .app{grid-template-columns:1fr;}
   .sidebar{height:auto;position:relative;flex-direction:row;flex-wrap:wrap;padding:8px;gap:2px;}
   .sidebar-brand{display:none;}.nav-section{display:none;}
@@ -527,6 +544,123 @@ function toggleExplain(){
   }
 }
 
+// ── GLOW / CHANGE DETECTION ──────────────────────────────────────────────────
+let currentSnapshot=null, pendingGlowData=null, glowTimer=null;
+
+const TAB_LABELS={shares:'3 — Share Tracker',dividends:'4 — Dividends',journals:'5 — Journals',taccounts:'6 — T-Accounts',bs:'7 — Balance Sheet'};
+
+function buildSnapshot(state,journals,divEntries){
+  const contrib=state.csParAmt+state.apicCs+state.psParAmt+state.apicPs;
+  return{csParAmt:state.csParAmt,apicCs:state.apicCs,psParAmt:state.psParAmt,apicPs:state.apicPs,
+    re:state.re,tsCost:state.tsCost,tsShares:state.tsShares,csIssued:state.csIssued,
+    outstanding:state.csIssued-state.tsShares,divDeclared:state.divDeclared,
+    journalCount:journals.length,divCount:divEntries.length,
+    totalEquity:contrib+state.re-state.tsCost,contrib};
+}
+
+function getChanges(prev,next){
+  const checks=[
+    {key:'csParAmt',    label:'Common stock',          isDollar:true,  account:'cs',     tabs:['taccounts','bs'],  bsId:'bs-cs'},
+    {key:'apicCs',      label:'APIC — common',          isDollar:true,  account:'apicCs', tabs:['taccounts','bs'],  bsId:'bs-apiccs'},
+    {key:'psParAmt',    label:'Preferred stock',        isDollar:true,  account:'ps',     tabs:['taccounts','bs'],  bsId:'bs-ps'},
+    {key:'apicPs',      label:'APIC — preferred',       isDollar:true,  account:'apicPs', tabs:['taccounts','bs'],  bsId:'bs-apicps'},
+    {key:'re',          label:'Retained earnings',      isDollar:true,  account:'re',     tabs:['taccounts','bs'],  bsId:'bs-re'},
+    {key:'tsCost',      label:'Treasury stock',         isDollar:true,  account:'ts',     tabs:['taccounts','bs'],  bsId:'bs-ts'},
+    {key:'divDeclared', label:'Dividends declared',     isDollar:true,  account:'div',    tabs:['taccounts','dividends','journals']},
+    {key:'csIssued',    label:'Shares issued',          isShare:true,                     tabs:['shares']},
+    {key:'tsShares',    label:'Treasury shares',        isShare:true,                     tabs:['shares']},
+    {key:'outstanding', label:'Outstanding shares',     isShare:true,                     tabs:['shares']},
+    {key:'totalEquity', label:'Total equity',           isDollar:true,                    tabs:['bs'],              bsId:'bs-total'},
+    {key:'journalCount',label:'Journal entries',        isCount:true,                     tabs:['journals']},
+    {key:'divCount',    label:'Dividend calculations',  isCount:true,                     tabs:['dividends']},
+  ];
+  return checks.filter(c=>prev[c.key]!==next[c.key]).map(c=>({...c,diff:next[c.key]-prev[c.key],prevVal:prev[c.key],nextVal:next[c.key]}));
+}
+
+function showToast(changes){
+  const existing=document.getElementById('change-toast');
+  if(existing)existing.remove();
+  const affectedTabs=[...new Set(changes.flatMap(c=>c.tabs||[]))];
+  const meaningful=changes.filter(c=>c.key!=='totalEquity'&&c.key!=='contrib');
+  if(!meaningful.length)return;
+  const toast=document.createElement('div');
+  toast.id='change-toast';
+  toast.className='change-toast';
+  toast.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45)">What changed</span>
+      <button onclick="clearGlows()" style="background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:18px;padding:0;line-height:1;font-family:sans-serif">&times;</button>
+    </div>
+    ${meaningful.map(c=>{
+      const up=c.diff>0;
+      const col=up?'#6ee7b7':'#fca5a5';
+      const arrow=up?'↑':'↓';
+      let val;
+      if(c.isShare) val=Math.abs(c.diff).toLocaleString()+' shares';
+      else if(c.isDollar) val=fmtd(Math.abs(c.diff));
+      else val=Math.abs(c.diff)+' entries';
+      return`<div class="toast-row"><span style="color:rgba(255,255,255,0.7)">${c.label}</span><span style="font-family:var(--mono);font-weight:600;color:${col}">${arrow} ${val}</span></div>`;
+    }).join('')}
+    ${affectedTabs.length?`<div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:8px;text-transform:uppercase;letter-spacing:0.06em">Highlighted in:</div>
+    <div class="toast-tabs">${affectedTabs.map(t=>`<button class="toast-tab" onclick="showPage('${t}')">${TAB_LABELS[t]||t}</button>`).join('')}</div>`:''}
+    <div class="toast-progress"><div class="toast-bar"></div></div>`;
+  document.body.appendChild(toast);
+}
+
+function computeGlowElements(changes){
+  const els=[];
+  changes.forEach(c=>{
+    if(c.account) els.push({id:'ta-'+c.account,diff:c.diff});
+    if(c.bsId) els.push({id:c.bsId,diff:c.diff});
+    if(c.tabs&&c.tabs.includes('shares')) els.push({id:'share-latest',diff:c.diff});
+    if(c.tabs&&c.tabs.includes('journals')) els.push({id:'journal-output',diff:0});
+    if(c.tabs&&c.tabs.includes('dividends')) els.push({id:'div-output',diff:0});
+  });
+  // deduplicate by id (keep first)
+  const seen=new Set();
+  return els.filter(e=>{if(seen.has(e.id))return false;seen.add(e.id);return true;});
+}
+
+function applyGlowClasses(){
+  if(!pendingGlowData)return;
+  pendingGlowData.tabs.forEach(tab=>{
+    const el=document.querySelector(`.nav-item[onclick*="'${tab}'"]`);
+    if(el)el.classList.add('nav-glow-active');
+  });
+  pendingGlowData.elements.forEach(({id,diff})=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.classList.remove('elem-glow','elem-glow-green','elem-glow-red');
+    if(diff>0)el.classList.add('elem-glow-green');
+    else if(diff<0)el.classList.add('elem-glow-red');
+    else el.classList.add('elem-glow');
+  });
+}
+
+function clearGlowClasses(){
+  document.querySelectorAll('.nav-glow-active,.elem-glow,.elem-glow-green,.elem-glow-red').forEach(el=>{
+    el.classList.remove('nav-glow-active','elem-glow','elem-glow-green','elem-glow-red');
+  });
+}
+
+function clearGlows(){
+  if(glowTimer){clearTimeout(glowTimer);glowTimer=null;}
+  clearGlowClasses();
+  pendingGlowData=null;
+  const t=document.getElementById('change-toast');
+  if(t)t.remove();
+}
+
+function triggerGlows(changes){
+  clearGlows();
+  const affectedTabs=[...new Set(changes.flatMap(c=>c.tabs||[]))];
+  const elements=computeGlowElements(changes);
+  pendingGlowData={tabs:affectedTabs,elements};
+  showToast(changes);
+  setTimeout(applyGlowClasses,30);
+  glowTimer=setTimeout(clearGlows,10000);
+}
+
 function recalcAndSave(){recalc();saveState();}
 
 // ── TRANSACTIONS ─────────────────────────────────────────────────────────────
@@ -843,6 +977,13 @@ function recalc(){
   renderDividends(divEntries,state,psRatePct,psPar,psRate,arrearsYears,psCumul);
   renderTAccounts(tData);
   renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName);
+
+  const newSnap=buildSnapshot(state,journals,divEntries);
+  if(currentSnapshot){
+    const changes=getChanges(currentSnapshot,newSnap);
+    if(changes.length)triggerGlows(changes);
+  }
+  currentSnapshot=newSnap;
 }
 
 function updateSetupSummary(csIssued,csPar,tsShares,tsCost,apicCs,psIssued,psPar,apicPs,re){
@@ -992,7 +1133,7 @@ function renderShares(history){
 
     const borderColor=isFirst?'var(--border2)':isSplit?'var(--teal)':issuedChanged?'var(--blue)':treasuryChanged?'var(--red)':'var(--border2)';
 
-    return`<div style="display:flex;gap:0;margin-bottom:8px">
+    return`<div style="display:flex;gap:0;margin-bottom:8px" ${i===history.length-1?'id="share-latest"':''}>
       <div style="width:3px;border-radius:2px;background:${borderColor};flex-shrink:0;margin-right:12px"></div>
       <div style="flex:1;background:var(--surface);border:1px solid ${isSplit?'var(--teal-border)':'var(--border)'};border-radius:var(--radius);padding:12px 14px">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
@@ -1071,7 +1212,7 @@ function renderTAccounts(tData){
     while(drRows.length<crRows.length)drRows.push(null);
     while(crRows.length<drRows.length)crRows.push(null);
     if(!drRows.length&&!crRows.length){drRows.push(null);crRows.push(null);}
-    return`<div class="t-acct">
+    return`<div class="t-acct" id="ta-${key}">
       <div class="t-name">${a.name}</div>
       <div class="t-cols">
         <div class="t-side">
@@ -1101,32 +1242,32 @@ function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
     <div class="bs-subtitle">Stockholders' Equity · December 31</div>
     ${parChanged?`<div class="split-box" style="margin-bottom:16px">Stock split in effect: par value is now ${fmtpar(state.currentCsPar)} (was $${csPar}). Share counts and par reflect post-split. Dollar totals are unchanged.</div>`:''}
     <div class="bs-section-hd">Contributed capital</div>
-    <div class="bs-row">
+    <div class="bs-row" id="bs-cs">
       <div>
         <div>Common stock, ${fmtpar(state.currentCsPar)} par${parChanged?' (post-split)':''}</div>
         <div class="bs-disclosure">${fmts(csAuth*(state.splitFactor||1))} authorized &nbsp;|&nbsp; ${fmts(state.csIssued)} issued &nbsp;|&nbsp; ${fmts(outstanding)} outstanding</div>
       </div>
       <div class="bs-amt">${fmtd(state.csParAmt)}</div>
     </div>
-    <div class="bs-row bs-row-indent"><span>Additional paid-in capital — common</span><span class="bs-amt">${fmtd(state.apicCs)}</span></div>
-    <div class="bs-row" style="margin-top:7px">
+    <div class="bs-row bs-row-indent" id="bs-apiccs"><span>Additional paid-in capital — common</span><span class="bs-amt">${fmtd(state.apicCs)}</span></div>
+    <div class="bs-row" id="bs-ps" style="margin-top:7px">
       <div>
         <div>Preferred stock, ${psRatePct}%, $${psPar} par${psCumul?' (cumulative)':''}</div>
         <div class="bs-disclosure">${fmts(psAuth)} authorized &nbsp;|&nbsp; ${fmts(state.psIssued)} issued &amp; outstanding</div>
       </div>
       <div class="bs-amt">${fmtd(state.psParAmt)}</div>
     </div>
-    <div class="bs-row bs-row-indent"><span>Additional paid-in capital — preferred</span><span class="bs-amt">${fmtd(state.apicPs)}</span></div>
+    <div class="bs-row bs-row-indent" id="bs-apicps"><span>Additional paid-in capital — preferred</span><span class="bs-amt">${fmtd(state.apicPs)}</span></div>
     <div class="bs-subtotal"><span style="padding-left:18px">Total contributed capital</span><span>${fmtd(contrib)}</span></div>
     <div class="bs-section-hd">Retained earnings</div>
-    <div class="bs-row"><span>Retained earnings</span><span class="bs-amt">${fmtd(state.re)}</span></div>
+    <div class="bs-row" id="bs-re"><span>Retained earnings</span><span class="bs-amt">${fmtd(state.re)}</span></div>
     <div class="bs-subtotal"><span>Subtotal</span><span>${fmtd(subtotal)}</span></div>
     <div class="bs-section-hd">Treasury stock</div>
-    <div class="bs-row">
+    <div class="bs-row" id="bs-ts">
       <div><div class="neg">Treasury stock — common, at cost</div><div class="bs-disclosure neg">${fmts(state.tsShares)} shares</div></div>
       <div class="bs-amt neg">(${fmt(state.tsCost)})</div>
     </div>
-    <div class="bs-total"><span>Total stockholders' equity</span><span>${fmtd(total)}</span></div>
+    <div class="bs-total" id="bs-total"><span>Total stockholders' equity</span><span>${fmtd(total)}</span></div>
   </div>
   <div class="calc-explainer" style="margin-top:14px">
     <div class="label">How the total is assembled</div>
@@ -1145,6 +1286,7 @@ function showPage(name){
     if(n.getAttribute('onclick')?.includes("'"+name+"'"))n.classList.add('active');
   });
   recalc();
+  setTimeout(applyGlowClasses,40);
 }
 
 function loadAlpha(){
@@ -1155,7 +1297,7 @@ function loadAlpha(){
     'arrears':0,'re-open':900000,'co-name':'Alpha Corporation'
   };
   Object.entries(d).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v;});
-  transactions=[];txId=0;
+  transactions=[];txId=0;currentSnapshot=null;clearGlows();
   [{type:'buy_treasury',date:'2024-02-02',fields:{shares:'1000',price:'7'}},
    {type:'issue_common',date:'2024-02-10',fields:{shares:'4000',price:'4.65'}},
    {type:'declare_common',date:'2024-06-01',fields:{rate:'0.60'}},
@@ -1175,7 +1317,7 @@ function loadShelby(){
     'arrears':0,'re-open':0,'co-name':'Shelby Corporation'
   };
   Object.entries(d).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v;});
-  transactions=[];txId=0;
+  transactions=[];txId=0;currentSnapshot=null;clearGlows();
   [{type:'issue_common',date:'2024-01-15',fields:{shares:'28000',price:'28'}},
    {type:'issue_preferred',date:'2024-01-20',fields:{shares:'19000',price:'38'}},
    {type:'buy_treasury',date:'2024-02-01',fields:{shares:'3000',price:'25'}},
@@ -1189,7 +1331,7 @@ function loadShelby(){
 
 function resetAll(){
   if(!confirm('Clear all data and start fresh?'))return;
-  transactions=[];txId=0;
+  transactions=[];txId=0;currentSnapshot=null;clearGlows();
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
   ['cs-par','cs-auth','cs-issued','apic-cs','ts-shares','ts-cost','ps-par','ps-rate','ps-auth','ps-issued','apic-ps','arrears','re-open'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='0';});
   document.getElementById('ps-cumul').value='no';
