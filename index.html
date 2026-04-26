@@ -151,6 +151,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .pending-panel{position:fixed;top:50%;right:28px;transform:translateY(-50%);width:400px;background:var(--surface);border:2px solid var(--amber-border);border-radius:var(--radius);box-shadow:0 12px 40px rgba(0,0,0,0.18);z-index:500;padding:18px 20px;max-height:85vh;overflow-y:auto;}
 .pending-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
 .pending-badge{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);border-radius:3px;padding:2px 7px;}
+@keyframes arrearsFlash{0%,100%{box-shadow:0 0 0 0 transparent}25%,75%{box-shadow:0 0 0 4px rgba(232,160,32,0.5)}50%{box-shadow:0 0 0 6px rgba(232,160,32,0.7)}}
 @keyframes navGlowPulse{0%,100%{background:rgba(232,160,32,0.12)}50%{background:rgba(232,160,32,0.32)}}
 @keyframes elemGlowPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,160,32,0)}50%{box-shadow:0 0 0 4px rgba(232,160,32,0.55)}}
 @keyframes elemGlowGreen{0%,100%{box-shadow:0 0 0 0 rgba(26,107,60,0)}50%{box-shadow:0 0 0 4px rgba(26,107,60,0.5)}}
@@ -410,7 +411,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
         <div style="font-size:11px;color:var(--text2);line-height:1.5;flex:1">Opening balances → transactions → JE → T-accounts → balance sheet. The complete picture.</div>
         <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px">
           <button class="btn btn-primary" onclick="startBlank('setup')" style="font-size:11px;padding:5px 0">Start blank →</button>
-          <button class="btn btn-secondary btn-sm" onclick="loadAlpha();showPage('setup')" style="font-size:11px">Load: Alpha Corporation</button>
+          <button class="btn btn-secondary btn-sm" onclick="loadAlpha();showPage('setup')" style="font-size:11px">Load: Comprehensive Problem #1</button>
           <button class="btn btn-secondary btn-sm" onclick="loadShelby();showPage('setup')" style="font-size:11px">Load: Shelby Corporation</button>
           <button id="welcome-malibu" class="btn btn-secondary btn-sm" onclick="loadIfUnlocked('malibu')" style="font-size:11px;opacity:0.5">🔒 Load: Malibu Beachwear</button>
         </div>
@@ -559,8 +560,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
       </div>
       <div class="field">
         <label>Cumulative preferred?</label>
-        <select id="ps-cumul" oninput="recalcAndSave()">
-          <option value="no">No — arrears accumulate</option>
+        <select id="ps-cumul" oninput="syncCumul('ps',this.value)">
+          <option value="yes">Yes — arrears accumulate</option>
           <option value="no">No — skipped dividends are lost</option>
         </select>
         <div class="explain-block hint-exp"><strong>Cumulative:</strong> Skipped dividends become <em>arrears</em> — owed in a future year before common gets anything. <strong>Non-cumulative:</strong> Skipped and gone. Most preferred is cumulative. <span class="goto-link" onclick="showPage('dividends')">→ See dividend calculator</span></div>
@@ -652,18 +653,20 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
       </div>
       <div class="field">
         <label>Cumulative?</label>
-        <select id="alloc-cumul" oninput="renderAllocator()">
-          <option value="no">Non-cumulative</option>
-          <option value="yes">Cumulative</option>
+        <select id="alloc-cumul" oninput="syncCumul('alloc',this.value)">
+          <option value="no">No — non-cumulative</option>
+          <option value="yes">Yes — cumulative</option>
         </select>
-        <div class="hint">Cumulative = skipped years owed</div>
+        <div class="hint">Cumulative = skipped years are owed</div>
       </div>
     </div>
     <div class="field-grid grid-2" style="padding-left:32px;margin-bottom:18px">
-      <div class="field" id="alloc-arrears-wrap" style="display:none">
-        <label>Years of skipped dividends (arrears)</label>
-        <input type="number" id="alloc-arrears" value="0" min="0" oninput="renderAllocator()">
-        <div class="hint">Years preferred went unpaid <em>before</em> the first year below</div>
+      <div id="alloc-arrears-wrap" style="display:none">
+        <div class="field" id="alloc-arrears-field" style="border:2px solid var(--amber-border);border-radius:var(--radius-sm);padding:10px 12px;background:var(--amber-bg)">
+          <label style="color:var(--amber);font-weight:700">⚠ Years of arrears <span style="font-size:10px;font-weight:400;color:var(--text2)">(skipped years BEFORE the first year below)</span></label>
+          <input type="number" id="alloc-arrears" value="0" min="0" oninput="renderAllocator()" style="margin-top:4px">
+          <div class="hint" style="color:var(--amber)">Enter 0 if no years were previously skipped. This directly changes how much preferred is owed.</div>
+        </div>
       </div>
     </div>
 
@@ -984,9 +987,9 @@ function renderAllocator(){
   const cumul=document.getElementById('alloc-cumul')?.value==='yes';
   const priorArrears=fv('alloc-arrears')||0;
 
-  // show/hide arrears field based on cumulative
+  // Show/hide arrears field
   const arrearsWrap=document.getElementById('alloc-arrears-wrap');
-  if(arrearsWrap)arrearsWrap.style.display=cumul?'':'none';
+  if(arrearsWrap)arrearsWrap.style.display=cumul?'block':'none';
 
   // Auto-fill inputs from Opening Balances if empty (non-destructive)
   function autoFill(id,val){
@@ -2199,7 +2202,39 @@ function loadIfUnlocked(name){
   else if(name==='fostergrant')loadFosterGrant();
 }
 
-// ── TRANSACTION EXPLANATION ENGINE ───────────────────────────────────────────
+// ── CUMULATIVE COUPLING ───────────────────────────────────────────────────────
+// Both dropdowns stay in sync by default. The alloc-arrears field mirrors
+// the Opening Balances arrears field when coupled.
+function syncCumul(source, value){
+  // Sync both dropdowns
+  const psEl=document.getElementById('ps-cumul');
+  const allocEl=document.getElementById('alloc-cumul');
+  if(psEl&&source!=='ps')psEl.value=value;
+  if(allocEl&&source!=='alloc')allocEl.value=value;
+
+  // Sync arrears field: if Opening Balances has an arrears value, copy to allocator
+  if(value==='yes'){
+    const psArrears=g('arrears');
+    const allocArrears=document.getElementById('alloc-arrears');
+    if(allocArrears&&psArrears>0&&allocArrears.value==='0')allocArrears.value=psArrears;
+  }
+
+  // Show/hide arrears panel with animation
+  const wrap=document.getElementById('alloc-arrears-wrap');
+  if(wrap){
+    wrap.style.display=value==='yes'?'block':'none';
+    if(value==='yes'){
+      // Flash amber to draw attention
+      const field=document.getElementById('alloc-arrears-field');
+      if(field){field.style.animation='none';setTimeout(()=>{field.style.animation='arrearsFlash 1.5s ease';},10);}
+    }
+  }
+
+  recalcAndSave();
+  renderAllocator();
+}
+
+
 const openExplains=new Set();
 function toggleTxExplain(txId,txType){
   const el=document.getElementById('tx-explain-'+txId);
@@ -2252,6 +2287,11 @@ function buildTxExplanation(tx){
     const cashEx=shares&&price?fmtd(shares*price):`${sEx} × $${pEx}`;
     const parAmt=shares&&csPar?fmtd(shares*csPar):`${sEx} × $${parEx}`;
     const apicEx=shares&&price&&csPar?fmtd(shares*price-shares*csPar):`${cashEx} − ${parAmt}`;
+    const jumpLinks=`<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ See in Journal Entries</button>
+      <button onclick="showPage('shares')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ See in Share Tracker</button>
+      <button onclick="showPage('taccounts')" style="font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);padding:3px 8px;cursor:pointer">→ See in T-Accounts</button>
+    </div>`;
     return box('','var(--surface2)','var(--border)',`
       <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Issuing common stock for cash</div>
       <div style="margin-bottom:10px"><strong>What happens:</strong> New shares are sold to investors. Cash comes in, and the equity section grows. The proceeds are always split between two equity accounts — Common Stock at par, and APIC for everything above par.</div>
@@ -2266,6 +2306,7 @@ function buildTxExplanation(tx){
       </div>
       ${insight('APIC is never calculated first — it is always what is left after subtracting par from total cash. You cannot know APIC until you have calculated both Cash and Common Stock.')}
       ${csPar>0&&price>0&&price<csPar?warn('Shares issued below par is unusual. If price < par, APIC would be negative — in practice this almost never happens in these problems.'):''}
+      ${jumpLinks}
     `);
   }
 
@@ -2312,6 +2353,12 @@ function buildTxExplanation(tx){
         &nbsp;&nbsp;&nbsp;&nbsp; ${diff===null||diff>=0?'Cr':'Dr'} &nbsp; ${diff===null||diff>=0?'APIC — common':'Retained Earnings'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${diff!==null?fmtd(Math.abs(diff)):'difference'}
       </div>
       ${insight('A company can NEVER recognize a gain or loss on transactions involving its own stock. The difference is always routed through equity accounts (APIC or RE), never through income.')}
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ Journal Entries</button>
+      <button onclick="showPage('shares')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Share Tracker</button>
+      <button onclick="showPage('taccounts')" style="font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);padding:3px 8px;cursor:pointer">→ T-Accounts</button>
+      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Balance Sheet</button>
+    </div>
     `);
   }
 
@@ -2333,6 +2380,12 @@ function buildTxExplanation(tx){
         &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; APIC — preferred &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${apicEx}
       </div>
       ${insight('APIC — Preferred is always tracked in its own separate account, never combined with APIC — Common. On the balance sheet, both APIC accounts appear, each labeled for their stock class.')}
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ Journal Entries</button>
+      <button onclick="showPage('shares')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Share Tracker</button>
+      <button onclick="showPage('taccounts')" style="font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);padding:3px 8px;cursor:pointer">→ T-Accounts</button>
+      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Balance Sheet</button>
+    </div>
       ${psPar>0?`<div style="margin-top:8px;font-size:11px;color:var(--text3)">Preferred par in this problem: $${psPar}. Annual dividend rate: ${psRateRaw}% × $${psPar} = <strong>$${(psRateRaw*psPar/100).toFixed(2)}/share/year</strong></div>`:''}
     `);
   }
@@ -2354,6 +2407,12 @@ function buildTxExplanation(tx){
       </div>
       ${insight(`Why no JE? Because nothing of value changes hands. More shares at lower par multiplies out to the same dollar total: old par × old shares = new par × new shares. The Common Stock account balance is unchanged.`)}
       ${warn('The market price per share typically halves after a 2-for-1 split. This is why shareholders aren\'t richer — they have twice as many shares worth half as much each.')}
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ Journal Entries</button>
+      <button onclick="showPage('shares')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Share Tracker</button>
+      <button onclick="showPage('taccounts')" style="font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);padding:3px 8px;cursor:pointer">→ T-Accounts</button>
+      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Balance Sheet</button>
+    </div>
     `);
   }
 
@@ -2376,6 +2435,11 @@ function buildTxExplanation(tx){
       ${warn('OUTSTANDING shares only — NOT issued shares. Treasury stock cannot receive dividends because the company cannot pay dividends to itself. Always subtract treasury before multiplying.')}
       ${insight('The Dividends account is temporary — it will be closed to Retained Earnings at year-end. Until then, RE on the balance sheet has not yet decreased; it decreases when dividends are closed.')}
       ${treasuryNow>0?`<div style="margin-top:6px;font-size:11px;color:var(--text3)">In this problem: ${fmts(issuedNow)} issued − ${fmts(treasuryNow)} treasury = ${fmts(outNow)} shares eligible for dividends.</div>`:''}
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ Journal Entries</button>
+      <button onclick="showPage('dividends')" style="font-size:10px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm);color:var(--purple);padding:3px 8px;cursor:pointer">→ Dividend Calculator</button>
+      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Balance Sheet</button>
+    </div>
     `);
   }
 
@@ -2392,6 +2456,11 @@ function buildTxExplanation(tx){
         &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Dividends Payable &nbsp; ${total?fmtd(total):'total'}
       </div>
       ${warn('Treasury shares cannot receive dividends. Always use outstanding (issued minus treasury) as the share base.')}
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ Journal Entries</button>
+      <button onclick="showPage('dividends')" style="font-size:10px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm);color:var(--purple);padding:3px 8px;cursor:pointer">→ Dividend Calculator</button>
+      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Balance Sheet</button>
+    </div>
     `);
   }
 
@@ -2417,6 +2486,11 @@ function buildTxExplanation(tx){
       ${insight('Preferred uses ISSUED shares (not outstanding). Preferred stock almost never has treasury shares, so issued = outstanding for preferred.')}
       ${hasCumulContext?warn(`Cumulative preferred: skipped dividends create "arrears" — all back dividends must be paid in full before common shareholders receive anything. Arrears are NOT a balance sheet liability, but they are disclosed in the notes.`):''}
       ${psCumul&&arrears>0?`<div style="margin-top:6px;font-size:11px;color:var(--purple)">This problem has ${arrears} year(s) in arrears at the opening balance.</div>`:''}
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ Journal Entries</button>
+      <button onclick="showPage('dividends')" style="font-size:10px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm);color:var(--purple);padding:3px 8px;cursor:pointer">→ Dividend Calculator</button>
+      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Balance Sheet</button>
+    </div>
     `);
   }
 
@@ -2484,6 +2558,10 @@ function clearAllData(){
   });
   const cumEl=document.getElementById('ps-cumul');if(cumEl)cumEl.value='no';
   const nameEl=document.getElementById('co-name');if(nameEl)nameEl.value='';
+  // Reset alloc-cumul and hide arrears
+  const allocCumEl=document.getElementById('alloc-cumul');if(allocCumEl)allocCumEl.value='no';
+  const allocArrearsWrap=document.getElementById('alloc-arrears-wrap');if(allocArrearsWrap)allocArrearsWrap.style.display='none';
+  const allocArrears=document.getElementById('alloc-arrears');if(allocArrears)allocArrears.value='0';
   // Clear allocator
   ['alloc-par','alloc-rate','alloc-ps-shares','alloc-cs-shares','alloc-arrears'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.value='';
@@ -2519,7 +2597,8 @@ function loadAlpha(){
   setFields({'cs-par':2,'cs-auth':900000,'cs-issued':300000,'apic-cs':880000,
     'ts-shares':25000,'ts-cost':140000,'ps-par':100,'ps-rate':7,
     'ps-auth':8000,'ps-issued':5000,'apic-ps':15000,'ps-cumul':'yes',
-    'arrears':0,'re-open':900000,'co-name':'Alpha Corporation'});
+    'arrears':0,'re-open':900000,'co-name':'Comprehensive Problem #1'});
+  syncCumul('ps','yes');
   [{type:'buy_treasury',date:'2024-02-02',fields:{shares:'1000',price:'7'}},
    {type:'issue_common',date:'2024-02-10',fields:{shares:'4000',price:'4.65'}},
    {type:'declare_common',date:'2024-06-01',fields:{rate:'0.60'}},
@@ -2600,6 +2679,7 @@ function loadFosterGrant(){
     'ts-shares':25000,'ts-cost':'','ps-par':80,'ps-rate':5,
     'ps-auth':0,'ps-issued':29000,'apic-ps':'','ps-cumul':'yes',
     'arrears':2,'re-open':'','co-name':'Foster Grant Company'});
+  syncCumul('ps','yes');
   const apar=document.getElementById('alloc-par');if(apar)apar.value='80';
   const arate=document.getElementById('alloc-rate');if(arate)arate.value='5';
   const aps=document.getElementById('alloc-ps-shares');if(aps)aps.value='29000';
