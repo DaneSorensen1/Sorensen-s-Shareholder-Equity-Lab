@@ -1916,31 +1916,51 @@ function renderTAccounts(tData){
 function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
   const el=document.getElementById('bs-output');
   const outstanding=state.csIssued-state.tsShares;
-  const contrib=state.csParAmt+state.apicCs+state.psParAmt+state.apicPs;
-  const subtotal=contrib+state.re;
-  const total=subtotal-state.tsCost;
   const parChanged=state.currentCsPar!==csPar;
   const csAuthAdj=Math.round(csAuth*(state.splitFactor||1));
-  // Authorized: never show 0 if shares are issued — show "not stated"
+
+  // Detect which fields were genuinely blank vs explicitly 0
+  // gs() returns '' for blank input; g() returns 0 for blank or '0'
+  const apicCsBlank = gs('apic-cs')==='' && state.apicCs===0;
+  const apicPsBlank = gs('apic-ps')==='' && state.apicPs===0;
+  const tsCostBlank = gs('ts-cost')==='' && state.tsCost===0 && state.tsShares>0;
+  const reBlank     = gs('re-open')==='' && state.re===0 && transactions.filter(t=>t.type==='net_income').length===0;
+  const anyBlank    = apicCsBlank||apicPsBlank||tsCostBlank||reBlank;
+
+  // Authorized display: never show 0 when shares are issued
   const csAuthDisplay=csAuthAdj>0?fmts(csAuthAdj):(state.csIssued>0?'not stated in problem':'—');
   const psAuthDisplay=psAuth>0?fmts(psAuth):(state.psIssued>0?'not stated in problem':'—');
   const hasPrefData=psPar>0||psRatePct>0;
 
-  // Build tooltip strings for each row
-  const tipCS=`Source: Opening Balances\n${fmts(state.csIssued)} shares issued × $${state.currentCsPar} par = ${fmtd(state.csParAmt)}`;
-  const tipAPIC=`Source: Opening Balances + any stock issuances this year\nOpening APIC: ${fmtd(g('apic-cs'))}\nFrom transactions: ${fmtd(state.apicCs-g('apic-cs'))}\nTotal: ${fmtd(state.apicCs)}`;
-  const tipPS=psPar>0?`Source: Opening Balances\n${fmts(state.psIssued)} shares × $${psPar} par = ${fmtd(state.psParAmt)}`:'No preferred stock info entered — par value = $0';
-  const tipAPICP=`Source: Opening Balances + any preferred issuances this year\nTotal: ${fmtd(state.apicPs)}`;
-  const tipRE=`Opening retained earnings: ${fmtd(g('re-open'))}\n+ Net income (transactions): ${fmtd(state.re-g('re-open')+state.divDeclared)}\n− Dividends declared: ${fmtd(state.divDeclared)}\n= Ending retained earnings: ${fmtd(state.re)}`;
-  const tipTS=`Source: Opening Balances + treasury purchases/reissues\n${fmts(state.tsShares)} shares held at cost\nTotal cost: (${fmtd(state.tsCost)}) — shown as deduction`;
-  const tipTotal=`Contributed capital: ${fmtd(contrib)}\n+ Retained earnings: ${fmtd(state.re)}\n− Treasury stock: (${fmtd(state.tsCost)})\n= Total equity: ${fmtd(total)}`;
+  // Dollar display helpers
+  const NP=`<span style="color:var(--text3);font-style:italic;font-size:11px">not provided</span>`;
+  const showAmt=(amt,blank)=>blank?NP:fmtd(amt);
+
+  // Compute totals (using 0 for blank fields — mark total as incomplete if any blank)
+  const contrib=state.csParAmt+state.apicCs+state.psParAmt+state.apicPs;
+  const subtotal=contrib+state.re;
+  const total=subtotal-state.tsCost;
+
+  // Tooltip builders (newlines become list items)
+  const tipCS=`From Opening Balances: ${fmts(state.csIssued)} shares × $${state.currentCsPar} par = ${fmtd(state.csParAmt)}`;
+  const tipAPIC=apicCsBlank?'Not provided — APIC was not given in this problem. In practice it almost always exists.':
+    `Opening APIC-common: ${fmtd(g('apic-cs'))}\n+ From issuance transactions: ${fmtd(state.apicCs-g('apic-cs'))}\n= Total APIC-common: ${fmtd(state.apicCs)}`;
+  const tipPS=hasPrefData?`From Opening Balances: ${fmts(state.psIssued)} shares × $${psPar} par = ${fmtd(state.psParAmt)}`:'No preferred stock info entered — fill in Opening Balances to populate.';
+  const tipAPICP=apicPsBlank?'Not provided — APIC-preferred was not given in this problem.':
+    `Opening APIC-preferred: ${fmtd(g('apic-ps'))}\n+ From issuances: ${fmtd(state.apicPs-g('apic-ps'))}\n= Total: ${fmtd(state.apicPs)}`;
+  const tipRE=reBlank?'Retained earnings not provided in this problem.':
+    `Opening RE: ${fmtd(g('re-open'))}\n+ Net income (transactions): ${fmtd(state.re-g('re-open')+state.divDeclared)}\n− Dividends declared: ${fmtd(state.divDeclared)}\n= Ending RE: ${fmtd(state.re)}`;
+  const tipTS=tsCostBlank?`${fmts(state.tsShares)} treasury shares on record, but cost was not provided in this problem.`:
+    state.tsShares>0?`${fmts(state.tsShares)} shares held at cost\nCost: (${fmtd(state.tsCost)}) — deducted from equity`:'No treasury shares held.';
+  const tipTotal=anyBlank?'Total is incomplete — one or more values were not provided in this problem. Shown here using 0 for missing amounts.':
+    `Contributed capital: ${fmtd(contrib)}\n+ Retained earnings: ${fmtd(state.re)}\n− Treasury stock: (${fmtd(state.tsCost)})\n= ${fmtd(total)}`;
 
   el.innerHTML=`
-  <div id="bs-tooltip"><div class="tip-label" id="bs-tip-label"></div><div id="bs-tip-body"></div></div>
   <div class="bs-wrap">
     <div class="bs-company">${coName||'Company Name'}</div>
     <div class="bs-subtitle">Stockholders' Equity · December 31</div>
     ${parChanged?`<div class="split-box" style="margin-bottom:14px">Stock split: par now ${fmtpar(state.currentCsPar)} (was $${csPar}). Dollar totals unchanged.</div>`:''}
+    ${anyBlank?`<div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--text2);line-height:1.5"><strong style="color:var(--amber)">Note:</strong> This problem did not provide all balance sheet values. Rows marked "not provided" show the section placeholder only — the total marked with ⚠ uses $0 for those fields and will not match a complete balance sheet.</div>`:''}
 
     <div class="bs-section-hd">Contributed capital</div>
     <div class="bs-row" id="bs-cs" data-tip="${tipCS}" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
@@ -1951,56 +1971,49 @@ function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
       <div class="bs-amt">${fmtd(state.csParAmt)}</div>
     </div>
     <div class="bs-row bs-row-indent" id="bs-apiccs" data-tip="${tipAPIC}" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
-      <span>Additional paid-in capital — common</span><span class="bs-amt">${fmtd(state.apicCs)}</span>
+      <span>Additional paid-in capital — common</span><span class="bs-amt">${showAmt(state.apicCs,apicCsBlank)}</span>
     </div>
 
     <div class="bs-row" id="bs-ps" style="margin-top:7px" data-tip="${tipPS}" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
       <div>
-        <div>${hasPrefData?`Preferred stock, ${parseFloat(psRatePct.toFixed(8))}%, $${psPar} par${psCumul?' (cumulative)':''}`:  'Preferred stock'}</div>
-        <div class="bs-disclosure">${hasPrefData?psAuthDisplay+' authorized &nbsp;|&nbsp; '+fmts(state.psIssued)+' issued &amp; outstanding':'None issued — enter preferred details in Opening Balances to populate'}</div>
+        <div>${hasPrefData?`Preferred stock, ${parseFloat(psRatePct.toFixed(8))}%, $${psPar} par${psCumul?' (cumulative)':''}` : 'Preferred stock'}</div>
+        <div class="bs-disclosure">${hasPrefData?psAuthDisplay+' authorized &nbsp;|&nbsp; '+fmts(state.psIssued)+' issued &amp; outstanding':'None — enter preferred details in Opening Balances to populate'}</div>
       </div>
       <div class="bs-amt">${fmtd(state.psParAmt)}</div>
     </div>
     <div class="bs-row bs-row-indent" id="bs-apicps" data-tip="${tipAPICP}" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
-      <span>Additional paid-in capital — preferred</span><span class="bs-amt">${fmtd(state.apicPs)}</span>
+      <span>Additional paid-in capital — preferred</span><span class="bs-amt">${showAmt(state.apicPs,apicPsBlank)}</span>
     </div>
 
-    <div class="bs-subtotal"><span style="padding-left:18px">Total contributed capital</span><span>${fmtd(contrib)}</span></div>
+    <div class="bs-subtotal"><span style="padding-left:18px">Total contributed capital</span><span>${anyBlank?'⚠ ':''} ${fmtd(contrib)}</span></div>
 
     <div class="bs-section-hd">Retained earnings</div>
     <div class="bs-row" id="bs-re" data-tip="${tipRE}" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
-      <span>Retained earnings</span><span class="bs-amt">${fmtd(state.re)}</span>
+      <span>Retained earnings</span><span class="bs-amt">${showAmt(state.re,reBlank)}</span>
     </div>
-    <div class="bs-subtotal"><span>Subtotal</span><span>${fmtd(subtotal)}</span></div>
+    <div class="bs-subtotal"><span>Subtotal</span><span>${anyBlank?'⚠ ':''}${fmtd(subtotal)}</span></div>
 
     <div class="bs-section-hd">Treasury stock</div>
     <div class="bs-row" id="bs-ts" data-tip="${tipTS}" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
       <div>
         <div class="${state.tsCost>0?'neg':''}">Treasury stock — common, at cost</div>
-        <div class="bs-disclosure ${state.tsCost>0?'neg':''}">${state.tsShares>0?fmts(state.tsShares)+' shares':'None held — enter treasury stock in Opening Balances or add buy-treasury transactions'}</div>
+        <div class="bs-disclosure ${(state.tsCost>0||tsCostBlank)?'neg':''}">${state.tsShares>0?fmts(state.tsShares)+' shares':'None held'}</div>
       </div>
-      <div class="bs-amt ${state.tsCost>0?'neg':''}">${state.tsCost>0?'('+fmt(state.tsCost)+')':'$0'}</div>
+      <div class="bs-amt">${tsCostBlank?NP:state.tsCost>0?'('+fmt(state.tsCost)+')':'$0'}</div>
     </div>
 
     <div class="bs-total" id="bs-total" data-tip="${tipTotal}" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
-      <span>Total stockholders' equity</span><span>${fmtd(total)}</span>
+      <span>Total stockholders' equity${anyBlank?' <span style="font-size:11px;color:var(--amber)">⚠ incomplete</span>':''}</span>
+      <span>${fmtd(total)}</span>
     </div>
   </div>
   <div class="calc-explainer" style="margin-top:14px">
     <div class="label">How the total is assembled</div>
-    <div class="calc-step"><span class="op">&nbsp;</span><span class="desc">Contributed capital (all stock issuances)</span><span class="result">${fmtd(contrib)}</span></div>
-    <div class="calc-step"><span class="op">+</span><span class="desc">Retained earnings</span><span class="result">${fmtd(state.re)}</span></div>
-    <div class="calc-step"><span class="op">−</span><span class="desc">Treasury stock (cash used to buy shares back)</span><span class="result neg">${fmtd(state.tsCost)}</span></div>
-    <div class="calc-step"><span class="op">=</span><span class="desc" style="font-weight:600">Total stockholders' equity</span><span class="result" style="font-size:16px">${fmtd(total)}</span></div>
+    <div class="calc-step"><span class="op">&nbsp;</span><span class="desc">Contributed capital</span><span class="result">${anyBlank?'⚠':''} ${fmtd(contrib)}</span></div>
+    <div class="calc-step"><span class="op">+</span><span class="desc">Retained earnings</span><span class="result">${showAmt(state.re,reBlank)}</span></div>
+    <div class="calc-step"><span class="op">−</span><span class="desc">Treasury stock</span><span class="result">${tsCostBlank?NP:fmtd(state.tsCost)}</span></div>
+    <div class="calc-step"><span class="op">=</span><span class="desc" style="font-weight:600">Total stockholders' equity</span><span class="result" style="font-size:16px">${anyBlank?'⚠ ':''}${fmtd(total)}</span></div>
   </div>`;
-
-  // Setup global tooltip (in case the inner one isn't used)
-  setupBSTooltip();
-}
-
-function setupBSTooltip(){
-  // Remove any leftover inner duplicate tooltip div if renderBS added one
-  document.querySelectorAll('.bs-wrap #bs-tooltip').forEach(e=>e.remove());
 }
 
 function showBSTip(el,evt){
@@ -2201,11 +2214,14 @@ function clearAllData(){
 
 function loadTotalDiv(){
   clearAllData();
-  setFields({'cs-par':1,'cs-auth':0,'cs-issued':80000,'apic-cs':0,
-    'ts-shares':0,'ts-cost':0,'ps-par':100,'ps-rate':8,
-    'ps-auth':0,'ps-issued':40000,'apic-ps':0,'ps-cumul':'no',
-    'arrears':0,'re-open':0,'co-name':'Total Dividend Declaration'});
-  // Pre-fill allocator — this problem is purely about dividend allocation
+  // Alpha Corp — Pg 9 note sheets
+  // Common: $1 par, 500,000 authorized, 80,000 issued & outstanding
+  // Preferred: 8%, $100 par, 40,000 shares outstanding
+  // APIC, RE, treasury cost: not stated — this is a dividend-allocation problem only
+  setFields({'cs-par':1,'cs-auth':500000,'cs-issued':80000,'apic-cs':'',
+    'ts-shares':0,'ts-cost':'','ps-par':100,'ps-rate':8,
+    'ps-auth':0,'ps-issued':40000,'apic-ps':'','ps-cumul':'no',
+    'arrears':0,'re-open':'','co-name':'Tot Div Declaration (Pg 9)'});
   const apar=document.getElementById('alloc-par');if(apar)apar.value='100';
   const arate=document.getElementById('alloc-rate');if(arate)arate.value='8';
   const aps=document.getElementById('alloc-ps-shares');if(aps)aps.value='40000';
@@ -2295,13 +2311,14 @@ function loadStanley(){
 
 function loadFosterGrant(){
   // Foster Grant — dividend with 2 years arrears
-  // Treasury: 25,000 shares held, cost not given in problem (set to 0 — unknown)
+  // Given: Common $1 par, 205,000 issued, treasury 25,000 shares (cost not stated)
+  //        Preferred $80 par, 5%, cumulative, 29,000 shares
+  // Not given: APIC, RE, treasury cost — dividend allocation problem only
   clearAllData();
-  setFields({'cs-par':1,'cs-auth':0,'cs-issued':205000,'apic-cs':0,
-    'ts-shares':25000,'ts-cost':0,'ps-par':80,'ps-rate':5,
-    'ps-auth':0,'ps-issued':29000,'apic-ps':0,'ps-cumul':'yes',
-    'arrears':2,'re-open':0,'co-name':'Foster Grant Company'});
-  // Pre-fill allocator — outstanding common = 205,000 - 25,000 = 180,000
+  setFields({'cs-par':1,'cs-auth':0,'cs-issued':205000,'apic-cs':'',
+    'ts-shares':25000,'ts-cost':'','ps-par':80,'ps-rate':5,
+    'ps-auth':0,'ps-issued':29000,'apic-ps':'','ps-cumul':'yes',
+    'arrears':2,'re-open':'','co-name':'Foster Grant Company'});
   const apar=document.getElementById('alloc-par');if(apar)apar.value='80';
   const arate=document.getElementById('alloc-rate');if(arate)arate.value='5';
   const aps=document.getElementById('alloc-ps-shares');if(aps)aps.value='29000';
