@@ -98,7 +98,11 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .t-entry.open{color:var(--text);font-weight:500;}
 .t-entry.new{color:var(--blue);}
 .t-balance{display:flex;justify-content:space-between;padding:5px 10px;background:var(--surface2);border-top:2px solid var(--border2);font-size:12px;font-weight:600;font-family:var(--mono);}
-#bs-tooltip{position:fixed;background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);border-radius:var(--radius);padding:10px 14px;font-size:12px;line-height:1.65;max-width:300px;pointer-events:none;z-index:800;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
+input[type=number]:placeholder-shown,.field input:placeholder-shown{color:var(--text3);font-style:italic;background:var(--surface);}
+input[type=number]:not(:placeholder-shown),.field input:not(:placeholder-shown){background:#fff;color:var(--text);font-style:normal;}
+input::placeholder{color:var(--text3);opacity:0.7;}
+.dark input[type=number]:not(:placeholder-shown){background:var(--surface2);}
+background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);border-radius:var(--radius);padding:10px 14px;font-size:12px;line-height:1.65;max-width:300px;pointer-events:none;z-index:800;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
 #bs-tooltip .tip-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--amber);margin-bottom:5px;}
 #bs-tooltip .tip-calc{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.65);margin-top:3px;}
 .bs-row[data-tip]{cursor:help;}
@@ -1274,11 +1278,12 @@ function renderTxList(){
           </div>`).join('')}
         </div>
         <div id="tx-effect-${tx.id}" style="margin-top:10px"></div>
-        <div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px">
+        <div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px;display:flex;align-items:center;gap:6px">
           <button onclick="toggleTxExplain(${tx.id},'${tx.type}')" id="tx-explain-btn-${tx.id}" style="font-size:11px;background:none;border:none;color:var(--text3);cursor:pointer;padding:2px 0;display:flex;align-items:center;gap:5px">
             <span id="tx-explain-arrow-${tx.id}">▸</span> How to think through this transaction
           </button>
-          <div id="tx-explain-${tx.id}" style="display:none;margin-top:8px"></div>
+          <button onclick="refreshTxExplain(${tx.id},'${tx.type}')" title="Refresh explanation with current values" style="font-size:10px;background:none;border:1px solid var(--border);border-radius:3px;color:var(--text3);cursor:pointer;padding:1px 6px;line-height:1.4">↻</button>
+          <div id="tx-explain-${tx.id}" style="display:none;margin-top:8px;width:100%"></div>
         </div>
       </div>
     </div>`;
@@ -1315,6 +1320,8 @@ function recalc(){
 
   const journals=[],shareHistory=[],prefShareHistory=[],divEntries=[];
   let jeCounter=0;
+  // Store state snapshots before and after each transaction for contextual explanations
+  window._txSnapshots={};
   const tData={
     cash:{name:'Cash (equity txns)',side:'dr',open:0,entries:[]},
     cs:{name:'Common stock',side:'cr',open:csIssuedOpen*csPar,entries:[]},
@@ -1338,6 +1345,8 @@ function recalc(){
   }
 
   sorted.forEach(tx=>{
+    // Snapshot state BEFORE this transaction
+    const preTx={...state};
     const f=tx.fields,d=tx.date||'';
     const shares=parseFloat(f.shares)||0,price=parseFloat(f.price)||0;
     const rate=parseFloat(f.rate)||0,years=parseFloat(f.years)||1;
@@ -1562,9 +1571,10 @@ function recalc(){
         {label:'Total equity',dir:'up',val:'+'+fmtd(amount)},
       ],'Net income increases retained earnings by '+fmtd(amount)+'. The income statement closing entries (revenues/expenses → RE) are handled separately and not shown in the equity section.');
     }
+    // Store pre/post state for this tx — used by explanation engine
+    window._txSnapshots[tx.id]={pre:preTx,post:{...state},date:tx.date};
   });
 
-  // ── post-loop renders
   renderJournals(journals);
   renderShares(shareHistory,prefShareHistory,state,psIssuedOpen,psPar,psAuth,psRatePct,psCumul);
   renderDividends(divEntries,state,psRatePct,psPar,psRate,arrearsYears,psCumul);
@@ -1955,19 +1965,100 @@ function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
   const subtotal=contrib+state.re;
   const total=subtotal-state.tsCost;
 
-  // Tooltip builders (newlines become list items)
-  const tipCS=`From Opening Balances: ${fmts(state.csIssued)} shares × $${state.currentCsPar} par = ${fmtd(state.csParAmt)}`;
-  const tipAPIC=apicCsBlank?'Not provided — APIC was not given in this problem. In practice it almost always exists.':
-    `Opening APIC-common: ${fmtd(g('apic-cs'))}\n+ From issuance transactions: ${fmtd(state.apicCs-g('apic-cs'))}\n= Total APIC-common: ${fmtd(state.apicCs)}`;
-  const tipPS=hasPrefData?`From Opening Balances: ${fmts(state.psIssued)} shares × $${psPar} par = ${fmtd(state.psParAmt)}`:'No preferred stock info entered — fill in Opening Balances to populate.';
-  const tipAPICP=apicPsBlank?'Not provided — APIC-preferred was not given in this problem.':
-    `Opening APIC-preferred: ${fmtd(g('apic-ps'))}\n+ From issuances: ${fmtd(state.apicPs-g('apic-ps'))}\n= Total: ${fmtd(state.apicPs)}`;
-  const tipRE=reBlank?'Retained earnings not provided in this problem.':
-    `Opening RE: ${fmtd(g('re-open'))}\n+ Net income (transactions): ${fmtd(state.re-g('re-open')+state.divDeclared)}\n− Dividends declared: ${fmtd(state.divDeclared)}\n= Ending RE: ${fmtd(state.re)}`;
-  const tipTS=tsCostBlank?`${fmts(state.tsShares)} treasury shares on record, but cost was not provided in this problem.`:
-    state.tsShares>0?`${fmts(state.tsShares)} shares held at cost\nCost: (${fmtd(state.tsCost)}) — deducted from equity`:'No treasury shares held.';
-  const tipTotal=anyBlank?'Total is incomplete — one or more values were not provided in this problem. Shown here using 0 for missing amounts.':
-    `Contributed capital: ${fmtd(contrib)}\n+ Retained earnings: ${fmtd(state.re)}\n− Treasury stock: (${fmtd(state.tsCost)})\n= ${fmtd(total)}`;
+  // ── Detailed instructional tooltips ──────────────────────────────────────
+  // Each teaches students HOW to derive the number, mirroring the work-on-paper process
+  const csOpenIssued=g('cs-issued'),csOpenTs=g('ts-shares');
+  const niTxAmt=([...transactions]).filter(t=>t.type==='net_income').reduce((s,t)=>s+parseFloat(t.fields?.amount||0),0);
+
+  const tipCS=[
+    'HOW TO FIND COMMON STOCK BALANCE:',
+    '① Issued shares:',
+    `   Opening (Jan.1): ${fmts(csOpenIssued)} shares`,
+    state.csIssued-csOpenIssued?`   + Issuances this year: +${fmts(state.csIssued-csOpenIssued)}`:'   + No new issuances this year',
+    `   = ${fmts(state.csIssued)} total issued`,
+    `② × Par value: $${state.currentCsPar}`,
+    `③ = ${fmtd(state.csParAmt)} ← Common Stock balance`,
+    '',
+    'Outstanding (for dividends):',
+    `${fmts(state.csIssued)} issued − ${fmts(state.tsShares)} treasury = ${fmts(outstanding)}`,
+    '→ Verify in Share Tracker (Tab 4)',
+  ].join('\n');
+
+  const tipAPIC=apicCsBlank?[
+    'APIC — common was not stated in this problem.',
+    'It almost always exists in practice.',
+    'This problem is focused on shares/dividends only.',
+    'Enter it in Opening Balances if you have it.',
+  ].join('\n'):[
+    'HOW TO FIND APIC-COMMON BALANCE:',
+    `Opening balance (Jan.1): ${fmtd(g('apic-cs'))}`,
+    state.apicCs-g('apic-cs')?`+ This year's issuances: +${fmtd(state.apicCs-g('apic-cs'))}`:'+ No issuances added APIC',
+    '  (Each issuance: Cash − Par = APIC portion)',
+    `= ${fmtd(state.apicCs)} ← APIC-common T-account balance`,
+    '',
+    '→ Verify each posting in T-Accounts (Tab 6)',
+  ].join('\n');
+
+  const tipPS=hasPrefData?[
+    'HOW TO FIND PREFERRED STOCK BALANCE:',
+    `${fmts(state.psIssued)} shares × $${psPar} par`,
+    `= ${fmtd(state.psParAmt)} ← Preferred Stock balance`,
+    '',
+    `Preferred: no treasury shares → issued = outstanding`,
+    `Annual dividend: ${parseFloat((psRatePct).toFixed(8))}% × $${psPar} = $${(psPar*psRatePct/100).toFixed(2)}/share`,
+  ].join('\n'):'No preferred stock details entered.\nFill in Opening Balances to populate.';
+
+  const tipAPICP=apicPsBlank?[
+    'APIC — preferred not provided in this problem.',
+    'Same calculation as APIC-common:',
+    'Each preferred issuance: Cash − Par = APIC-preferred',
+  ].join('\n'):[
+    'HOW TO FIND APIC-PREFERRED:',
+    `Opening (Jan.1): ${fmtd(g('apic-ps'))}`,
+    state.apicPs-g('apic-ps')?`+ This year's preferred issuances: +${fmtd(state.apicPs-g('apic-ps'))}`:'+No changes this year',
+    `= ${fmtd(state.apicPs)} ← APIC-preferred T-account balance`,
+  ].join('\n');
+
+  const tipRE=reBlank?'Retained earnings not provided in this problem.':[
+    'HOW TO FIND RETAINED EARNINGS:',
+    `Opening RE (Jan.1):        ${fmtd(g('re-open'))}`,
+    niTxAmt?`+ Net income this year:    +${fmtd(niTxAmt)}`:'+ Net income: not entered',
+    `− Dividends declared:     −${fmtd(state.divDeclared)}`,
+    `= Ending RE:               ${fmtd(state.re)}`,
+    '',
+    'Rule: RE = Opening + NI − Dividends Declared',
+    '(RE changes when dividends are DECLARED, not paid)',
+    '→ Verify in RE T-Account (Tab 6)',
+  ].join('\n');
+
+  const tipTS=tsCostBlank?[
+    `${fmts(state.tsShares)} treasury shares held — cost not provided.`,
+    'Cost method: record total price paid (no par split).',
+    'Treasury stock is a DEDUCTION from total equity.',
+  ].join('\n'):state.tsShares>0?[
+    'HOW TO FIND TREASURY STOCK BALANCE:',
+    `Opening (Jan.1): ${fmtd(g('ts-cost'))} — ${fmts(csOpenTs)} shares`,
+    state.tsCost-g('ts-cost')?`+ Purchases/reissues this year: ${fmtd(state.tsCost-g('ts-cost'))}`:'+ No changes this year',
+    `= ${fmtd(state.tsCost)} total cost → shown as (${fmtd(state.tsCost)})`,
+    `Avg cost: $${state.tsShares>0?(state.tsCost/state.tsShares).toFixed(2):'—'}/share`,
+    '(Used when reissuing treasury stock)',
+    '→ Verify in T-Accounts (Tab 6)',
+  ].join('\n'):'No treasury shares held.';
+
+  const tipTotal=anyBlank?[
+    '⚠ One or more values not provided.',
+    'Total uses $0 for missing items.',
+    'Complete balance sheet requires all values.',
+  ].join('\n'):[
+    'HOW TO BUILD TOTAL EQUITY:',
+    `Contributed capital:    ${fmtd(contrib)}`,
+    `+ Retained earnings:   +${fmtd(state.re)}`,
+    `− Treasury stock:      −(${fmtd(state.tsCost)})`,
+    `= Total equity:        ${fmtd(total)}`,
+    '',
+    'Hover each row above for how that amount was derived.',
+    '→ Verify components in T-Accounts (Tab 6)',
+  ].join('\n');
 
   el.innerHTML=`
   <div class="bs-wrap">
@@ -2236,6 +2327,13 @@ function syncCumul(source, value){
 
 
 const openExplains=new Set();
+function refreshTxExplain(txId,txType){
+  const el=document.getElementById('tx-explain-'+txId);
+  if(!el||el.style.display==='none')return;
+  const tx=transactions.find(t=>t.id===txId)||{id:txId,type:txType,fields:{}};
+  el.innerHTML=buildTxExplanation(tx);
+}
+
 function toggleTxExplain(txId,txType){
   const el=document.getElementById('tx-explain-'+txId);
   const arrow=document.getElementById('tx-explain-arrow-'+txId);
@@ -2259,11 +2357,21 @@ function buildTxExplanation(tx){
   const rate=parseFloat(f.rate)||null;
   const total=parseFloat(f.total)||null;
 
-  // Read current state from fields
-  const csPar=g('cs-par');
-  const csIssuedOpen=g('cs-issued');
-  const tsSharesOpen=g('ts-shares');
-  const tsCostOpen=g('ts-cost');
+  // Use snapshot at the TIME of this transaction, not opening balances
+  const snap=window._txSnapshots?.[tx.id];
+  const pre=snap?.pre;  // state BEFORE this tx ran
+  const post=snap?.post; // state AFTER this tx ran
+
+  // Fall back to opening balance fields if no snapshot yet (tx not yet processed)
+  const csPar=pre?.currentCsPar||g('cs-par');
+  const csIssuedBefore=pre?.csIssued??g('cs-issued');
+  const tsSharesBefore=pre?.tsShares??g('ts-shares');
+  const tsCostBefore=pre?.tsCost??g('ts-cost');
+  const outstandingBefore=csIssuedBefore-(tsSharesBefore);
+  const csIssuedAfter=post?.csIssued??csIssuedBefore;
+  const tsSharesAfter=post?.tsShares??tsSharesBefore;
+  const outstandingAfter=csIssuedAfter-tsSharesAfter;
+
   const psPar=g('ps-par');
   const psRateRaw=g('ps-rate');
   const psCumul=gs('ps-cumul')==='yes';
@@ -2311,54 +2419,71 @@ function buildTxExplanation(tx){
   }
 
   if(tx.type==='buy_treasury'){
-    const tsSharesCurrent=tsSharesOpen;
-    const avgCostCurrent=tsSharesOpen>0&&tsCostOpen>0?(tsCostOpen/tsSharesOpen).toFixed(2):'—';
     const costEx=shares&&price?fmtd(shares*price):`${shares||'shares'} × $${price||'price'}`;
-    const newOutstanding=csIssuedOpen-tsSharesOpen-(shares||0);
+    const shareJL=`<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ Journal Entries</button>
+      <button onclick="showPage('shares')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Share Tracker</button>
+      <button onclick="showPage('taccounts')" style="font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);padding:3px 8px;cursor:pointer">→ T-Accounts</button>
+      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Balance Sheet</button>
+    </div>`;
     return box('','var(--surface2)','var(--border)',`
-      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Purchasing treasury stock (buyback)</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Purchasing treasury stock (buyback) — ${tx.date||'date not set'}</div>
       <div style="margin-bottom:10px"><strong>What happens:</strong> The company buys back its own previously issued shares. Those shares leave the public market and are held by the company. They are NOT retired — they still exist but cannot vote or receive dividends.</div>
       <div style="font-weight:600;margin-bottom:8px;color:var(--blue)">Calculation (cost method):</div>
       ${step(1,'Total cost',shares&&price?`${fmts(shares)} shares × $${price}/share = <strong>${costEx}</strong>`:'shares × price per share = Treasury Stock amount')}
       ${step(2,'No par split needed','Unlike stock issuances, treasury stock is recorded at the total cost paid — no separation into par and APIC.')}
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
         Dr &nbsp; Treasury Stock (cost method) &nbsp; ${costEx}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${costEx}
+        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${costEx}
       </div>
-      <div style="margin-top:10px"><strong>Effect on share counts:</strong></div>
-      <div style="margin:4px 0;font-size:12px">Issued shares: unchanged (${fmts(csIssuedOpen)}) — buying back does not "un-issue" shares</div>
-      <div style="font-size:12px">Outstanding: ${fmts(csIssuedOpen)} issued − ${fmts(tsSharesOpen+(shares||0))} treasury = <strong>${fmts(Math.max(0,csIssuedOpen-tsSharesOpen-(shares||0)))} outstanding</strong></div>
+      <div style="margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px">
+        <div style="font-weight:600;margin-bottom:6px;color:var(--text)">Share counts at time of this transaction (${tx.date||'?'}):</div>
+        <div style="font-family:var(--mono);line-height:2;color:var(--text2)">
+          Before: &nbsp;${fmts(csIssuedBefore)} issued &nbsp;−&nbsp; ${fmts(tsSharesBefore)} treasury &nbsp;= &nbsp;<strong style="color:var(--blue)">${fmts(outstandingBefore)} outstanding</strong><br>
+          This tx: &nbsp;+${fmts(shares||0)} treasury shares added<br>
+          After: &nbsp;&nbsp;${fmts(csIssuedAfter)} issued &nbsp;−&nbsp; ${fmts(tsSharesAfter)} treasury &nbsp;= &nbsp;<strong style="color:var(--green)">${fmts(outstandingAfter)} outstanding</strong>
+        </div>
+        ${csIssuedBefore!==g('cs-issued')?`<div style="margin-top:6px;font-size:11px;color:var(--amber)">⚡ Note: Issued count reflects prior transactions this year, not just the opening balance.</div>`:''}
+      </div>
       ${insight('Treasury stock is a contra-equity account — it has a debit balance, which subtracts from total equity. The more treasury stock, the lower total stockholders\' equity.')}
-      ${warn('Outstanding shares (not issued shares) are what matter for common dividend calculations. After this purchase, common dividends will be based on the smaller outstanding count.')}
+      ${warn('The outstanding count at this date ('+fmts(outstandingAfter)+') is what would be used for any common dividends declared after this date.')}
+      ${shareJL}
     `);
   }
 
   if(tx.type==='reissue_treasury'){
-    const totalTsShares=tsSharesOpen;
-    const avgCost=totalTsShares>0&&tsCostOpen>0?tsCostOpen/totalTsShares:0;
+    const avgCost=tsSharesBefore>0&&tsCostBefore>0?tsCostBefore/tsSharesBefore:0;
     const proceeds=shares&&price?shares*price:null;
     const basisAmt=shares&&avgCost?shares*avgCost:null;
     const diff=proceeds&&basisAmt?proceeds-basisAmt:null;
     const aboveOrBelow=diff===null?'unknown':diff>0?'ABOVE':'BELOW';
+    const shareJL2=`<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ Journal Entries</button>
+      <button onclick="showPage('shares')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Share Tracker</button>
+      <button onclick="showPage('taccounts')" style="font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);padding:3px 8px;cursor:pointer">→ T-Accounts</button>
+      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Balance Sheet</button>
+    </div>`;
     return box('','var(--surface2)','var(--border)',`
-      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Reissuing treasury stock</div>
-      <div style="margin-bottom:10px"><strong>What happens:</strong> Previously repurchased shares are sold back to the public. Cash comes in, and the treasury stock account is reduced. The difference between selling price and original cost goes to APIC or reduces RE — but is <em>never recorded as a gain or loss</em>.</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Reissuing treasury stock — ${tx.date||'date not set'}</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> Previously repurchased shares are sold back to the public. Cash comes in, and the treasury stock account is reduced. The difference between selling price and original cost goes to APIC or reduces RE — never recorded as a gain or loss.</div>
       <div style="font-weight:600;margin-bottom:8px;color:var(--blue)">Step-by-step:</div>
       ${step(1,'Cash received from reissue',shares&&price?`${fmts(shares)} shares × $${price}/share = <strong>${fmtd(proceeds)}</strong>`:'shares × reissue price')}
-      ${step(2,'Remove cost basis',avgCost>0?`${shares?fmts(shares):'shares'} × $${avgCost.toFixed(2)} avg cost = <strong>${basisAmt?fmtd(basisAmt):'basis'}</strong> removed from Treasury Stock`:`Average cost = Total treasury cost ÷ Total treasury shares held (${fmts(totalTsShares)} shares, $${fmts(tsCostOpen)} total)`)}
-      ${step(3,diff!==null?`Proceeds ${aboveOrBelow} cost — difference goes to ${diff>=0?'APIC':'Retained Earnings'}`:'Compare proceeds vs. cost basis',diff!==null?`${fmtd(Math.abs(diff))} ${diff>=0?'above → credited to APIC-common (NOT income)':'below → debited to Retained Earnings (not a loss)'}`:'If proceeds > basis: excess → APIC. If proceeds < basis: shortfall → reduces Retained Earnings.')}
+      ${step(2,'Average cost basis at this date',avgCost>0?`${fmts(tsSharesBefore)} treasury shares held, total cost $${fmts(tsCostBefore)} → avg = <strong>$${avgCost.toFixed(2)}/share</strong>. Cost removed: ${shares?fmts(shares):'shares'} × $${avgCost.toFixed(2)} = <strong>${basisAmt?fmtd(basisAmt):'basis'}</strong>`:'No treasury shares on record before this date')}
+      ${step(3,diff!==null?`Proceeds ${aboveOrBelow} cost basis`:'Compare proceeds vs. cost basis',diff!==null?`${fmtd(Math.abs(diff))} ${diff>=0?'above cost → APIC-common (NOT income)':'below cost → reduces Retained Earnings (not a loss)'}`:'If proceeds > basis: excess → APIC. If proceeds < basis: shortfall → reduces RE.')}
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
         Dr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${proceeds?fmtd(proceeds):'proceeds'}<br>
         &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Treasury Stock &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${basisAmt?fmtd(basisAmt):'cost basis'}<br>
         &nbsp;&nbsp;&nbsp;&nbsp; ${diff===null||diff>=0?'Cr':'Dr'} &nbsp; ${diff===null||diff>=0?'APIC — common':'Retained Earnings'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${diff!==null?fmtd(Math.abs(diff)):'difference'}
       </div>
+      <div style="margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:12px">
+        <strong>Share counts at ${tx.date||'?'}:</strong>
+        <div style="font-family:var(--mono);line-height:2;margin-top:4px;color:var(--text2)">
+          Before: ${fmts(tsSharesBefore)} treasury → After: ${fmts(tsSharesAfter)} treasury<br>
+          Outstanding: <strong style="color:var(--green)">${fmts(outstandingAfter)} shares</strong> eligible for dividends after reissue
+        </div>
+      </div>
       ${insight('A company can NEVER recognize a gain or loss on transactions involving its own stock. The difference is always routed through equity accounts (APIC or RE), never through income.')}
-      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ Journal Entries</button>
-      <button onclick="showPage('shares')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Share Tracker</button>
-      <button onclick="showPage('taccounts')" style="font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);padding:3px 8px;cursor:pointer">→ T-Accounts</button>
-      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Balance Sheet</button>
-    </div>
+      ${shareJL2}
     `);
   }
 
