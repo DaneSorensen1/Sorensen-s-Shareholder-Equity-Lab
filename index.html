@@ -1054,9 +1054,9 @@ function renderAllocator(){
   el.innerHTML=`
   <div style="font-size:12px;color:var(--text2);margin-bottom:10px;padding:10px 12px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm)">
     Annual preferred dividend: ${psRateDisplay}% × $${psPar} par × ${fmts(psShares)} shares = <strong>${fmtd(annualPref)}/year</strong>
-    &nbsp;·&nbsp; <strong style="color:var(--purple)">$${perShare.toFixed(2)} per preferred share</strong>
-    &nbsp;·&nbsp; ${cumul?'<strong>Cumulative</strong> — arrears must be paid before common gets anything':'<strong>Non-cumulative</strong> — only current year owed'}
-    ${cumul&&priorArrears>0?` &nbsp;·&nbsp; ${priorArrears} prior year(s) in arrears = ${fmtd(priorArrears*annualPref)} owed at start`:''}
+     ·  <strong style="color:var(--purple)">$${perShare.toFixed(2)} per preferred share</strong>
+     ·  ${cumul?'<strong>Cumulative</strong> — arrears must be paid before common gets anything':'<strong>Non-cumulative</strong> — only current year owed'}
+    ${cumul&&priorArrears>0?`  ·  ${priorArrears} prior year(s) in arrears = ${fmtd(priorArrears*annualPref)} owed at start`:''}
   </div>
   <div style="overflow-x:auto">
   <table style="width:100%;border-collapse:collapse;font-size:13px">
@@ -1857,7 +1857,7 @@ function renderDividends(entries,state,psRatePct,psPar,psRate,arrearsYears,psCum
         <div class="card-label" style="color:var(--purple)">Preferred dividend — ${e.date}</div>
         <div class="calc-explainer" style="background:var(--purple-bg);border-color:var(--purple-border)">
           <div class="label" style="color:var(--purple)">Calculation</div>
-          <div class="calc-step"><span class="op">&nbsp;</span><span class="desc">Annual preferred dividend = rate × par × shares issued</span><span class="formula">${psRatePct}% × $${psPar} × ${fmts(e.psIssued)}</span><span class="result">${fmtd(e.annual)}/yr</span></div>
+          <div class="calc-step"><span class="op"> </span><span class="desc">Annual preferred dividend = rate × par × shares issued</span><span class="formula">${psRatePct}% × $${psPar} × ${fmts(e.psIssued)}</span><span class="result">${fmtd(e.annual)}/yr</span></div>
           ${e.totalYears>1?`<div class="calc-step"><span class="op">×</span><span class="desc">Total years owed (${e.arrearsYears} in arrears + ${e.years} current)</span><span class="formula">× ${e.totalYears} years</span><span class="result">${fmtd(e.total)}</span></div>`:''}
           <div class="calc-step" style="border-top:1px solid var(--purple-border);padding-top:8px;margin-top:4px"><span class="op">=</span><span class="desc" style="font-weight:600">Total preferred dividend</span><span class="result" style="font-size:15px">${fmtd(e.total)}</span></div>
         </div>
@@ -1869,7 +1869,7 @@ function renderDividends(entries,state,psRatePct,psPar,psRate,arrearsYears,psCum
         <div class="card-label" style="color:var(--green)">Common dividend — ${e.date}</div>
         <div class="calc-explainer" style="background:var(--green-bg);border-color:var(--green-border)">
           <div class="label" style="color:var(--green)">Calculation</div>
-          <div class="calc-step"><span class="op">&nbsp;</span><span class="desc">Dividend declared per share</span><span class="formula">$${e.rate}/share</span><span class="result">$${e.rate}/share</span></div>
+          <div class="calc-step"><span class="op"> </span><span class="desc">Dividend declared per share</span><span class="formula">$${e.rate}/share</span><span class="result">$${e.rate}/share</span></div>
           <div class="calc-step"><span class="op">×</span><span class="desc">Outstanding shares${hasTreasury?' (issued '+fmts(e.issued)+' − treasury '+fmts(e.treasury)+')':' ('+fmts(e.shares)+' issued, none in treasury)'} — NOT the issued total</span><span class="formula">= ${fmts(e.shares)} shares</span><span class="result">${fmts(e.shares)}</span></div>
           <div class="calc-step" style="border-top:1px solid var(--green-border);padding-top:8px;margin-top:4px"><span class="op">=</span><span class="desc" style="font-weight:600">Total common dividend</span><span class="result" style="font-size:15px">${fmtd(e.total)}</span></div>
         </div>
@@ -2071,7 +2071,7 @@ function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
     <div class="bs-row" id="bs-cs" data-tip="${tipCS}" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
       <div>
         <div>Common stock, ${fmtpar(state.currentCsPar)} par${parChanged?' (post-split)':''}</div>
-        <div class="bs-disclosure">${csAuthDisplay} authorized &nbsp;|&nbsp; ${fmts(state.csIssued)} issued &nbsp;|&nbsp; ${fmts(outstanding)} outstanding</div>
+        <div class="bs-disclosure">${csAuthDisplay} authorized  |  ${fmts(state.csIssued)} issued  |  ${fmts(outstanding)} outstanding</div>
       </div>
       <div class="bs-amt">${fmtd(state.csParAmt)}</div>
     </div>
@@ -2082,7 +2082,7 @@ function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
     <div class="bs-row" id="bs-ps" style="margin-top:7px" data-tip="${tipPS}" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
       <div>
         <div>${hasPrefData?`Preferred stock, ${parseFloat(psRatePct.toFixed(8))}%, $${psPar} par${psCumul?' (cumulative)':''}` : 'Preferred stock'}</div>
-        <div class="bs-disclosure">${hasPrefData?psAuthDisplay+' authorized &nbsp;|&nbsp; '+fmts(state.psIssued)+' issued &amp; outstanding':'None — enter preferred details in Opening Balances to populate'}</div>
+        <div class="bs-disclosure">${hasPrefData?psAuthDisplay+' authorized  |  '+fmts(state.psIssued)+' issued & outstanding':'None — enter preferred details in Opening Balances to populate'}</div>
       </div>
       <div class="bs-amt">${fmtd(state.psParAmt)}</div>
     </div>
@@ -2114,7 +2114,7 @@ function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
   </div>
   <div class="calc-explainer" style="margin-top:14px">
     <div class="label">How the total is assembled</div>
-    <div class="calc-step"><span class="op">&nbsp;</span><span class="desc">Contributed capital</span><span class="result">${anyBlank?'⚠':''} ${fmtd(contrib)}</span></div>
+    <div class="calc-step"><span class="op"> </span><span class="desc">Contributed capital</span><span class="result">${anyBlank?'⚠':''} ${fmtd(contrib)}</span></div>
     <div class="calc-step"><span class="op">+</span><span class="desc">Retained earnings</span><span class="result">${showAmt(state.re,reBlank)}</span></div>
     <div class="calc-step"><span class="op">−</span><span class="desc">Treasury stock</span><span class="result">${tsCostBlank?NP:fmtd(state.tsCost)}</span></div>
     <div class="calc-step"><span class="op">=</span><span class="desc" style="font-weight:600">Total stockholders' equity</span><span class="result" style="font-size:16px">${anyBlank?'⚠ ':''}${fmtd(total)}</span></div>
@@ -2408,9 +2408,9 @@ function buildTxExplanation(tx){
       ${step(2,'Common Stock (par portion)',shares&&csPar?`${fmts(shares)} shares × $${csPar} par = <strong>${parAmt}</strong>`:`shares × $${parEx} par value = Common Stock amount`)}
       ${step(3,'APIC — common (the remainder)',`Cash received − Common Stock par amount = <strong>${apicEx}</strong>`)}
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
-        Dr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${cashEx}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Common Stock (par) &nbsp;&nbsp;&nbsp;&nbsp; ${parAmt}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; APIC — common &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${apicEx}
+        Dr   Cash                           ${cashEx}<br>
+             Cr   Common Stock (par)      ${parAmt}<br>
+             Cr   APIC — common           ${apicEx}
       </div>
       ${insight('APIC is never calculated first — it is always what is left after subtracting par from total cash. You cannot know APIC until you have calculated both Cash and Common Stock.')}
       ${csPar>0&&price>0&&price<csPar?warn('Shares issued below par is unusual. If price < par, APIC would be negative — in practice this almost never happens in these problems.'):''}
@@ -2433,15 +2433,15 @@ function buildTxExplanation(tx){
       ${step(1,'Total cost',shares&&price?`${fmts(shares)} shares × $${price}/share = <strong>${costEx}</strong>`:'shares × price per share = Treasury Stock amount')}
       ${step(2,'No par split needed','Unlike stock issuances, treasury stock is recorded at the total cost paid — no separation into par and APIC.')}
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
-        Dr &nbsp; Treasury Stock (cost method) &nbsp; ${costEx}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${costEx}
+        Dr   Treasury Stock (cost method)   ${costEx}<br>
+             Cr   Cash                                         ${costEx}
       </div>
       <div style="margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px">
         <div style="font-weight:600;margin-bottom:6px;color:var(--text)">Share counts at time of this transaction (${tx.date||'?'}):</div>
         <div style="font-family:var(--mono);line-height:2;color:var(--text2)">
-          Before: &nbsp;${fmts(csIssuedBefore)} issued &nbsp;−&nbsp; ${fmts(tsSharesBefore)} treasury &nbsp;= &nbsp;<strong style="color:var(--blue)">${fmts(outstandingBefore)} outstanding</strong><br>
-          This tx: &nbsp;+${fmts(shares||0)} treasury shares added<br>
-          After: &nbsp;&nbsp;${fmts(csIssuedAfter)} issued &nbsp;−&nbsp; ${fmts(tsSharesAfter)} treasury &nbsp;= &nbsp;<strong style="color:var(--green)">${fmts(outstandingAfter)} outstanding</strong>
+          Before:  ${fmts(csIssuedBefore)} issued  −  ${fmts(tsSharesBefore)} treasury  =  <strong style="color:var(--blue)">${fmts(outstandingBefore)} outstanding</strong><br>
+          This tx:  +${fmts(shares||0)} treasury shares added<br>
+          After:   ${fmts(csIssuedAfter)} issued  −  ${fmts(tsSharesAfter)} treasury  =  <strong style="color:var(--green)">${fmts(outstandingAfter)} outstanding</strong>
         </div>
         ${csIssuedBefore!==g('cs-issued')?`<div style="margin-top:6px;font-size:11px;color:var(--amber)">⚡ Note: Issued count reflects prior transactions this year, not just the opening balance.</div>`:''}
       </div>
@@ -2471,9 +2471,9 @@ function buildTxExplanation(tx){
       ${step(2,'Average cost basis at this date',avgCost>0?`${fmts(tsSharesBefore)} treasury shares held, total cost $${fmts(tsCostBefore)} → avg = <strong>$${avgCost.toFixed(2)}/share</strong>. Cost removed: ${shares?fmts(shares):'shares'} × $${avgCost.toFixed(2)} = <strong>${basisAmt?fmtd(basisAmt):'basis'}</strong>`:'No treasury shares on record before this date')}
       ${step(3,diff!==null?`Proceeds ${aboveOrBelow} cost basis`:'Compare proceeds vs. cost basis',diff!==null?`${fmtd(Math.abs(diff))} ${diff>=0?'above cost → APIC-common (NOT income)':'below cost → reduces Retained Earnings (not a loss)'}`:'If proceeds > basis: excess → APIC. If proceeds < basis: shortfall → reduces RE.')}
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
-        Dr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${proceeds?fmtd(proceeds):'proceeds'}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Treasury Stock &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${basisAmt?fmtd(basisAmt):'cost basis'}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; ${diff===null||diff>=0?'Cr':'Dr'} &nbsp; ${diff===null||diff>=0?'APIC — common':'Retained Earnings'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${diff!==null?fmtd(Math.abs(diff)):'difference'}
+        Dr   Cash                                ${proceeds?fmtd(proceeds):'proceeds'}<br>
+             Cr   Treasury Stock                  ${basisAmt?fmtd(basisAmt):'cost basis'}<br>
+             ${diff===null||diff>=0?'Cr':'Dr'}   ${diff===null||diff>=0?'APIC — common':'Retained Earnings'}           ${diff!==null?fmtd(Math.abs(diff)):'difference'}
       </div>
       <div style="margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:12px">
         <strong>Share counts at ${tx.date||'?'}:</strong>
@@ -2500,9 +2500,9 @@ function buildTxExplanation(tx){
       ${step(2,'Preferred Stock (par portion)',shares&&psPar?`${fmts(shares)} shares × $${psPar} par = <strong>${parAmt}</strong>`:`shares × $${parEx} par`)}
       ${step(3,'APIC — preferred (the remainder)',`${cashEx} − ${parAmt} = <strong>${apicEx}</strong>`)}
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
-        Dr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${cashEx}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Preferred Stock ($${parEx} par) &nbsp;&nbsp;&nbsp; ${parAmt}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; APIC — preferred &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${apicEx}
+        Dr   Cash                                  ${cashEx}<br>
+             Cr   Preferred Stock ($${parEx} par)     ${parAmt}<br>
+             Cr   APIC — preferred                  ${apicEx}
       </div>
       ${insight('APIC — Preferred is always tracked in its own separate account, never combined with APIC — Common. On the balance sheet, both APIC accounts appear, each labeled for their stock class.')}
       <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
@@ -2554,8 +2554,8 @@ function buildTxExplanation(tx){
       ${step(1,'Identify outstanding shares',`<span style="font-family:var(--mono)">${fmts(issuedNow)} issued − ${fmts(treasuryNow)} treasury = <strong>${fmts(outNow)} outstanding</strong></span>`)}
       ${step(2,'Calculate total dividend',rate?`$${rate}/share × ${fmts(outNow)} outstanding = <strong>${totalDiv}</strong>`:rate===null?'Enter $/share above to see the total':'No rate entered')}
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
-        Dr &nbsp; Dividends &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${totalDiv||'total amount'}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Dividends Payable &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${totalDiv||'total amount'}
+        Dr   Dividends                          ${totalDiv||'total amount'}<br>
+             Cr   Dividends Payable                ${totalDiv||'total amount'}
       </div>
       ${warn('OUTSTANDING shares only — NOT issued shares. Treasury stock cannot receive dividends because the company cannot pay dividends to itself. Always subtract treasury before multiplying.')}
       ${insight('The Dividends account is temporary — it will be closed to Retained Earnings at year-end. Until then, RE on the balance sheet has not yet decreased; it decreases when dividends are closed.')}
@@ -2577,8 +2577,8 @@ function buildTxExplanation(tx){
       ${step(1,'Outstanding shares',`${fmts(csIssuedOpen)} issued − ${fmts(tsSharesOpen)} treasury = <strong>${fmts(outNow)} outstanding</strong>`)}
       ${step(2,'Per-share amount (calculated)',total&&outNow?`${fmtd(total)} ÷ ${fmts(outNow)} shares = <strong>${perShare}/share</strong>`:'Total ÷ outstanding shares')}
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
-        Dr &nbsp; Dividends &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${total?fmtd(total):'total'}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Dividends Payable &nbsp; ${total?fmtd(total):'total'}
+        Dr   Dividends          ${total?fmtd(total):'total'}<br>
+             Cr   Dividends Payable   ${total?fmtd(total):'total'}
       </div>
       ${warn('Treasury shares cannot receive dividends. Always use outstanding (issued minus treasury) as the share base.')}
       <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
@@ -2605,8 +2605,8 @@ function buildTxExplanation(tx){
       ${step(2,'Annual total for all preferred shares',annualTotal?`$${annual?.toFixed(2)} × ${fmts(g('ps-issued'))} shares = <strong>${fmtd(annualTotal)}/year</strong>`:'Annual per share × preferred shares issued')}
       ${hasCumulContext?step(3,'Total including arrears',arrearsYrs>0?`${arrearsYrs} skipped years + ${years} current = ${totalYears} years × ${annualTotal?fmtd(annualTotal):'annual'} = <strong>${totalDiv||'total'}</strong>`:`Current year only: <strong>${annualTotal?fmtd(annualTotal):'annual total'}</strong>`):step(3,'Total declared',annualTotal?`<strong>${fmtd(annualTotal)}</strong> (current year only)`:null)}
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
-        Dr &nbsp; Dividends &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${totalDiv||'total'}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Dividends Payable &nbsp; ${totalDiv||'total'}
+        Dr   Dividends          ${totalDiv||'total'}<br>
+             Cr   Dividends Payable   ${totalDiv||'total'}
       </div>
       ${insight('Preferred uses ISSUED shares (not outstanding). Preferred stock almost never has treasury shares, so issued = outstanding for preferred.')}
       ${hasCumulContext?warn(`Cumulative preferred: skipped dividends create "arrears" — all back dividends must be paid in full before common shareholders receive anything. Arrears are NOT a balance sheet liability, but they are disclosed in the notes.`):''}
@@ -2629,8 +2629,8 @@ function buildTxExplanation(tx){
         <div><strong style="color:var(--blue)">Step 2 — Payment date (this transaction):</strong> Dr Dividends Payable / Cr Cash → liability cleared, cash leaves</div>
       </div>
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;line-height:1.8">
-        Dr &nbsp; Dividends Payable &nbsp; [amount from declaration]<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Cash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [same amount]
+        Dr   Dividends Payable   [amount from declaration]<br>
+             Cr   Cash                  [same amount]
       </div>
       ${insight('Paying dividends does NOT affect Retained Earnings directly. RE only decreases when dividends are closed at year-end. The payment simply converts a liability (Dividends Payable) into a cash outflow.')}
       ${warn('If no dividends have been declared yet, there is nothing to pay — the Dividends Payable balance would be $0.')}
@@ -2642,8 +2642,8 @@ function buildTxExplanation(tx){
       <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Closing dividends to retained earnings</div>
       <div style="margin-bottom:10px"><strong>What happens:</strong> At year-end, the Dividends account — a temporary account — is zeroed out by transferring its balance to Retained Earnings. This is why dividends reduce RE on the year-end balance sheet.</div>
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;margin-bottom:8px;line-height:1.8">
-        Dr &nbsp; Retained Earnings &nbsp; [total dividends declared this year]<br>
-        &nbsp;&nbsp;&nbsp;&nbsp; Cr &nbsp; Dividends &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [same — resets Dividends to $0]
+        Dr   Retained Earnings   [total dividends declared this year]<br>
+             Cr   Dividends              [same — resets Dividends to $0]
       </div>
       ${insight('The Dividends account is temporary — it accumulates dividend declarations during the year and then is closed to RE at year-end. After closing, the Dividends account balance is $0, ready for next year.')}
       <div style="margin-top:8px;font-size:12px;color:var(--text2)"><strong>Why this matters for the balance sheet:</strong> Until this closing entry is recorded, RE on the balance sheet has not yet been reduced by dividends declared. The year-end balance sheet should always reflect this closing entry having been made.</div>
@@ -2657,10 +2657,10 @@ function buildTxExplanation(tx){
       <div style="margin-bottom:10px"><strong>What happens:</strong> Net income earned during the year increases Retained Earnings. In a complete accounting cycle this happens via income statement closing entries (revenue and expense accounts close to income summary, then to RE). In equity-focused problems, we capture just the final effect: RE increases by net income.</div>
       <div style="font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px">
         <strong>How RE builds up over the year:</strong><br>
-        Opening RE (Jan 1) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + ${fmtd(g('re-open'))}<br>
-        ${amount?`+ Net income &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + ${fmtd(amount)}`:'+ Net income &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + (enter amount above)'}<br>
-        − Dividends declared &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; − [from dividend transactions]<br>
-        = Ending RE (Dec 31) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = [shows on Balance Sheet tab]
+        Opening RE (Jan 1)           + ${fmtd(g('re-open'))}<br>
+        ${amount?`+ Net income                    + ${fmtd(amount)}`:'+ Net income                    + (enter amount above)'}<br>
+        − Dividends declared            − [from dividend transactions]<br>
+        = Ending RE (Dec 31)           = [shows on Balance Sheet tab]
       </div>
       ${insight('Net income is not a cash concept — it is the accounting profit for the period. A company can have large net income but low cash if most revenue was on credit, or vice versa.')}
       <div style="margin-top:6px;font-size:11px;color:var(--text3)">Note: No formal journal entry is shown here because income statement closing entries are outside the scope of these equity problems. Only the RE effect is tracked.</div>
