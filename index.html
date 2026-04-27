@@ -103,6 +103,7 @@ input[type=number]:not(:placeholder-shown),.field input:not(:placeholder-shown){
 input::placeholder{color:var(--text3);opacity:0.7;}
 .dark input[type=number]:not(:placeholder-shown){background:var(--surface2);}
 background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);border-radius:var(--radius);padding:10px 14px;font-size:12px;line-height:1.65;max-width:300px;pointer-events:none;z-index:800;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
+#bs-tooltip{position:fixed;background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);border-radius:var(--radius);padding:10px 14px;font-size:12px;line-height:1.65;max-width:320px;pointer-events:none;z-index:800;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
 #bs-tooltip .tip-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--amber);margin-bottom:5px;}
 #bs-tooltip .tip-calc{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.65);margin-top:3px;}
 .bs-row[data-tip]{cursor:help;}
@@ -278,6 +279,7 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
   </div>
 </nav>
 
+<main class="main">
 <div id="bs-tooltip"><div class="tip-label" id="bs-tip-label"></div><div id="bs-tip-body"></div></div>
 <!-- GLOBAL LOCK OVERLAY -->
 <div id="global-lock-overlay">
@@ -286,7 +288,6 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
   <div class="lock-overlay-sub">This tool is disabled during class. Work the problem by hand first — it will be unlocked for the last portion of class.</div>
 </div>
 
-<main class="main">
 
 <!-- PAGE 0: WELCOME -->
 <div id="page-welcome" class="page active">
@@ -1579,7 +1580,7 @@ function recalc(){
   renderShares(shareHistory,prefShareHistory,state,psIssuedOpen,psPar,psAuth,psRatePct,psCumul);
   renderDividends(divEntries,state,psRatePct,psPar,psRate,arrearsYears,psCumul);
   renderTAccounts(tData);
-  renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName);
+  renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName,transactions,sorted);
 
   const newSnap=buildSnapshot(state,journals,divEntries);
   if(currentSnapshot){
@@ -1937,7 +1938,9 @@ function renderTAccounts(tData){
   }).join('')+'</div>';
 }
 
-function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
+function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName,transactions,sorted){
+  transactions=transactions||[];
+  sorted=sorted||[];
   const el=document.getElementById('bs-output');
   const outstanding=state.csIssued-state.tsShares;
   const parChanged=state.currentCsPar!==csPar;
