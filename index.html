@@ -765,12 +765,12 @@ const TX_TYPES=[
   {val:'net_income',            label:'Net income (year-end, increases retained earnings)'},
 ];
 const TX_FIELDS={
-  issue_common:    [{id:'shares',label:'Shares issued',ph:'4000'},{id:'price',label:'Issue price/share ($)',ph:'18.00'}],
-  buy_treasury:    [{id:'shares',label:'Shares repurchased',ph:'1000'},{id:'price',label:'Price paid/share ($)',ph:'7.00'}],
+  issue_common:    [{id:'shares',label:'Shares issued',ph:'4000'},{id:'price',label:'Issue price/share (optional if total given)',ph:'18.00'},{id:'total',label:'Total proceeds received $ (optional if price given)',ph:''}],
+  buy_treasury:    [{id:'shares',label:'Shares repurchased',ph:'1000'},{id:'price',label:'Price paid/share (optional if total given)',ph:'7.00'},{id:'total',label:'Total cost paid $ (optional if price given)',ph:''}],
   reissue_treasury:[{id:'shares',label:'Shares reissued',ph:'500'},{id:'price',label:'Reissue price/share ($)',ph:'9.00'}],
   issue_preferred: [{id:'shares',label:'Shares issued',ph:'1000'},{id:'price',label:'Issue price/share ($)',ph:'110.00'}],
   stock_split:     [{id:'newshares',label:'New shares for every 1 old share',ph:'2',default:'2'}],
-  declare_common:  [{id:'rate',label:'Dividend $/share',ph:'0.60'}],
+  declare_common:  [{id:'rate',label:'Dividend $/share (if known)',ph:'0.60'},{id:'total',label:'Total dividend amount $ (if known)',ph:''}],
   declare_pref:    [{id:'years',label:'Years to pay (incl. current)',ph:'1',default:'1'}],
   pay_dividends:   [],
   close_dividends:      [],
@@ -1368,40 +1368,48 @@ function recalc(){
     const amount=parseFloat(f.amount)||0;
 
     if(tx.type==='issue_common'){
-      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares and price to generate this entry.',null,tx.type);return;}
+      const icTotal=parseFloat(f.total)||0;
+      const cash=shares&&price?shares*price:(icTotal||0);
+      const effectivePrice=cash&&shares?cash/shares:price;
+      if(!shares||!cash){renderTxEffect(tx.id,[],'Enter shares issued and either issue price/share or total proceeds.',null,tx.type);return;}
       const jid=jeCounter++;
-      const cash=shares*price,par=shares*state.currentCsPar,apic=cash-par;
+      const par=shares*state.currentCsPar,apic=cash-par;
       state.csIssued+=shares;state.csParAmt+=par;state.apicCs+=apic;
+      const icPriceNote=effectivePrice?fmts(shares)+' shares × '+fmtd(effectivePrice)+'/sh':fmts(shares)+' shares, total '+fmtd(cash);
       journals.push({id:jid,txId:tx.id,date:d,type:'Issue common stock',entries:[
-        {acct:'Cash',dr:cash,note:fmts(shares)+' shares × '+fmtd(price)},
+        {acct:'Cash',dr:cash,note:icPriceNote},
         {acct:'Common stock, '+fmtpar(state.currentCsPar)+' par',cr:par,note:fmts(shares)+' × '+fmtpar(state.currentCsPar)+' par'},
         {acct:'APIC — common',cr:apic,note:fmtd(cash)+' total − '+fmtd(par)+' par = '+fmtd(apic)},
       ]});
       post('cash','dr',cash,d,jid);post('cs','cr',par,d,jid);post('apicCs','cr',apic,d,jid);
-      shareHistory.push({date:d,issued:state.csIssued,treasury:state.tsShares,outstanding:state.csIssued-state.tsShares,event:'Issued '+fmts(shares)+' shares @ '+fmtd(price),change:'+'+fmts(shares)+' issued',par:state.currentCsPar,splitNote:null,txId:tx.id,jeId:jid});
+      shareHistory.push({date:d,issued:state.csIssued,treasury:state.tsShares,outstanding:state.csIssued-state.tsShares,event:'Issued '+fmts(shares)+' shares @ '+fmtd(effectivePrice)+'/sh',change:'+'+fmts(shares)+' issued',par:state.currentCsPar,splitNote:null,txId:tx.id,jeId:jid});
       renderTxEffect(tx.id,[
         {label:'Cash',dir:'up',val:fmtd(cash)},
         {label:'Common stock',dir:'up',val:fmtd(par)},
         {label:'APIC—common',dir:'up',val:fmtd(apic)},
         {label:'Shares issued',dir:'up',val:'+'+fmts(shares)},
-      ],'Step 1: Cash = '+fmts(shares)+' × $'+price+' = '+fmtd(cash)+'.  Step 2: Par = '+fmts(shares)+' × '+fmtpar(state.currentCsPar)+' = '+fmtd(par)+'.  Step 3: APIC = '+fmtd(cash)+' − '+fmtd(par)+' = '+fmtd(apic)+'.',jid);
+      ],'Step 1: Cash = '+fmts(shares)+' × $'+effectivePrice.toFixed(2)+' = '+fmtd(cash)+'.  Step 2: Par = '+fmts(shares)+' × '+fmtpar(state.currentCsPar)+' = '+fmtd(par)+'.  Step 3: APIC = '+fmtd(cash)+' − '+fmtd(par)+' = '+fmtd(apic)+'.',jid);
     }
     else if(tx.type==='buy_treasury'){
-      if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares repurchased and price paid.',null,tx.type);return;}
+      const btTotal=parseFloat(f.total)||0;
+      const derivedCost=shares&&price?shares*price:btTotal;
+      const derivedPrice=derivedCost&&shares?derivedCost/shares:price;
+      if(!shares||!derivedCost){renderTxEffect(tx.id,[],'Enter shares repurchased and either price/share or total cost.',null,tx.type);return;}
       const jid=jeCounter++;
-      const cost=shares*price;
+      const cost=derivedCost;
       state.tsShares+=shares;state.tsCost+=cost;
+      const btPriceNote=price?fmts(shares)+' shares × '+fmtd(derivedPrice)+'/sh = '+fmtd(cost):fmts(shares)+' shares @ total cost '+fmtd(cost);
       journals.push({id:jid,txId:tx.id,date:d,type:'Purchase treasury stock',entries:[
-        {acct:'Treasury stock (cost method)',dr:cost,note:fmts(shares)+' shares × '+fmtd(price)},
+        {acct:'Treasury stock (cost method)',dr:cost,note:btPriceNote},
         {acct:'Cash',cr:cost},
       ]});
       post('ts','dr',cost,d,jid);post('cash','cr',cost,d,jid);
-      shareHistory.push({date:d,issued:state.csIssued,treasury:state.tsShares,outstanding:state.csIssued-state.tsShares,event:'Repurchased '+fmts(shares)+' shares @ '+fmtd(price),change:'+'+fmts(shares)+' treasury',par:state.currentCsPar,splitNote:null,txId:tx.id,jeId:jid});
+      shareHistory.push({date:d,issued:state.csIssued,treasury:state.tsShares,outstanding:state.csIssued-state.tsShares,event:'Repurchased '+fmts(shares)+' shares @ '+fmtd(derivedPrice)+'/sh',change:'+'+fmts(shares)+' treasury',par:state.currentCsPar,splitNote:null,txId:tx.id,jeId:jid});
       renderTxEffect(tx.id,[
         {label:'Cash',dir:'down',val:fmtd(cost)},
         {label:'Treasury stock',dir:'down',val:'+'+fmtd(cost)+' (deduction)'},
         {label:'Outstanding shares',dir:'down',val:'−'+fmts(shares)},
-      ],'Cost method: record the full price paid. No par split needed. '+fmts(shares)+' × $'+price+' = '+fmtd(cost)+'. Total equity decreases.',jid);
+      ],'Cost method: record the full price paid, no par split needed. '+fmts(shares)+' shares × $'+derivedPrice.toFixed(2)+'/sh = '+fmtd(cost)+'. Total equity decreases.',jid);
     }
     else if(tx.type==='reissue_treasury'){
       if(!shares||!price){renderTxEffect(tx.id,[],'Enter shares reissued and reissue price.',null,tx.type);return;}
@@ -1478,24 +1486,38 @@ function recalc(){
       }
     }
     else if(tx.type==='declare_common'){
-      if(!rate){renderTxEffect(tx.id,[],'Enter the dividend per share to generate this entry.',null,tx.type);return;}
-      const jid=jeCounter++;
       const curOut=state.csIssued-state.tsShares;
-      const total=rate*curOut;
-      state.divDeclared+=total;state.divBalance+=total;
+      const totalGiven=parseFloat(f.total)||0;
+      let divTotal,perShare,calcNote;
+      if(rate&&totalGiven){
+        // Both given — use rate as primary, note the total
+        divTotal=rate*curOut;perShare=rate;
+        calcNote='$'+rate+'/share × '+fmts(curOut)+' outstanding = '+fmtd(divTotal)+' (given total $'+totalGiven.toLocaleString()+' used as reference)';
+      } else if(rate){
+        divTotal=rate*curOut;perShare=rate;
+        calcNote='$'+rate+'/share × '+fmts(curOut)+' outstanding shares (not '+fmts(state.csIssued)+' issued)';
+      } else if(totalGiven){
+        divTotal=totalGiven;perShare=curOut>0?totalGiven/curOut:0;
+        calcNote=fmtd(totalGiven)+' total ÷ '+fmts(curOut)+' outstanding = $'+perShare.toFixed(4)+'/share';
+      } else {
+        renderTxEffect(tx.id,[],'Enter either dividend $/share OR total dividend amount to generate this entry.',null,tx.type);return;
+      }
+      const jid=jeCounter++;
+      state.divDeclared+=divTotal;state.divBalance+=divTotal;
       journals.push({id:jid,txId:tx.id,date:d,type:'Declare common dividend',entries:[
-        {acct:'Dividends',dr:total,note:'$'+rate+'/share × '+fmts(curOut)+' outstanding shares (not '+fmts(state.csIssued)+' issued)'},
-        {acct:'Dividends payable',cr:total,note:'Liability until cash is paid'},
+        {acct:'Dividends',dr:divTotal,note:calcNote},
+        {acct:'Dividends payable',cr:divTotal,note:'Liability until cash is paid'},
       ]});
-      post('div','dr',total,d,jid);post('divPay','cr',total,d,jid);
-      divEntries.push({date:d,type:'common',rate,shares:curOut,issued:state.csIssued,treasury:state.tsShares,total,perShare:rate});
+      post('div','dr',divTotal,d,jid);post('divPay','cr',divTotal,d,jid);
+      divEntries.push({date:d,type:'common',rate:perShare,shares:curOut,issued:state.csIssued,treasury:state.tsShares,total:divTotal,perShare});
+      const effNote=rate?'Outstanding = '+fmts(state.csIssued)+' issued − '+fmts(state.tsShares)+' treasury = '+fmts(curOut)+' shares × $'+rate+' = '+fmtd(divTotal)+'.':'Total given: '+fmtd(divTotal)+'. Implied $'+perShare.toFixed(4)+'/share on '+fmts(curOut)+' outstanding shares.';
       renderTxEffect(tx.id,[
-        {label:'Dividends (debit)',dir:'down',val:fmtd(total)},
-        {label:'Dividends payable',dir:'down',val:fmtd(total)+' (liability created)'},
+        {label:'Dividends (debit)',dir:'down',val:fmtd(divTotal)},
+        {label:'Dividends payable',dir:'down',val:fmtd(divTotal)+' (liability created)'},
         {label:'Issued shares',dir:'neutral',val:fmts(state.csIssued)},
         {label:'Treasury shares',dir:'neutral',val:'−'+fmts(state.tsShares)},
         {label:'Outstanding used',dir:'neutral',val:'= '+fmts(curOut)},
-      ],'Treasury shares cannot receive dividends — the company cannot pay itself. Outstanding = '+fmts(state.csIssued)+' issued − '+fmts(state.tsShares)+' treasury = '+fmts(curOut)+' shares × $'+rate+' = '+fmtd(total)+'.',jid);
+      ],effNote,jid);
     }
     else if(tx.type==='declare_pref'){
       const jid=jeCounter++;
@@ -2257,21 +2279,15 @@ function showBSTip(el,evt){
   if(!tip||!key||!html)return;
   document.getElementById('bs-tip-label').textContent='How this was calculated';
   document.getElementById('bs-tip-body').innerHTML=html;
-  tip.style.display='block';
-  // Position once beside the row — no mouse tracking (prevents bouncing)
+  // Measure off-screen to get true height before any visible positioning
+  tip.style.visibility='hidden';tip.style.display='block';tip.style.left='-9999px';tip.style.top='0px';
+  const tipW=420,tipH=tip.offsetHeight||240;
   const rect=el.getBoundingClientRect();
-  const tipW=420;
   let x=rect.right+14;
   let y=rect.top-4;
-  if(x+tipW>window.innerWidth-8)x=rect.left-tipW-14;
-  if(x<8)x=8;
-  tip.style.left=x+'px';tip.style.top=y+'px';
-  tip.style.display='block';
-  requestAnimationFrame(()=>{
-    const th=tip.offsetHeight;
-    if(parseFloat(tip.style.top)+th>window.innerHeight-8)
-      tip.style.top=Math.max(8,window.innerHeight-th-8)+'px';
-  });
+  if(x+tipW>window.innerWidth-8)x=Math.max(8,rect.left-tipW-14);
+  if(y+tipH>window.innerHeight-8)y=Math.max(8,window.innerHeight-tipH-8);
+  tip.style.left=x+'px';tip.style.top=y+'px';tip.style.visibility='visible';
 }
 function hideBSTip(){
   const tip=document.getElementById('bs-tooltip');
@@ -2672,50 +2688,40 @@ function buildTxExplanation(tx){
     `);
   }
 
-  if(tx.type==='declare_common'){
-    // Figure out outstanding based on current state
-    const issuedNow=csIssuedOpen; // approximate - doesn't account for in-year issuances before this tx
-    const treasuryNow=tsSharesOpen;
-    const outNow=issuedNow-treasuryNow;
-    const totalDiv=rate&&outNow?fmtd(rate*outNow):null;
+  if(tx.type==='declare_common'||tx.type==='declare_common_total'){
+    // Use snapshot — shares at EXACT moment of declaration, not opening balances
+    const issuedAtDecl=pre?.csIssued??csIssuedBefore;
+    const tsAtDecl=pre?.tsShares??tsSharesBefore;
+    const outAtDecl=issuedAtDecl-tsAtDecl;
+    const totalGivenD=parseFloat(f.total)||null;
+    const divRate=rate||(totalGivenD&&outAtDecl?totalGivenD/outAtDecl:null);
+    const divTotal=totalGivenD||(divRate&&outAtDecl?divRate*outAtDecl:null);
+    const openIssued=g('cs-issued'),openTs=g('ts-shares');
+    const hadInYearChanges=(issuedAtDecl!==openIssued||tsAtDecl!==openTs);
     return box('','var(--surface2)','var(--border)',`
-      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Declaring a common dividend</div>
-      <div style="margin-bottom:10px"><strong>What happens:</strong> The board of directors announces a dividend will be paid to common shareholders. This creates a <em>liability</em> (Dividends Payable) on the date of declaration — cash hasn't left yet, but the company is now obligated to pay.</div>
-      <div style="font-weight:600;margin-bottom:8px;color:var(--blue)">Calculation:</div>
-      ${step(1,'Identify outstanding shares',`<span style="font-family:var(--mono)">${fmts(issuedNow)} issued − ${fmts(treasuryNow)} treasury = <strong>${fmts(outNow)} outstanding</strong></span>`)}
-      ${step(2,'Calculate total dividend',rate?`$${rate}/share × ${fmts(outNow)} outstanding = <strong>${totalDiv}</strong>`:rate===null?'Enter $/share above to see the total':'No rate entered')}
-      <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
-        Dr   Dividends                          ${totalDiv||'total amount'}<br>
-             Cr   Dividends Payable                ${totalDiv||'total amount'}
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Declaring a common dividend — ${tx.date||'date not set'}</div>
+      <div style="margin-bottom:10px"><strong>What happens:</strong> The board announces a dividend to common shareholders. On declaration date, a liability (Dividends Payable) is created. Cash hasn't left yet, but the obligation is recorded. RE isn't reduced here — that happens at year-end closing.</div>
+      <div style="font-weight:600;margin-bottom:8px;color:var(--blue)">Step-by-step:</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;font-size:12px">
+        <div style="font-weight:600;margin-bottom:4px">Share count at ${tx.date||'declaration date'}:</div>
+        <div style="font-family:var(--mono);line-height:2;color:var(--text2)">
+          Issued:                ${fmts(issuedAtDecl)}<br>
+          Treasury:           \u2212 ${fmts(tsAtDecl)}<br>
+          <strong style="color:var(--blue)">Outstanding: = ${fmts(outAtDecl)}</strong>
+        </div>
+        ${hadInYearChanges?`<div style="font-size:10px;color:var(--amber);margin-top:5px">\u26a1 This uses the share count AFTER prior transactions this year — not just opening balances (opened with ${fmts(openIssued)} issued, ${fmts(openTs)} treasury).</div>`:'<div style="font-size:10px;color:var(--text3);margin-top:5px">No prior-year share changes — opening balances match declaration date.</div>'}
       </div>
-      ${warn('OUTSTANDING shares only — NOT issued shares. Treasury stock cannot receive dividends because the company cannot pay dividends to itself. Always subtract treasury before multiplying.')}
-      ${insight('The Dividends account is temporary — it will be closed to Retained Earnings at year-end. Until then, RE on the balance sheet has not yet decreased; it decreases when dividends are closed.')}
-      ${treasuryNow>0?`<div style="margin-top:6px;font-size:11px;color:var(--text3)">In this problem: ${fmts(issuedNow)} issued − ${fmts(treasuryNow)} treasury = ${fmts(outNow)} shares eligible for dividends.</div>`:''}
-      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ Journal Entries</button>
-      <button onclick="showPage('dividends')" style="font-size:10px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm);color:var(--purple);padding:3px 8px;cursor:pointer">→ Dividend Calculator</button>
-      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Balance Sheet</button>
-    </div>
-    `);
-  }
-
-  if(tx.type==='declare_common_total'){
-    const outNow=csIssuedOpen-tsSharesOpen;
-    const perShare=total&&outNow?'$'+(total/outNow).toFixed(4):null;
-    return box('','var(--surface2)','var(--border)',`
-      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)">Declaring a common dividend — total amount</div>
-      <div style="margin-bottom:10px"><strong>What happens:</strong> A total dollar amount of dividends is declared to common shareholders. Same as the per-share declaration, but total is given directly. Per-share amount is calculated from outstanding shares.</div>
-      ${step(1,'Outstanding shares',`${fmts(csIssuedOpen)} issued − ${fmts(tsSharesOpen)} treasury = <strong>${fmts(outNow)} outstanding</strong>`)}
-      ${step(2,'Per-share amount (calculated)',total&&outNow?`${fmtd(total)} ÷ ${fmts(outNow)} shares = <strong>${perShare}/share</strong>`:'Total ÷ outstanding shares')}
+      ${totalGivenD&&!rate?step(1,'Total dividend given directly',`<strong>${fmtd(totalGivenD)}</strong> \u2014 per-share implied: ${fmtd(totalGivenD)} \xf7 ${fmts(outAtDecl)} = <strong>$${(totalGivenD/Math.max(1,outAtDecl)).toFixed(4)}/sh</strong>`):step(1,'Total dividend',divRate?`$${divRate}/share \xd7 ${fmts(outAtDecl)} outstanding = <strong>${divTotal?fmtd(divTotal):'?'}</strong>`:'Enter $/share or total amount above')}
       <div style="font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;line-height:1.8">
-        Dr   Dividends          ${total?fmtd(total):'total'}<br>
-             Cr   Dividends Payable   ${total?fmtd(total):'total'}
+        Dr   Dividends          ${divTotal?fmtd(divTotal):'total'}<br>
+             Cr   Dividends Payable   ${divTotal?fmtd(divTotal):'total'}
       </div>
-      ${warn('Treasury shares cannot receive dividends. Always use outstanding (issued minus treasury) as the share base.')}
+      ${warn('OUTSTANDING only — not issued. The company cannot pay dividends to itself (treasury shares). Always: ' + fmts(issuedAtDecl) + ' issued \u2212 ' + fmts(tsAtDecl) + ' treasury = ' + fmts(outAtDecl) + ' shares.')}
+      ${insight('Dividends is a temporary account. It is closed to Retained Earnings at year-end — until then, RE has not changed on the balance sheet.')}
       <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">→ Journal Entries</button>
-      <button onclick="showPage('dividends')" style="font-size:10px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm);color:var(--purple);padding:3px 8px;cursor:pointer">→ Dividend Calculator</button>
-      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">→ Balance Sheet</button>
+      <button onclick="showPage('journals')" style="font-size:10px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);color:var(--blue);padding:3px 8px;cursor:pointer">\u2192 Journal Entries</button>
+      <button onclick="showPage('dividends')" style="font-size:10px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm);color:var(--purple);padding:3px 8px;cursor:pointer">\u2192 Dividend Calculator</button>
+      <button onclick="showPage('bs')" style="font-size:10px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);color:var(--green);padding:3px 8px;cursor:pointer">\u2192 Balance Sheet</button>
     </div>
     `);
   }
