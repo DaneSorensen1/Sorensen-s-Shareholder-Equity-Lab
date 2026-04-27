@@ -1579,7 +1579,7 @@ function recalc(){
   renderShares(shareHistory,prefShareHistory,state,psIssuedOpen,psPar,psAuth,psRatePct,psCumul);
   renderDividends(divEntries,state,psRatePct,psPar,psRate,arrearsYears,psCumul);
   renderTAccounts(tData);
-  renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName,transactions,sorted);
+  renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName);
 
   const newSnap=buildSnapshot(state,journals,divEntries);
   if(currentSnapshot){
@@ -1937,9 +1937,7 @@ function renderTAccounts(tData){
   }).join('')+'</div>';
 }
 
-function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName,transactions,sorted){
-  transactions=transactions||[];
-  sorted=sorted||[];
+function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName){
   const el=document.getElementById('bs-output');
   const outstanding=state.csIssued-state.tsShares;
   const parChanged=state.currentCsPar!==csPar;
