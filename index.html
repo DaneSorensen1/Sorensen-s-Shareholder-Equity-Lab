@@ -103,25 +103,25 @@ input[type=number]:not(:placeholder-shown),.field input:not(:placeholder-shown){
 input::placeholder{color:var(--text3);opacity:0.7;}
 .dark input[type=number]:not(:placeholder-shown){background:var(--surface2);}
 background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);border-radius:var(--radius);padding:10px 14px;font-size:12px;line-height:1.65;max-width:300px;pointer-events:none;z-index:800;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
-#bs-tooltip{position:fixed;background:rgba(22,20,16,0.98);color:#fff;border:1px solid var(--amber-border);border-radius:var(--radius);padding:0;font-size:12px;line-height:1.6;max-width:420px;width:420px;pointer-events:none;z-index:800;display:none;box-shadow:0 6px 28px rgba(0,0,0,0.45);overflow:hidden;}
-#bs-tooltip .tip-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--amber);padding:8px 14px 6px;border-bottom:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);}
-#bs-tip-body{padding:10px 14px 12px;max-height:70vh;overflow-y:auto;}
-.bst-head{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:var(--amber);margin:10px 0 5px;padding-bottom:3px;border-bottom:1px solid rgba(232,160,32,0.25);}
-.bst-head:first-child{margin-top:0;}
-.bst-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:2px 0;font-size:12px;color:rgba(255,255,255,0.75);}
-.bst-row span:last-child{font-family:var(--mono);font-size:11px;white-space:nowrap;color:rgba(255,255,255,0.9);}
-.bst-tx{padding-left:10px;border-left:2px solid rgba(232,160,32,0.3);}
-.bst-tx span:first-child{color:rgba(255,255,255,0.55);font-size:11px;}
-.bst-split{padding-left:10px;border-left:2px solid rgba(15,107,107,0.6);}
-.bst-split span:first-child{color:rgba(168,220,220,0.8);font-size:11px;}
-.bst-total{padding:4px 0 3px;border-top:1px solid rgba(255,255,255,0.15);margin-top:3px;font-weight:600;}
-.bst-total span:last-child{color:#fcd34d;}
-.bst-note{font-size:10px;color:rgba(255,165,0,0.75);margin-top:4px;line-height:1.4;font-style:italic;}
-.bst-open{color:rgba(255,255,255,0.45);font-size:11px;font-style:italic;}
-.bs-row[data-tip-key]{cursor:help;}
-.bs-row[data-tip-key]:hover,.bs-subtotal[data-tip-key]:hover,.bs-total[data-tip-key]:hover{background:rgba(232,160,32,0.06);}
-.bs-subtotal[data-tip-key]{cursor:help;}
-.bs-total[data-tip-key]{cursor:help;}
+.bs-explain-btn{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);background:none;border:none;cursor:pointer;padding:3px 0;margin-top:3px;transition:color 0.15s;}
+.bs-explain-btn:hover{color:var(--amber);}
+.bs-explain-btn .arr{font-size:8px;transition:transform 0.2s;}
+.bs-explain-btn.open{color:var(--amber);}
+.bs-explain-btn.open .arr{transform:rotate(90deg);}
+.bs-panel{display:none;margin:6px 0 4px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2);overflow:hidden;}
+.bs-panel.open{display:block;}
+.bsp-section{padding:10px 14px;border-bottom:1px solid var(--border);}
+.bsp-section:last-child{border-bottom:none;}
+.bsp-hd{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--amber);margin-bottom:7px;}
+.bsp-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:2px 0;font-size:12px;color:var(--text2);}
+.bsp-line .val{font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap;}
+.bsp-tx{padding-left:12px;border-left:2px solid var(--amber-border);}
+.bsp-tx .val{color:var(--text2);}
+.bsp-split{padding-left:12px;border-left:2px solid var(--teal-border);}
+.bsp-split .lbl{color:var(--teal);}
+.bsp-total{border-top:1px solid var(--border2);margin-top:3px;padding-top:4px;font-weight:600;}
+.bsp-total .val{color:var(--amber);}
+.bsp-rule{font-size:10px;color:var(--text3);font-style:italic;line-height:1.5;margin-top:5px;padding-top:5px;border-top:1px dashed var(--border);}
 #global-lock-overlay{position:fixed;inset:0;background:rgba(20,18,15,0.96);z-index:9000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
 #global-lock-overlay.active{display:flex;}
 .lock-overlay-icon{font-size:64px;}
@@ -294,7 +294,7 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
 </nav>
 
 <main class="main">
-<div id="bs-tooltip"><div class="tip-label" id="bs-tip-label"></div><div id="bs-tip-body"></div></div>
+
 <!-- GLOBAL LOCK OVERLAY -->
 <div id="global-lock-overlay">
   <div class="lock-overlay-icon">🔒</div>
@@ -1579,7 +1579,7 @@ function recalc(){
     }
     else if(tx.type==='declare_common_total'){
       const total=parseFloat(f.total)||0;
-      if(!total){renderTxEffect(tx.id,[],'Enter the total dividend amount.',null,tx.type);return;}
+      if(!total){renderTxEffect(tx.id,[],'Enter the total dividend amount ($) to generate this entry.',null,tx.type);return;}
       const curOut=state.csIssued-state.tsShares;
       const perShare=curOut>0?total/curOut:0;
       state.divDeclared+=total;state.divBalance+=total;
@@ -1982,317 +1982,344 @@ function renderBS(state,csPar,csAuth,psPar,psAuth,psRatePct,psCumul,coName,trans
   const parChanged=state.currentCsPar!==csPar;
   const csAuthAdj=Math.round(csAuth*(state.splitFactor||1));
 
-  // Detect which fields were genuinely blank vs explicitly 0
-  // gs() returns '' for blank input; g() returns 0 for blank or '0'
-  const apicCsBlank = gs('apic-cs')==='' && state.apicCs===0;
-  const apicPsBlank = gs('apic-ps')==='' && state.apicPs===0;
-  const tsCostBlank = gs('ts-cost')==='' && state.tsCost===0 && state.tsShares>0;
-  const reBlank     = gs('re-open')==='' && state.re===0 && transactions.filter(t=>t.type==='net_income').length===0;
-  const anyBlank    = apicCsBlank||apicPsBlank||tsCostBlank||reBlank;
+  const apicCsBlank=gs('apic-cs')===''&&state.apicCs===0;
+  const apicPsBlank=gs('apic-ps')===''&&state.apicPs===0;
+  const tsCostBlank=gs('ts-cost')===''&&state.tsCost===0&&state.tsShares>0;
+  const reBlank=gs('re-open')===''&&state.re===0&&transactions.filter(t=>t.type==='net_income').length===0;
+  const anyBlank=apicCsBlank||apicPsBlank||tsCostBlank||reBlank;
 
-  // Authorized display: never show 0 when shares are issued
-  const csAuthDisplay=csAuthAdj>0?fmts(csAuthAdj):(state.csIssued>0?'not stated in problem':'—');
-  const psAuthDisplay=psAuth>0?fmts(psAuth):(state.psIssued>0?'not stated in problem':'—');
+  const csAuthDisplay=csAuthAdj>0?fmts(csAuthAdj):(state.csIssued>0?'not stated':'—');
+  const psAuthDisplay=psAuth>0?fmts(psAuth):(state.psIssued>0?'not stated':'—');
   const hasPrefData=psPar>0||psRatePct>0;
-
-  // Dollar display helpers
   const NP=`<span style="color:var(--text3);font-style:italic;font-size:11px">not provided</span>`;
   const showAmt=(amt,blank)=>blank?NP:fmtd(amt);
-
-  // Compute totals (using 0 for blank fields — mark total as incomplete if any blank)
   const contrib=state.csParAmt+state.apicCs+state.psParAmt+state.apicPs;
   const subtotal=contrib+state.re;
   const total=subtotal-state.tsCost;
 
-  // ── Rich instructional tooltips — teach students how to derive each number ──
   const csOpenIssued=g('cs-issued'),csOpenTs=g('ts-shares');
-  const niTxAmt=([...transactions]).filter(t=>t.type==='net_income').reduce((s,t)=>s+parseFloat(t.fields?.amount||0),0);
+  const niTxAmt=transactions.filter(t=>t.type==='net_income').reduce((s,t)=>s+parseFloat(t.fields?.amount||0),0);
 
-  // Build the BS tooltip data — rich HTML stored in window._bsTipData, keyed by row
-  window._bsTipData={};
-  const T=window._bsTipData;
+  // ── Build inline explanation panels ─────────────────────────────────────
+  function bspLine(lbl,val,cls=''){
+    return`<div class="bsp-line ${cls}"><span class="lbl">${lbl}</span><span class="val">${val}</span></div>`;
+  }
+  function bspTotal(lbl,val){
+    return`<div class="bsp-line bsp-total"><span class="lbl">${lbl}</span><span class="val">${val}</span></div>`;
+  }
+  function bspRule(msg){return`<div class="bsp-rule">${msg}</div>`;}
+  function section(hd,body){return`<div class="bsp-section"><div class="bsp-hd">${hd}</div>${body}</div>`;}
+  function panel(id,sections){return`<div class="bs-panel" id="bsp-${id}">${sections}</div>`;}
+  function btn(id){return`<button class="bs-explain-btn" onclick="toggleBsPanel('${id}')"><span class="arr">▶</span> How was this determined?</button>`;}
 
-  // ── Common Stock tip ──────────────────────────────────────────────────────
+  window._bsPanels={};
+  // ── COMMON STOCK PANEL ───────────────────────────────────────────────────
   {
-    let issuedR=csOpenIssued,tsR=csOpenTs;
-    const csLines=[`<div class="bst-row"><span>Opening (Jan 1):</span><span>${fmts(csOpenIssued)} shares</span></div>`];
-    const tsLines=[`<div class="bst-row"><span>Opening (Jan 1):</span><span>${fmts(csOpenTs)} treasury shares</span></div>`];
+    // Issued share chain
+    let issuedR=csOpenIssued,tsR=csOpenTs,tsCostR=g('ts-cost');
+    let issuedBody=bspLine('Opening (Jan 1)',fmts(csOpenIssued)+' shares');
+    let tsBody=bspLine('Opening (Jan 1)',fmts(csOpenTs)+' treasury shares');
+    let hadIssuedChanges=false,hadTsChanges=false;
     sorted.forEach(tx=>{
-      const shs=parseFloat(tx.fields?.shares)||0,pr=parseFloat(tx.fields?.price)||0;
-      if(tx.type==='issue_common'&&shs&&pr){
-        issuedR+=shs;
-        csLines.push(`<div class="bst-row bst-tx"><span>+ ${tx.date}&nbsp; Issued ${fmts(shs)} shares @ ${fmtd(pr)}</span><span>= ${fmts(issuedR)}</span></div>`);
+      const shs=parseFloat(tx.fields?.shares)||0;
+      const pr=parseFloat(tx.fields?.price)||0;
+      const tot=parseFloat(tx.fields?.total)||0;
+      const derivedCost=shs&&pr?shs*pr:tot;
+      const derivedPr=derivedCost&&shs?derivedCost/shs:pr;
+      if(tx.type==='issue_common'&&shs){
+        issuedR+=shs;hadIssuedChanges=true;
+        const cash=pr?shs*pr:(tot||0);
+        const priceLbl=pr?`@ ${fmtd(pr)}/sh`:(tot?`total ${fmtd(tot)}`:``);
+        issuedBody+=bspLine(`+ ${tx.date} &nbsp;Issued ${fmts(shs)} shares ${priceLbl}`,`= ${fmts(issuedR)}`,'bsp-tx');
       } else if(tx.type==='stock_split'){
         const mult=parseFloat(tx.fields?.newshares)||1;
         issuedR=Math.round(issuedR*mult);tsR=Math.round(tsR*mult);
-        csLines.push(`<div class="bst-row bst-split"><span>\xd7 ${tx.date}&nbsp; ${mult}-for-1 split \u2192 shares \xd7 ${mult}</span><span>= ${fmts(issuedR)}</span></div>`);
-        tsLines.push(`<div class="bst-row bst-split"><span>\xd7 ${tx.date}&nbsp; ${mult}-for-1 split</span><span>= ${fmts(tsR)}</span></div>`);
-      } else if(tx.type==='buy_treasury'&&shs&&pr){
-        tsR+=shs;
-        tsLines.push(`<div class="bst-row bst-tx"><span>+ ${tx.date}&nbsp; Repurchased ${fmts(shs)} @ ${fmtd(pr)}</span><span>= ${fmts(tsR)}</span></div>`);
+        hadIssuedChanges=true;hadTsChanges=true;
+        issuedBody+=bspLine(`&times; ${tx.date} &nbsp;${mult}-for-1 split &rarr; shares &times;${mult}`,`= ${fmts(issuedR)}`,'bsp-split');
+        tsBody+=bspLine(`&times; ${tx.date} &nbsp;${mult}-for-1 split`,`= ${fmts(tsR)}`,'bsp-split');
+      } else if(tx.type==='buy_treasury'&&shs&&derivedCost){
+        tsR+=shs;tsCostR+=derivedCost;hadTsChanges=true;
+        const priceLbl=pr?`@ ${fmtd(derivedPr)}/sh`:`total ${fmtd(derivedCost)}`;
+        tsBody+=bspLine(`+ ${tx.date} &nbsp;Repurchased ${fmts(shs)} ${priceLbl}`,`= ${fmts(tsR)}`,'bsp-tx');
       } else if(tx.type==='reissue_treasury'&&shs){
-        tsR-=shs;
-        tsLines.push(`<div class="bst-row bst-tx"><span>\u2212 ${tx.date}&nbsp; Reissued ${fmts(shs)} shares</span><span>= ${fmts(tsR)}</span></div>`);
+        tsR-=shs;hadTsChanges=true;
+        tsBody+=bspLine(`&minus; ${tx.date} &nbsp;Reissued ${fmts(shs)} shares`,`= ${fmts(tsR)}`,'bsp-tx');
       }
     });
-    T['cs']=`
-      <div class="bst-head">Step 1 \u2014 Build the ISSUED share count</div>
-      ${csLines.join('')}
-      <div class="bst-row bst-total"><span>= Total issued shares:</span><span>${fmts(state.csIssued)}</span></div>
-      <div class="bst-head" style="margin-top:10px">Step 2 \u2014 Dollar balance (issued \xd7 par, not outstanding)</div>
-      <div class="bst-row"><span>${fmts(state.csIssued)} issued \xd7 ${fmtpar(state.currentCsPar)} par</span><span>${fmtd(state.csParAmt)}</span></div>
-      <div class="bst-note">\u26a0 Balance sheet always uses ISSUED \xd7 par \u2014 never outstanding or market price</div>
-      <div class="bst-head" style="margin-top:10px">Step 3 \u2014 Outstanding shares (dividends only, not balance sheet)</div>
-      ${tsLines.join('')}
-      <div class="bst-row bst-total"><span>= Treasury shares:</span><span>${fmts(state.tsShares)}</span></div>
-      <div class="bst-row" style="margin-top:4px"><span>${fmts(state.csIssued)} issued \u2212 ${fmts(state.tsShares)} treasury</span><span>${fmts(outstanding)} outstanding</span></div>
-      <div class="bst-note">Outstanding used only in Dividend Calculator (Tab 5) \u2014 not here</div>`;
+    if(!hadIssuedChanges)issuedBody+=`<div class="bsp-rule">No new issuances this year &mdash; count unchanged from opening.</div>`;
+    issuedBody+=bspTotal('= Total issued shares (year-end)',fmts(state.csIssued));
+    
+    const dollarBody=bspLine(fmts(state.csIssued)+' issued &times; '+fmtpar(state.currentCsPar)+' par value',fmtd(state.csParAmt))
+      +bspTotal('= Common Stock balance',fmtd(state.csParAmt))
+      +bspRule('Balance sheet always uses <strong>issued &times; par</strong> &mdash; never outstanding, never market price. APIC captures everything above par.');
+
+    if(!hadTsChanges)tsBody+=`<div class="bsp-rule">No treasury transactions this year &mdash; count unchanged.</div>`;
+    tsBody+=bspTotal('= Total treasury shares',fmts(state.tsShares));
+    tsBody+=bspLine(fmts(state.csIssued)+' issued &minus; '+fmts(state.tsShares)+' treasury','= '+fmts(outstanding)+' outstanding');
+    tsBody+=bspRule('Outstanding = who actually receives dividends. Balance sheet uses <em>issued</em>, not outstanding.');
+
+  
+    window._bsPanels['cs']=panel('cs',
+      section('ISSUED SHARES &mdash; Step by Step',issuedBody)+
+      section('DOLLAR BALANCE &mdash; Common Stock Account',dollarBody)+
+      section('OUTSTANDING SHARES &mdash; For Dividends Only',tsBody)
+    );
   }
 
-  // ── APIC-Common tip ───────────────────────────────────────────────────────
+  // ── APIC-COMMON PANEL ────────────────────────────────────────────────────
   {
+    let apicBody='';
     if(apicCsBlank){
-      T['apic-cs']=`<div class="bst-head">APIC \u2014 Common: not provided</div>
-        <div class="bst-row"><span>Not stated in this problem.</span></div>
-        <div class="bst-note">APIC-common almost always exists. Each issuance: Cash received \u2212 Par = APIC portion. Enter in Opening Balances if available.</div>`;
+      apicBody=`<div class="bsp-rule">APIC-common was not stated in this problem. If provided, enter it in Opening Balances (Tab 1). Each issuance adds: total cash &minus; par portion = APIC portion.</div>`;
     } else {
-      const apicOpen=g('apic-cs');
-      const apicLines=[`<div class="bst-row"><span>Opening (Jan 1):</span><span>${fmtd(apicOpen)}</span></div>`];
+      apicBody=bspLine('Opening (Jan 1)',fmtd(g('apic-cs')));
+      let hadChanges=false;
       sorted.forEach(tx=>{
-        const shs=parseFloat(tx.fields?.shares)||0,pr=parseFloat(tx.fields?.price)||0;
-        if(tx.type==='issue_common'&&shs&&pr){
-          const cash=shs*pr,par=shs*(state.currentCsPar||csPar),apic=cash-par;
-          apicLines.push(`<div class="bst-row bst-tx" style="flex-direction:column;align-items:flex-start;gap:1px"><span>+ ${tx.date}&nbsp; ${fmts(shs)} sh \xd7 ${fmtd(pr)} = ${fmtd(cash)} cash</span><span style="padding-left:10px;color:rgba(255,255,255,0.4);font-size:10px">\u2192 ${fmts(shs)} \xd7 ${fmtpar(state.currentCsPar||csPar)} par = ${fmtd(par)} \u2192 Common Stock <span style="color:rgba(255,200,80,0.8)">${fmtd(apic)} \u2192 APIC</span></span></div>`);
+        const shs=parseFloat(tx.fields?.shares)||0;
+        const pr=parseFloat(tx.fields?.price)||0;
+        const tot=parseFloat(tx.fields?.total)||0;
+        const cash=shs&&pr?shs*pr:(tot||0);
+        if(tx.type==='issue_common'&&shs&&cash){
+          hadChanges=true;
+          const par=shs*(state.currentCsPar||csPar);
+          const apic=cash-par;
+          apicBody+=bspLine(`+ ${tx.date} &nbsp;${fmts(shs)} sh &times; ${fmtd(cash/shs)}/sh = ${fmtd(cash)} cash`,'')+
+            bspLine(`&nbsp;&nbsp;&nbsp;minus ${fmts(shs)} &times; ${fmtpar(state.currentCsPar||csPar)} par = ${fmtd(par)} &rarr; Common Stock`,`+${fmtd(apic)} APIC`,'bsp-tx');
         }
       });
-      apicLines.push(`<div class="bst-row bst-total"><span>= APIC-common ending balance:</span><span>${fmtd(state.apicCs)}</span></div>`);
-      T['apic-cs']=`
-        <div class="bst-head">How to find APIC-Common</div>
-        <div class="bst-note" style="margin-bottom:6px">Each issuance splits: total cash \u2212 par portion = APIC. Verify in T-Accounts (Tab 6)</div>
-        ${apicLines.join('')}`;
+      if(!hadChanges)apicBody+=`<div class="bsp-rule">No new common stock issuances this year.</div>`;
+      apicBody+=bspTotal('= APIC-Common ending balance',fmtd(state.apicCs));
+      apicBody+=bspRule('Rule: cash received &minus; par portion = APIC. Calculated last &mdash; always the remainder after par is subtracted.');
     }
+    window._bsPanels['apic-cs']=panel('apic-cs',section('APIC &mdash; COMMON STOCK',apicBody));
   }
 
-  // ── Preferred Stock tip ───────────────────────────────────────────────────
+  // ── PREFERRED STOCK PANEL ────────────────────────────────────────────────
   {
+    let psBody='';
     if(!hasPrefData){
-      T['ps']=`<div class="bst-head">Preferred Stock: not entered</div>
-        <div class="bst-row"><span>No preferred stock details in Opening Balances.</span></div>
-        <div class="bst-note">If your problem has preferred stock, enter par, rate, and shares in Tab 1.</div>`;
+      psBody=`<div class="bsp-rule">No preferred stock in this problem. If it exists, enter par, rate, and shares in Opening Balances (Tab 1).</div>`;
     } else {
       const psOpenSh=g('ps-issued');
-      const psLines=[`<div class="bst-row"><span>Opening (Jan 1):</span><span>${fmts(psOpenSh)} shares</span></div>`];
-      let psR=psOpenSh;
+      psBody=bspLine('Opening (Jan 1)',fmts(psOpenSh)+' shares');
+      let psR=psOpenSh,hadChanges=false;
       sorted.forEach(tx=>{
         const shs=parseFloat(tx.fields?.shares)||0,pr=parseFloat(tx.fields?.price)||0;
         if(tx.type==='issue_preferred'&&shs&&pr){
-          psR+=shs;
-          psLines.push(`<div class="bst-row bst-tx"><span>+ ${tx.date}&nbsp; Issued ${fmts(shs)} shares @ ${fmtd(pr)}</span><span>= ${fmts(psR)}</span></div>`);
+          psR+=shs;hadChanges=true;
+          psBody+=bspLine(`+ ${tx.date} &nbsp;Issued ${fmts(shs)} shares @ ${fmtd(pr)}/sh`,`= ${fmts(psR)}`,'bsp-tx');
         }
       });
-      psLines.push(`<div class="bst-row bst-total"><span>= Total preferred issued:</span><span>${fmts(state.psIssued)}</span></div>`);
-      const annDivPerSh=psPar*psRatePct/100;
-      const annDivTotal=annDivPerSh*state.psIssued;
-      T['ps']=`
-        <div class="bst-head">Step 1 \u2014 Preferred share count (no treasury for preferred)</div>
-        ${psLines.join('')}
-        <div class="bst-head" style="margin-top:10px">Step 2 \u2014 Dollar balance</div>
-        <div class="bst-row"><span>${fmts(state.psIssued)} shares \xd7 ${fmtd(psPar)} par</span><span>${fmtd(state.psParAmt)}</span></div>
-        <div class="bst-head" style="margin-top:10px">Annual dividend (use in Tab 5)</div>
-        <div class="bst-row"><span>${parseFloat(psRatePct.toFixed(8))}% \xd7 ${fmtd(psPar)} par = ${fmtd(annDivPerSh)}/sh/yr</span></div>
-        <div class="bst-row"><span>${fmts(state.psIssued)} shares \xd7 ${fmtd(annDivPerSh)}</span><span>${fmtd(annDivTotal)}/yr total</span></div>
-        ${psCumul?`<div class="bst-note">Cumulative: arrears must be paid before common receives anything</div>`:''}`;
+      if(!hadChanges)psBody+=`<div class="bsp-rule">No new preferred issuances this year.</div>`;
+      psBody+=bspTotal('= Total preferred shares issued',fmts(state.psIssued));
+      psBody+=bspLine(fmts(state.psIssued)+' shares &times; '+fmtd(psPar)+' par',fmtd(state.psParAmt),'bsp-total');
+      const annDivPsh=(psPar*psRatePct/100);
+      const annDivTot=annDivPsh*state.psIssued;
+      psBody+=bspRule(`Annual dividend: ${parseFloat(psRatePct.toFixed(8))}% &times; $${psPar} par = $${annDivPsh.toFixed(2)}/share &times; ${fmts(state.psIssued)} shares = ${fmtd(annDivTot)}/yr total. ${psCumul?'<strong>Cumulative</strong>: arrears accumulate until paid &mdash; preferred must be paid in full before common gets anything.':''}`);
     }
+    window._bsPanels['ps']=panel('ps',section('PREFERRED STOCK &mdash; Shares &amp; Balance',psBody));
   }
 
-  // ── APIC-Preferred tip ────────────────────────────────────────────────────
+  // ── APIC-PREFERRED PANEL ──────────────────────────────────────────────────
   {
+    let apBody='';
     if(apicPsBlank){
-      T['apic-ps']=`<div class="bst-head">APIC \u2014 Preferred: not provided</div>
-        <div class="bst-note">Same logic as APIC-common: proceeds above par \u2192 APIC-preferred. Enter in Opening Balances if provided.</div>`;
+      apBody=`<div class="bsp-rule">APIC-preferred not stated in this problem. Same logic as APIC-common: proceeds above par go to APIC-preferred (separate account).</div>`;
     } else {
-      const apicPsOpen=g('apic-ps');
-      const lines=[`<div class="bst-row"><span>Opening (Jan 1):</span><span>${fmtd(apicPsOpen)}</span></div>`];
+      apBody=bspLine('Opening (Jan 1)',fmtd(g('apic-ps')));
+      let hadChanges=false;
       sorted.forEach(tx=>{
         const shs=parseFloat(tx.fields?.shares)||0,pr=parseFloat(tx.fields?.price)||0;
         if(tx.type==='issue_preferred'&&shs&&pr){
+          hadChanges=true;
           const cash=shs*pr,par=shs*psPar,apic=cash-par;
-          if(apic!==0)lines.push(`<div class="bst-row bst-tx"><span>+ ${tx.date}&nbsp; ${fmts(shs)} \xd7 ${fmtd(pr)} \u2192 ${fmtd(apic)} above par</span><span>+${fmtd(apic)}</span></div>`);
+          apBody+=bspLine(`+ ${tx.date} &nbsp;${fmts(shs)} sh @ ${fmtd(pr)}: ${fmtd(cash)} &minus; ${fmtd(par)} par`,`+${fmtd(apic)}`,'bsp-tx');
         }
       });
-      lines.push(`<div class="bst-row bst-total"><span>= APIC-preferred ending balance:</span><span>${fmtd(state.apicPs)}</span></div>`);
-      T['apic-ps']=`
-        <div class="bst-head">How to find APIC-Preferred</div>
-        ${lines.join('')}`;
+      if(!hadChanges)apBody+=`<div class="bsp-rule">No new preferred issuances this year.</div>`;
+      apBody+=bspTotal('= APIC-Preferred ending balance',fmtd(state.apicPs));
     }
+    window._bsPanels['apic-ps']=panel('apic-ps',section('APIC &mdash; PREFERRED STOCK',apBody));
   }
 
-  // ── Retained Earnings tip ─────────────────────────────────────────────────
+  // ── RETAINED EARNINGS PANEL ───────────────────────────────────────────────
   {
+    let reBody='';
     if(reBlank){
-      T['re']=`<div class="bst-head">Retained Earnings: not provided</div>
-        <div class="bst-note">Opening RE not given in this problem. Enter it in Tab 1 if provided.</div>`;
+      reBody=`<div class="bsp-rule">Retained earnings not provided. Enter opening RE in Tab 1 if given.</div>`;
     } else {
-      const reOpenAmt=g('re-open');
-      const reLines=[`<div class="bst-row"><span>Opening RE (Jan 1):</span><span>${fmtd(reOpenAmt)}</span></div>`];
-      if(niTxAmt){
-        reLines.push(`<div class="bst-row bst-tx"><span>+ Net income (entered):</span><span>+${fmtd(niTxAmt)}</span></div>`);
-      } else {
-        reLines.push(`<div class="bst-row" style="color:rgba(255,255,255,0.3)"><span>+ Net income: not entered (add in Tab 2 if provided)</span></div>`);
-      }
+      reBody=bspLine('Opening RE (Jan 1)',fmtd(g('re-open')));
+      if(niTxAmt)reBody+=bspLine('+ Net income (entered in Tab 2)',`+${fmtd(niTxAmt)}`,'bsp-tx');
+      else reBody+=`<div class="bsp-line" style="color:var(--text3);font-style:italic"><span>+ Net income: not entered (add in Tab 2 if given)</span></div>`;
       sorted.forEach(tx=>{
         if(tx.type==='declare_common'){
-          const rate=parseFloat(tx.fields?.rate)||0;
-          if(rate)reLines.push(`<div class="bst-row bst-tx"><span>\u2212 ${tx.date}&nbsp; Common div declared @ ${fmtd(rate)}/sh \xd7 ${fmts(outstanding)} outstanding</span><span>\u2212${fmtd(rate*outstanding)}</span></div>`);
+          const rt=parseFloat(tx.fields?.rate)||0;
+          const tot=parseFloat(tx.fields?.total)||0;
+          // figure out outstanding at that point via snapshot
+          const snap=window._txSnapshots?.[tx.id];
+          const pre=snap?.pre;
+          const outAtDecl=pre?(pre.csIssued-pre.tsShares):(csOpenIssued-csOpenTs);
+          const divAmt=rt?rt*outAtDecl:tot;
+          reBody+=bspLine(`&minus; ${tx.date} &nbsp;Common dividend declared`,`&minus;${fmtd(divAmt)}`,'bsp-tx');
         } else if(tx.type==='declare_common_total'){
           const tot=parseFloat(tx.fields?.total)||0;
-          if(tot)reLines.push(`<div class="bst-row bst-tx"><span>\u2212 ${tx.date}&nbsp; Common dividend declared (total)</span><span>\u2212${fmtd(tot)}</span></div>`);
+          reBody+=bspLine(`&minus; ${tx.date} &nbsp;Common dividend declared (total given)`,`&minus;${fmtd(tot)}`,'bsp-tx');
         } else if(tx.type==='declare_pref'){
           const annDiv=psPar*psRatePct/100*state.psIssued;
           const yrs=parseFloat(tx.fields?.years)||1;
-          reLines.push(`<div class="bst-row bst-tx"><span>\u2212 ${tx.date}&nbsp; Preferred div declared (${yrs} yr${yrs>1?'s':''})</span><span>\u2212${fmtd(annDiv*yrs)}</span></div>`);
-        } else if(tx.type==='close_dividends'){
-          reLines.push(`<div class="bst-row bst-tx" style="color:rgba(255,255,255,0.3)"><span>${tx.date}&nbsp; Dividends closed to RE (year-end)</span></div>`);
+          reBody+=bspLine(`&minus; ${tx.date} &nbsp;Preferred dividend declared (${yrs} yr${yrs>1?'s':''})`,`&minus;${fmtd(annDiv*yrs)}`,'bsp-tx');
+        } else if(tx.type==='net_income'){
+          // already handled above
         }
       });
-      reLines.push(`<div class="bst-row bst-total"><span>= Ending Retained Earnings:</span><span>${fmtd(state.re)}</span></div>`);
-      T['re']=`
-        <div class="bst-head">Formula: Opening RE + Net Income \u2212 Dividends Declared</div>
-        ${reLines.join('')}
-        <div class="bst-note">RE changes when dividends are DECLARED \u2014 not when paid or closed. Verify in RE T-Account (Tab 6)</div>`;
+      reBody+=bspTotal('= Ending Retained Earnings',fmtd(state.re));
+      reBody+=bspRule('RE changes when dividends are <strong>declared</strong> &mdash; not when paid or closed. The closing entry moves the Dividends balance into RE at year-end.');
     }
+    window._bsPanels['re']=panel('re',section('RETAINED EARNINGS &mdash; T-Account Rollforward',reBody));
   }
 
-  // ── Treasury Stock tip ────────────────────────────────────────────────────
+  // ── TREASURY STOCK PANEL ──────────────────────────────────────────────────
   {
+    let tsBody='';
     if(state.tsShares===0&&!tsCostBlank){
-      T['ts']=`<div class="bst-head">Treasury Stock: none held</div>
-        <div class="bst-row"><span>No treasury shares \u2014 no deduction from equity.</span></div>`;
+      tsBody=`<div class="bsp-rule">No treasury shares held &mdash; no deduction from equity.</div>`;
     } else {
       const tsOpenCost=g('ts-cost');
-      const tsLines=[`<div class="bst-row"><span>Opening (Jan 1):</span><span>${fmts(csOpenTs)} shares \xb7 ${tsCostBlank?'cost not provided':fmtd(tsOpenCost)}</span></div>`];
+      tsBody=bspLine('Opening (Jan 1)',`${fmts(csOpenTs)} shares &middot; ${tsCostBlank?'cost not provided':fmtd(tsOpenCost)}`);
       let tsSharesR=csOpenTs,tsCostR=tsOpenCost;
       sorted.forEach(tx=>{
-        const shs=parseFloat(tx.fields?.shares)||0,pr=parseFloat(tx.fields?.price)||0;
-        if(tx.type==='buy_treasury'&&shs&&pr){
-          const cost=shs*pr;tsSharesR+=shs;tsCostR+=cost;
-          tsLines.push(`<div class="bst-row bst-tx"><span>+ ${tx.date}&nbsp; Repurchased ${fmts(shs)} sh @ ${fmtd(pr)}</span><span>+${fmtd(cost)}</span></div>`);
-          tsLines.push(`<div class="bst-row" style="padding-left:18px;color:rgba(255,255,255,0.4);font-size:10px"><span>Running: ${fmts(tsSharesR)} shares \xb7 ${fmtd(tsCostR)} total</span></div>`);
+        const shs=parseFloat(tx.fields?.shares)||0;
+        const pr=parseFloat(tx.fields?.price)||0;
+        const tot=parseFloat(tx.fields?.total)||0;
+        const derivedCost=shs&&pr?shs*pr:tot;
+        const derivedPr=derivedCost&&shs?derivedCost/shs:0;
+        if(tx.type==='buy_treasury'&&shs&&derivedCost){
+          tsSharesR+=shs;tsCostR+=derivedCost;
+          const priceLbl=pr?`@ ${fmtd(derivedPr)}/sh`:`total ${fmtd(derivedCost)}`;
+          tsBody+=bspLine(`+ ${tx.date} &nbsp;Repurchased ${fmts(shs)} ${priceLbl}`,`+${fmtd(derivedCost)}`,'bsp-tx');
+          tsBody+=bspLine(`Running total:`,`${fmts(tsSharesR)} sh &middot; ${fmtd(tsCostR)}`,'bsp-tx');
         } else if(tx.type==='reissue_treasury'&&shs){
           const avgC=tsSharesR>0?tsCostR/tsSharesR:0;
           const basis=shs*avgC;tsSharesR-=shs;tsCostR-=basis;
-          tsLines.push(`<div class="bst-row bst-tx"><span>\u2212 ${tx.date}&nbsp; Reissued ${fmts(shs)} sh (avg cost ${fmtd(avgC)}/sh)</span><span>\u2212${fmtd(basis)}</span></div>`);
-          tsLines.push(`<div class="bst-row" style="padding-left:18px;color:rgba(255,255,255,0.4);font-size:10px"><span>Running: ${fmts(tsSharesR)} shares \xb7 ${fmtd(tsCostR)} total</span></div>`);
+          tsBody+=bspLine(`&minus; ${tx.date} &nbsp;Reissued ${fmts(shs)} sh (avg $${avgC.toFixed(2)}/sh)`,`&minus;${fmtd(basis)}`,'bsp-tx');
+          tsBody+=bspLine(`Running total:`,`${fmts(tsSharesR)} sh &middot; ${fmtd(tsCostR)}`,'bsp-tx');
         }
       });
-      const avgFinal=state.tsShares>0?(state.tsCost/state.tsShares).toFixed(2):'—';
-      tsLines.push(`<div class="bst-row bst-total"><span>= Total treasury stock:</span><span>${fmts(state.tsShares)} sh \xb7 ${tsCostBlank?'cost n/a':fmtd(state.tsCost)}</span></div>`);
-      T['ts']=`
-        <div class="bst-head">Cost method \u2014 record full price paid, no par split</div>
-        ${tsLines.join('')}
-        ${!tsCostBlank&&state.tsShares>0?`<div class="bst-row" style="margin-top:4px"><span>Avg cost: ${fmtd(state.tsCost)} \xf7 ${fmts(state.tsShares)} shares</span><span>$${avgFinal}/sh</span></div>
-        <div class="bst-note">Avg cost used if treasury shares are reissued (Tab 2)</div>`:''}
-        <div class="bst-note">Shown as (${tsCostBlank?'n/a':fmtd(state.tsCost)}) \u2014 deduction that reduces total equity</div>`;
+      tsBody+=bspTotal(`= Year-end treasury stock`,`${fmts(state.tsShares)} shares`);
+      if(!tsCostBlank&&state.tsShares>0){
+        tsBody+=bspTotal(`= Total cost (contra-equity)`,fmtd(state.tsCost));
+        const avgFinal=(state.tsCost/state.tsShares).toFixed(2);
+        tsBody+=bspLine(`Average cost per share: ${fmtd(state.tsCost)} &divide; ${fmts(state.tsShares)}`,`$${avgFinal}/sh`);
+        tsBody+=bspRule(`Cost method: treasury stock recorded at <strong>total cost paid</strong> &mdash; no par split. Shown as (${fmtd(state.tsCost)}) because it <strong>reduces</strong> total equity. Avg cost ($${avgFinal}/sh) is used if shares are reissued.`);
+      }
     }
+    window._bsPanels['ts']=panel('ts',section('TREASURY STOCK &mdash; Cost Method',tsBody));
   }
 
-  // ── Total Equity tip ──────────────────────────────────────────────────────
-  T['total']=`
-    <div class="bst-head">How total stockholders\u2019 equity is assembled</div>
-    <div class="bst-row"><span>Common stock (issued \xd7 par):</span><span>${fmtd(state.csParAmt)}</span></div>
-    <div class="bst-row"><span>APIC \u2014 common:</span><span>${apicCsBlank?'n/a':fmtd(state.apicCs)}</span></div>
-    ${hasPrefData?`<div class="bst-row"><span>Preferred stock:</span><span>${fmtd(state.psParAmt)}</span></div>`:''}
-    ${hasPrefData?`<div class="bst-row"><span>APIC \u2014 preferred:</span><span>${apicPsBlank?'n/a':fmtd(state.apicPs)}</span></div>`:''}
-    <div class="bst-row bst-total"><span>= Total contributed capital:</span><span>${anyBlank?'\u26a0 ':''}${fmtd(contrib)}</span></div>
-    <div class="bst-row" style="margin-top:6px"><span>+ Retained earnings:</span><span>${reBlank?'n/a':fmtd(state.re)}</span></div>
-    <div class="bst-row bst-total"><span>= Subtotal:</span><span>${fmtd(subtotal)}</span></div>
-    <div class="bst-row" style="margin-top:6px"><span>\u2212 Treasury stock (deduction):</span><span>(${tsCostBlank?'n/a':fmtd(state.tsCost)})</span></div>
-    <div class="bst-row bst-total" style="font-size:13px"><span>= Total stockholders\u2019 equity:</span><span>${anyBlank?'\u26a0 ':''}${fmtd(total)}</span></div>
-    ${anyBlank?`<div class="bst-note">\u26a0 One or more values not provided \u2014 total uses $0 for missing items</div>`:''}
-    <div class="bst-note" style="margin-top:6px">Hover each row above to see exactly how that amount was derived</div>`;
+  // ── TOTAL EQUITY PANEL ────────────────────────────────────────────────────
+  {
+    let totBody=bspLine('Common stock (issued &times; par)',fmtd(state.csParAmt));
+    totBody+=bspLine('APIC &mdash; common',apicCsBlank?'not provided':fmtd(state.apicCs));
+    if(hasPrefData){
+      totBody+=bspLine('Preferred stock (issued &times; par)',fmtd(state.psParAmt));
+      totBody+=bspLine('APIC &mdash; preferred',apicPsBlank?'not provided':fmtd(state.apicPs));
+    }
+    totBody+=bspTotal('= Total contributed capital',(anyBlank?'⚠ ':'')+fmtd(contrib));
+    totBody+=bspLine('+ Retained earnings',reBlank?'not provided':fmtd(state.re));
+    totBody+=bspTotal('= Subtotal',fmtd(subtotal));
+    totBody+=bspLine('&minus; Treasury stock (deduction)','('+fmtd(state.tsCost)+')');
+    totBody+=bspTotal('= Total stockholders\u2019 equity',(anyBlank?'⚠ ':'')+fmtd(total));
+    totBody+=bspRule('Click "How was this determined?" on each row above to see the step-by-step derivation for that line item.'+(anyBlank?' &mdash; <strong>⚠ one or more values not provided</strong>; total uses $0 for missing items.':''));
+    window._bsPanels['total']=panel('total',section('TOTAL STOCKHOLDERS\u2019 EQUITY &mdash; Assembly',totBody));
+  }
+
+  // ── Render the balance sheet ──────────────────────────────────────────────
+  function bsRow(id,label,disc,amt,key){
+    return`<div class="bs-row" id="bs-${id}">
+      <div style="flex:1">
+        <div>${label}</div>
+        ${disc?`<div class="bs-disclosure">${disc}</div>`:''}
+        ${btn(key)}
+        ${window._bsPanels[key]||''}
+      </div>
+      <div class="bs-amt">${amt}</div>
+    </div>`;
+  }
+  function bsRowIndent(id,label,amt,key){
+    return`<div class="bs-row bs-row-indent" id="bs-${id}">
+      <div style="flex:1">
+        <span>${label}</span>
+        ${btn(key)}
+        ${window._bsPanels[key]||''}
+      </div>
+      <div class="bs-amt">${amt}</div>
+    </div>`;
+  }
 
   el.innerHTML=`
   <div class="bs-wrap">
     <div class="bs-company">${coName||'Company Name'}</div>
-    <div class="bs-subtitle">Stockholders' Equity · December 31</div>
+    <div class="bs-subtitle">Stockholders' Equity &middot; December 31</div>
     ${parChanged?`<div class="split-box" style="margin-bottom:14px">Stock split: par now ${fmtpar(state.currentCsPar)} (was $${csPar}). Dollar totals unchanged.</div>`:''}
-    ${anyBlank?`<div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--text2);line-height:1.5"><strong style="color:var(--amber)">Note:</strong> This problem did not provide all balance sheet values. Rows marked "not provided" show the section placeholder only — the total marked with ⚠ uses $0 for those fields and will not match a complete balance sheet.</div>`:''}
+    ${anyBlank?`<div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--text2);line-height:1.5"><strong style="color:var(--amber)">Note:</strong> Some values not provided &mdash; rows show placeholder only; ⚠ total uses $0 for missing items.</div>`:''}
 
     <div class="bs-section-hd">Contributed capital</div>
-    <div class="bs-row" id="bs-cs" data-tip-key="cs" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
-      <div>
-        <div>Common stock, ${fmtpar(state.currentCsPar)} par${parChanged?' (post-split)':''}</div>
-        <div class="bs-disclosure">${csAuthDisplay} authorized  |  ${fmts(state.csIssued)} issued  |  ${fmts(outstanding)} outstanding</div>
-      </div>
-      <div class="bs-amt">${fmtd(state.csParAmt)}</div>
-    </div>
-    <div class="bs-row bs-row-indent" id="bs-apiccs" data-tip-key="apic-cs" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
-      <span>Additional paid-in capital — common</span><span class="bs-amt">${showAmt(state.apicCs,apicCsBlank)}</span>
-    </div>
+    ${bsRow('cs',
+      `Common stock, ${fmtpar(state.currentCsPar)} par${parChanged?' (post-split)':''}`,
+      `${csAuthDisplay} authorized &nbsp;|&nbsp; ${fmts(state.csIssued)} issued &nbsp;|&nbsp; ${fmts(outstanding)} outstanding`,
+      fmtd(state.csParAmt),'cs')}
+    ${bsRowIndent('apiccs','Additional paid-in capital \u2014 common',showAmt(state.apicCs,apicCsBlank),'apic-cs')}
 
-    <div class="bs-row" id="bs-ps" style="margin-top:7px" data-tip-key="ps" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
-      <div>
-        <div>${hasPrefData?`Preferred stock, ${parseFloat(psRatePct.toFixed(8))}%, $${psPar} par${psCumul?' (cumulative)':''}` : 'Preferred stock'}</div>
-        <div class="bs-disclosure">${hasPrefData?psAuthDisplay+' authorized  |  '+fmts(state.psIssued)+' issued & outstanding':'None — enter preferred details in Opening Balances to populate'}</div>
-      </div>
-      <div class="bs-amt">${fmtd(state.psParAmt)}</div>
-    </div>
-    <div class="bs-row bs-row-indent" id="bs-apicps" data-tip-key="apic-ps" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
-      <span>Additional paid-in capital — preferred</span><span class="bs-amt">${showAmt(state.apicPs,apicPsBlank)}</span>
-    </div>
+    <div style="height:7px"></div>
+    ${bsRow('ps',
+      hasPrefData?`Preferred stock, ${parseFloat(psRatePct.toFixed(8))}%, $${psPar} par${psCumul?' (cumulative)':''}`:'Preferred stock',
+      hasPrefData?`${psAuthDisplay} authorized &nbsp;|&nbsp; ${fmts(state.psIssued)} issued &amp; outstanding`:'None \u2014 enter preferred details in Opening Balances',
+      fmtd(state.psParAmt),'ps')}
+    ${bsRowIndent('apicps','Additional paid-in capital \u2014 preferred',showAmt(state.apicPs,apicPsBlank),'apic-ps')}
 
-    <div class="bs-subtotal"><span style="padding-left:18px">Total contributed capital</span><span>${anyBlank?'⚠ ':''} ${fmtd(contrib)}</span></div>
+    <div class="bs-subtotal"><span style="padding-left:18px">Total contributed capital</span><span>${anyBlank?'⚠ ':''}${fmtd(contrib)}</span></div>
 
     <div class="bs-section-hd">Retained earnings</div>
-    <div class="bs-row" id="bs-re" data-tip-key="re" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
-      <span>Retained earnings</span><span class="bs-amt">${showAmt(state.re,reBlank)}</span>
-    </div>
+    ${bsRow('re','Retained earnings','',showAmt(state.re,reBlank),'re')}
     <div class="bs-subtotal"><span>Subtotal</span><span>${anyBlank?'⚠ ':''}${fmtd(subtotal)}</span></div>
 
     <div class="bs-section-hd">Treasury stock</div>
-    <div class="bs-row" id="bs-ts" data-tip-key="ts" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
-      <div>
-        <div class="${state.tsCost>0?'neg':''}">Treasury stock — common, at cost</div>
-        <div class="bs-disclosure ${(state.tsCost>0||tsCostBlank)?'neg':''}">${state.tsShares>0?fmts(state.tsShares)+' shares':'None held'}</div>
-      </div>
-      <div class="bs-amt">${tsCostBlank?NP:state.tsCost>0?'('+fmt(state.tsCost)+')':'$0'}</div>
-    </div>
+    ${bsRow('ts',
+      `<span class="${state.tsCost>0?'neg':''}">Treasury stock \u2014 common, at cost</span>`,
+      `<span class="${(state.tsCost>0||tsCostBlank)?'neg':''}">${state.tsShares>0?fmts(state.tsShares)+' shares':'None held'}</span>`,
+      tsCostBlank?NP:state.tsCost>0?'('+fmt(state.tsCost)+')':'$0','ts')}
 
-    <div class="bs-total" id="bs-total" data-tip-key="total" onmouseenter="showBSTip(this,event)" onmouseleave="hideBSTip()">
-      <span>Total stockholders' equity${anyBlank?' <span style="font-size:11px;color:var(--amber)">⚠ incomplete</span>':''}</span>
+    <div class="bs-total" id="bs-total">
+      <div style="flex:1">
+        <span>Total stockholders\u2019 equity${anyBlank?' <span style="font-size:11px;color:var(--amber)">⚠ incomplete</span>':''}</span>
+        ${btn('total')}
+        ${window._bsPanels['total']||''}
+      </div>
       <span>${fmtd(total)}</span>
     </div>
   </div>
   <div class="calc-explainer" style="margin-top:14px">
-    <div class="label">How the total is assembled</div>
-    <div class="calc-step"><span class="op"> </span><span class="desc">Contributed capital</span><span class="result">${anyBlank?'⚠':''} ${fmtd(contrib)}</span></div>
+    <div class="label">Quick assembly view</div>
+    <div class="calc-step"><span class="op"> </span><span class="desc">Contributed capital</span><span class="result">${anyBlank?'⚠':''} ${fmtd(contrib)}</span></div>
     <div class="calc-step"><span class="op">+</span><span class="desc">Retained earnings</span><span class="result">${showAmt(state.re,reBlank)}</span></div>
-    <div class="calc-step"><span class="op">−</span><span class="desc">Treasury stock</span><span class="result">${tsCostBlank?NP:fmtd(state.tsCost)}</span></div>
+    <div class="calc-step"><span class="op">&minus;</span><span class="desc">Treasury stock</span><span class="result">${tsCostBlank?NP:fmtd(state.tsCost)}</span></div>
     <div class="calc-step"><span class="op">=</span><span class="desc" style="font-weight:600">Total stockholders' equity</span><span class="result" style="font-size:16px">${anyBlank?'⚠ ':''}${fmtd(total)}</span></div>
   </div>`;
 }
 
-function showBSTip(el,evt){
-  const tip=document.getElementById('bs-tooltip');
-  const key=el.dataset.tipKey;
-  const html=(window._bsTipData||{})[key];
-  if(!tip||!key||!html)return;
-  document.getElementById('bs-tip-label').textContent='How this was calculated';
-  document.getElementById('bs-tip-body').innerHTML=html;
-  // Measure off-screen to get true height before any visible positioning
-  tip.style.visibility='hidden';tip.style.display='block';tip.style.left='-9999px';tip.style.top='0px';
-  const tipW=420,tipH=tip.offsetHeight||240;
-  const rect=el.getBoundingClientRect();
-  let x=rect.right+14;
-  let y=rect.top-4;
-  if(x+tipW>window.innerWidth-8)x=Math.max(8,rect.left-tipW-14);
-  if(y+tipH>window.innerHeight-8)y=Math.max(8,window.innerHeight-tipH-8);
-  tip.style.left=x+'px';tip.style.top=y+'px';tip.style.visibility='visible';
+function toggleBsPanel(key){
+  const panel=document.getElementById('bsp-'+key);
+  if(!panel)return;
+  const open=panel.classList.toggle('open');
+  // find the sibling button by searching parent
+  const parent=panel.parentElement;
+  if(parent){
+    parent.querySelectorAll('.bs-explain-btn').forEach(b=>{
+      if(b.getAttribute('onclick')===`toggleBsPanel('${key}')`)b.classList.toggle('open',open);
+    });
+  }
 }
-function hideBSTip(){
-  const tip=document.getElementById('bs-tooltip');
-  if(tip)tip.style.display='none';
-}
+
 
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
