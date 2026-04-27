@@ -193,6 +193,17 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
 .nav-item.tab-dim{opacity:0.32;transition:opacity 0.15s;}
 .nav-item.tab-dim:hover{opacity:0.75;cursor:pointer;}
 .nav-item.tab-dim .nav-label::after{content:' — not used';font-size:8px;color:rgba(255,255,255,0.35);font-style:italic;}
+
+/* ── Problem browser ────────────────────────────────────────── */
+.topic-hd{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);margin-bottom:7px;padding-bottom:4px;border-bottom:1px solid var(--amber-border);}
+.prob-r{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border);margin-bottom:5px;cursor:pointer;transition:border-color 0.12s,background 0.12s;}
+.prob-r:hover{border-color:var(--amber-border);background:var(--amber-bg);}
+.prob-r-blank{background:var(--surface2);border-style:dashed;}
+.prob-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:1px 6px;border-radius:3px;background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber);white-space:nowrap;flex-shrink:0;}
+.prob-ref-pill{font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text3);white-space:nowrap;flex-shrink:0;}
+.prob-name{font-size:12px;font-weight:600;color:var(--text);flex-shrink:0;}
+.prob-tag{font-size:10.5px;color:var(--text3);flex:1;text-align:right;padding-right:4px;}
+.prob-go{font-size:12px;font-weight:700;color:var(--text3);flex-shrink:0;min-width:18px;text-align:right;}
 </style>
 </head>
 <body>
@@ -220,32 +231,8 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
     <div id="nav-bs" class="nav-item" onclick="showPage('bs')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">7</span><span class="nav-label">Balance Sheet</span></div>
   </div>
 
-  <!-- CLASS PROBLEMS -->
+  <!-- CLEAR + TEACHER CONTROLS -->
   <div style="margin:10px 20px 0;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1)">
-    <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:6px">Class problems</div>
-
-    <div id="class-problems-list">
-
-      <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:5px">Building Blocks</div>
-      <div id="locked-problem-csiso" onclick="loadIfUnlocked('csiso')" style="padding:4px 0;cursor:pointer;opacity:0.9;font-size:11.5px;color:rgba(255,255,255,0.75);line-height:1.3;margin-bottom:4px">Common Stock Issuance</div>
-      <div id="locked-problem-psiso" onclick="loadIfUnlocked('psiso')" style="padding:4px 0;cursor:pointer;opacity:0.9;font-size:11.5px;color:rgba(255,255,255,0.75);line-height:1.3;margin-bottom:4px">Preferred Stock Issuance</div>
-      <div id="locked-problem-tsscenario" onclick="loadIfUnlocked('tsscenario')" style="padding:4px 0;cursor:pointer;opacity:0.9;font-size:11.5px;color:rgba(255,255,255,0.75);line-height:1.3;margin-bottom:8px">Treasury Buy &amp; Reissue</div>
-
-      <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:5px">Class Problems</div>
-      <div id="locked-problem-shelby" onclick="loadIfUnlocked('shelby')" style="padding:4px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.75);line-height:1.3;margin-bottom:4px;display:flex;justify-content:space-between;align-items:flex-start">
-          <div>Shelby Corp <span style="font-size:9px;color:rgba(255,255,255,0.35)">E11-4</span></div><div id="lk-shelby" style="font-size:9px;margin-top:2px"></div></div>
-      <div id="locked-problem-insideinc" onclick="loadIfUnlocked('insideinc')" style="padding:4px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.75);line-height:1.3;margin-bottom:4px;display:flex;justify-content:space-between;align-items:flex-start">
-          <div>Inside Inc <span style="font-size:9px;color:rgba(255,255,255,0.35)">E11-5</span></div><div id="lk-insideinc" style="font-size:9px;margin-top:2px"></div></div>
-      <div id="locked-problem-malibu" onclick="loadIfUnlocked('malibu')" style="padding:4px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.5);line-height:1.3;margin-bottom:4px;display:flex;justify-content:space-between;align-items:flex-start">
-          <div>Malibu Beachwear <span style="font-size:9px;color:rgba(255,255,255,0.35)">E11-9</span></div><div id="lk-malibu" style="font-size:9px;margin-top:2px">🔒</div></div>
-      <div id="locked-problem-fostergrant" onclick="loadIfUnlocked('fostergrant')" style="padding:4px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.5);line-height:1.3;margin-bottom:4px;display:flex;justify-content:space-between;align-items:flex-start">
-          <div>Foster Grant</div><div id="lk-fostergrant" style="font-size:9px;margin-top:2px">🔒</div></div>
-      <div id="locked-problem-alpha" onclick="loadIfUnlocked('alpha')" style="padding:4px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.75);line-height:1.3;margin-bottom:4px;display:flex;justify-content:space-between;align-items:flex-start">
-          <div>Comprehensive Prob #1</div><div id="lk-alpha" style="font-size:9px;margin-top:2px"></div></div>
-      <div id="locked-problem-stanley" onclick="loadIfUnlocked('stanley')" style="padding:4px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.5);line-height:1.3;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start">
-          <div>Stanley Corp (split)</div><div id="lk-stanley" style="font-size:9px;margin-top:2px">🔒</div></div>
-
-    </div>
         <button class="btn btn-danger btn-full" onclick="resetAll()" style="font-size:12px;">Clear everything</button>
     <!-- Global lock toggle — triple-click to reveal -->
     <div id="teacher-btn" style="margin-top:8px;text-align:center;font-size:10px;color:rgba(255,255,255,0.2);cursor:pointer;padding:4px" onclick="teacherClick()" title="My controls">• • •</div>
@@ -269,7 +256,18 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
     </div>
   </div>
 </nav>
-
+<!-- Hidden placeholders for lock state JS (not visible to users) -->
+<div style="display:none">
+  <div id="locked-problem-csiso"></div><div id="locked-problem-psiso"></div>
+  <div id="locked-problem-tsscenario"></div><div id="locked-problem-shelby"></div>
+  <div id="locked-problem-insideinc"></div><div id="locked-problem-malibu"></div>
+  <div id="locked-problem-fostergrant"></div><div id="locked-problem-alpha"></div>
+  <div id="locked-problem-stanley"></div><div id="locked-problem-totaldiv"></div>
+  <div id="lk-csiso"></div><div id="lk-psiso"></div><div id="lk-tsscenario"></div>
+  <div id="lk-shelby"></div><div id="lk-insideinc"></div><div id="lk-malibu"></div>
+  <div id="lk-fostergrant"></div><div id="lk-alpha"></div><div id="lk-stanley"></div>
+  <div id="lk-totaldiv"></div>
+</div>
 <main class="main">
 
 <!-- GLOBAL LOCK OVERLAY -->
@@ -296,314 +294,164 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
       </div>
     </div>
 
-    <!-- ── HOW THE 7 TABS CONNECT (always visible, not buried) ── -->
-    <div style="margin-bottom:22px">
-      <!-- How all 7 tabs work together - always visible flow -->
-      <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">How all 7 tabs work together</div>
-      <div style="display:flex;align-items:stretch;gap:0;overflow-x:auto;padding-bottom:4px">
-
-        <!-- You enter group -->
-        <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
-          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--amber);text-align:center;padding:0 4px">You enter</div>
-          <div style="display:flex;gap:3px">
-            <div onclick="toggleTabInfo('tab-info-1')" style="cursor:pointer;background:var(--amber-bg);border:2px solid var(--amber-border);border-radius:var(--radius-sm);padding:8px 10px;min-width:88px;text-align:center">
-              <div style="font-size:16px;font-weight:700;color:var(--amber);font-family:var(--mono)">1</div>
-              <div style="font-size:11px;font-weight:600;color:var(--text);line-height:1.3">Opening<br>Balances</div>
-              <div style="font-size:9px;color:var(--amber);margin-top:3px">▾ details</div>
+    <!-- ── HOW IT WORKS (collapsed by default) ── -->
+    <div style="margin-bottom:16px">
+      <button onclick="toggleHowItWorks()" id="how-it-works-btn"
+        style="background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:0;display:flex;align-items:center;gap:5px">
+        <span id="how-arrow" style="font-size:9px;transition:transform 0.2s">▶</span>
+        How do the 7 tabs work together?
+      </button>
+      <div id="how-it-works-panel" style="display:none;margin-top:10px">
+        <div style="display:flex;align-items:stretch;gap:0;overflow-x:auto;padding-bottom:4px">
+          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--amber);text-align:center;padding:0 4px">You enter</div>
+            <div style="display:flex;gap:3px">
+              <div onclick="toggleTabInfo('tab-info-1')" style="cursor:pointer;background:var(--amber-bg);border:2px solid var(--amber-border);border-radius:var(--radius-sm);padding:8px 10px;min-width:88px;text-align:center"><div style="font-size:16px;font-weight:700;color:var(--amber);font-family:var(--mono)">1</div><div style="font-size:11px;font-weight:600;color:var(--text);line-height:1.3">Opening<br>Balances</div><div style="font-size:9px;color:var(--amber);margin-top:3px">▾ details</div></div>
+              <div style="display:flex;align-items:center;color:var(--text3);font-size:14px;padding:0 2px">→</div>
+              <div onclick="toggleTabInfo('tab-info-2')" style="cursor:pointer;background:var(--amber-bg);border:2px solid var(--amber-border);border-radius:var(--radius-sm);padding:8px 10px;min-width:88px;text-align:center"><div style="font-size:16px;font-weight:700;color:var(--amber);font-family:var(--mono)">2</div><div style="font-size:11px;font-weight:600;color:var(--text);line-height:1.3">Add<br>Transactions</div><div style="font-size:9px;color:var(--amber);margin-top:3px">▾ details</div></div>
             </div>
-            <div style="display:flex;align-items:center;color:var(--text3);font-size:14px;padding:0 2px">→</div>
-            <div onclick="toggleTabInfo('tab-info-2')" style="cursor:pointer;background:var(--amber-bg);border:2px solid var(--amber-border);border-radius:var(--radius-sm);padding:8px 10px;min-width:88px;text-align:center">
-              <div style="font-size:16px;font-weight:700;color:var(--amber);font-family:var(--mono)">2</div>
-              <div style="font-size:11px;font-weight:600;color:var(--text);line-height:1.3">Add<br>Transactions</div>
-              <div style="font-size:9px;color:var(--amber);margin-top:3px">▾ details</div>
+          </div>
+          <div style="display:flex;align-items:center;padding:16px 4px 0;color:var(--text3);font-size:14px;flex-shrink:0">→</div>
+          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(100,120,200,0.7);text-align:center;padding:0 4px">Auto-generated</div>
+            <div style="display:flex;gap:3px">
+              <div onclick="toggleTabInfo('tab-info-3')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 8px;min-width:72px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--blue);font-family:var(--mono)">3</div><div style="font-size:10px;font-weight:500;color:var(--text2);line-height:1.3">Journal<br>Entries</div></div>
+              <div style="display:flex;align-items:center;color:var(--text3);font-size:12px;padding:0 1px">→</div>
+              <div onclick="toggleTabInfo('tab-info-4')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 8px;min-width:72px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--blue);font-family:var(--mono)">4</div><div style="font-size:10px;font-weight:500;color:var(--text2);line-height:1.3">Share<br>Tracker</div></div>
+              <div style="display:flex;align-items:center;color:var(--text3);font-size:12px;padding:0 1px">→</div>
+              <div onclick="toggleTabInfo('tab-info-5')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 8px;min-width:72px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--purple);font-family:var(--mono)">5</div><div style="font-size:10px;font-weight:500;color:var(--text2);line-height:1.3">Dividend<br>Calc</div></div>
+              <div style="display:flex;align-items:center;color:var(--text3);font-size:12px;padding:0 1px">→</div>
+              <div onclick="toggleTabInfo('tab-info-6')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 8px;min-width:72px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--blue);font-family:var(--mono)">6</div><div style="font-size:10px;font-weight:500;color:var(--text2);line-height:1.3">T-<br>Accounts</div></div>
+              <div style="display:flex;align-items:center;color:var(--text3);font-size:12px;padding:0 1px">→</div>
+              <div onclick="toggleTabInfo('tab-info-7')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 8px;min-width:72px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--green);font-family:var(--mono)">7</div><div style="font-size:10px;font-weight:500;color:var(--text2);line-height:1.3">Balance<br>Sheet</div></div>
             </div>
           </div>
         </div>
-
-        <div style="display:flex;align-items:center;padding:16px 4px 0;color:var(--text3);font-size:14px;flex-shrink:0">→</div>
-
-        <!-- Auto-generated group -->
-        <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
-          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(100,120,200,0.7);text-align:center;padding:0 4px">Auto-generated</div>
-          <div style="display:flex;gap:3px">
-            <div onclick="toggleTabInfo('tab-info-3')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 8px;min-width:72px;text-align:center">
-              <div style="font-size:14px;font-weight:700;color:var(--blue);font-family:var(--mono)">3</div>
-              <div style="font-size:10px;font-weight:500;color:var(--text2);line-height:1.3">Journal<br>Entries</div>
-              <div style="font-size:9px;color:var(--blue);margin-top:3px">▾ details</div>
-            </div>
-            <div style="display:flex;align-items:center;color:var(--text3);font-size:12px;padding:0 1px">→</div>
-            <div onclick="toggleTabInfo('tab-info-4')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 8px;min-width:72px;text-align:center">
-              <div style="font-size:14px;font-weight:700;color:var(--blue);font-family:var(--mono)">4</div>
-              <div style="font-size:10px;font-weight:500;color:var(--text2);line-height:1.3">Share<br>Tracker</div>
-              <div style="font-size:9px;color:var(--blue);margin-top:3px">▾ details</div>
-            </div>
-            <div style="display:flex;align-items:center;color:var(--text3);font-size:12px;padding:0 1px">→</div>
-            <div onclick="toggleTabInfo('tab-info-5')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 8px;min-width:72px;text-align:center">
-              <div style="font-size:14px;font-weight:700;color:var(--blue);font-family:var(--mono)">5</div>
-              <div style="font-size:10px;font-weight:500;color:var(--text2);line-height:1.3">Dividend<br>Calc</div>
-              <div style="font-size:9px;color:var(--blue);margin-top:3px">▾ details</div>
-            </div>
-            <div style="display:flex;align-items:center;color:var(--text3);font-size:12px;padding:0 1px">→</div>
-            <div onclick="toggleTabInfo('tab-info-6')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 8px;min-width:72px;text-align:center">
-              <div style="font-size:14px;font-weight:700;color:var(--blue);font-family:var(--mono)">6</div>
-              <div style="font-size:10px;font-weight:500;color:var(--text2);line-height:1.3">T-<br>Accounts</div>
-              <div style="font-size:9px;color:var(--blue);margin-top:3px">▾ details</div>
-            </div>
-            <div style="display:flex;align-items:center;color:var(--text3);font-size:12px;padding:0 1px">→</div>
-            <div onclick="toggleTabInfo('tab-info-7')" style="cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 8px;min-width:72px;text-align:center">
-              <div style="font-size:14px;font-weight:700;color:var(--green);font-family:var(--mono)">7</div>
-              <div style="font-size:10px;font-weight:500;color:var(--text2);line-height:1.3">Balance<br>Sheet</div>
-              <div style="font-size:9px;color:var(--green);margin-top:3px">▾ details</div>
-            </div>
-          </div>
-        </div>
-
+        <div id="tab-info-1" style="display:none;margin-top:8px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6"><strong style="color:var(--amber)">1 — Opening Balances:</strong> The company's equity accounts as of January 1 — only used when the problem gives you starting balances from a prior year. First-year and concept problems skip this entirely. <span onclick="showPage('setup')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span></div>
+        <div id="tab-info-2" style="display:none;margin-top:8px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6"><strong style="color:var(--amber)">2 — Add Transactions:</strong> Each equity event for the year. A floating panel lets you pick type, date, and amounts. Journal entries, T-account postings, and the balance sheet all update instantly. <span onclick="showPage('transactions')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span></div>
+        <div id="tab-info-3" style="display:none;margin-top:8px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6"><strong style="color:var(--blue)">3 — Journal Entries:</strong> Every transaction written as a proper journal entry with the math shown. Links forward to T-accounts and back to the transaction that created it. <span onclick="showPage('journals')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span></div>
+        <div id="tab-info-4" style="display:none;margin-top:8px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6"><strong style="color:var(--blue)">4 — Share Tracker:</strong> Issued vs. treasury vs. outstanding at every event. Matters because common dividends use outstanding, not issued. <span onclick="showPage('shares')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span></div>
+        <div id="tab-info-5" style="display:none;margin-top:8px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6"><strong style="color:var(--purple)">5 — Dividend Calculator:</strong> Splits total declared dividends between preferred and common, handles cumulative arrears automatically. Works standalone without the other tabs. <span onclick="showPage('dividends')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span></div>
+        <div id="tab-info-6" style="display:none;margin-top:8px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6"><strong style="color:var(--blue)">6 — T-Accounts:</strong> Opening balances bold, then all transaction postings in date order. Each entry links back to its journal entry. <span onclick="showPage('taccounts')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span></div>
+        <div id="tab-info-7" style="display:none;margin-top:8px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6"><strong style="color:var(--green)">7 — Balance Sheet:</strong> The fully formatted stockholders' equity section, always current. Click any row to see exactly how that number was derived. <span onclick="showPage('bs')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span></div>
       </div>
-
-      <!-- Expandable tab detail panels -->
-      <div id="tab-info-1" style="display:none;margin-top:8px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6">
-        <strong style="color:var(--amber)">1 — Opening Balances:</strong> Enter the company's equity accounts as of January 1 — Common Stock par value and shares, APIC, Preferred Stock details, Treasury Stock (shares and cost), and Retained Earnings. These are the historical totals from last year's balance sheet, not new transactions. Leave a field blank if the problem doesn't give you a value for it. <span onclick="showPage('setup')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span>
-      </div>
-      <div id="tab-info-2" style="display:none;margin-top:8px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6">
-        <strong style="color:var(--amber)">2 — Add Transactions:</strong> Add each equity event for the year — stock issuances, treasury stock purchases or reissues, dividend declarations and payments, stock splits, and net income. A floating panel on the right lets you enter type, date, and amounts. Each transaction immediately shows its accounting effect and generates a journal entry. Transactions are automatically sorted by date. <span onclick="showPage('transactions')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span>
-      </div>
-      <div id="tab-info-3" style="display:none;margin-top:8px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6">
-        <strong style="color:var(--blue)">3 — Journal Entries:</strong> Every transaction is automatically written as a proper journal entry — debits on the left, credits indented on the right, totals verified. The math for each line is shown below the account name (e.g., "4,000 shares × $2 par = $8,000"). Each entry links back to its transaction and forward to the T-accounts that were affected. <span onclick="showPage('journals')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span>
-      </div>
-      <div id="tab-info-4" style="display:none;margin-top:8px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6">
-        <strong style="color:var(--blue)">4 — Share Tracker:</strong> At every event, see exactly how many shares are Issued, held as Treasury, and Outstanding. This matters because <em>common dividends are paid only on outstanding shares</em> — not issued shares. The tracker shows separate columns for common and preferred when both exist, and each event card links back to its transaction and journal entry. <span onclick="showPage('shares')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span>
-      </div>
-      <div id="tab-info-5" style="display:none;margin-top:8px;background:var(--purple-bg);border:1px solid var(--purple-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6">
-        <strong style="color:var(--purple)">5 — Dividend Calculator:</strong> Two tools in one. <em>Allocation calculator</em>: enter total dividends declared, preferred par/rate/shares, and common shares — get the preferred vs. common split with per-share amounts, even handling multi-year arrears for cumulative preferred. Works without any other tabs. <em>From transactions</em>: if you've added dividend declarations in Tab 2, those appear here worked out step by step. <span onclick="showPage('dividends')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span>
-      </div>
-      <div id="tab-info-6" style="display:none;margin-top:8px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6">
-        <strong style="color:var(--blue)">6 — T-Accounts:</strong> Only equity accounts that actually have activity are shown. Opening balances appear first (bold), then all transactions are posted in chronological order on the correct side. Entries tagged with a small blue <strong>JE</strong> badge are clickable — they jump to the exact journal entry that created them. This makes it easy to trace any T-account posting back to its source. <span onclick="showPage('taccounts')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span>
-      </div>
-      <div id="tab-info-7" style="display:none;margin-top:8px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6">
-        <strong style="color:var(--green)">7 — Balance Sheet:</strong> The fully formatted Stockholders' Equity section, live and always current. All sections are shown — Common Stock, APIC, Preferred Stock, APIC-Preferred, Retained Earnings, and Treasury Stock. Hover over any balance to see exactly how it was calculated. A breakdown panel below the statement shows how the total equity is assembled from its components. <span onclick="showPage('bs')" style="color:var(--blue);cursor:pointer;text-decoration:underline">Go to tab →</span>
-      </div>
-
-      <div style="font-size:11px;color:var(--text3);margin-top:8px;line-height:1.5">Click any numbered box above to see what that tab does. Tabs 3–7 update instantly as you enter data. You can use Tab 5 (Dividends) without filling in Tabs 1 or 2 at all.</div>
     </div>
 
     <!-- ── PROBLEM BROWSER ── -->
-    <div style="margin-top:20px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px 24px;align-items:start">
 
-      <!-- ═══ PROBLEM TYPE: PREPARE THE EQUITY SECTION ═══ -->
-      <div style="margin-bottom:20px">
-        <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px">
-          Prepare the stockholders' equity section of the balance sheet
+      <!-- ═══ LEFT COLUMN ═══ -->
+      <div>
+
+        <!-- STOCK ISSUANCES -->
+        <div style="margin-bottom:18px">
+          <div class="topic-hd">Stock Issuances</div>
+          <div class="prob-r" onclick="loadIfUnlocked('csiso')">
+            <span class="prob-badge">concept</span>
+            <span class="prob-name">Common Stock Issuance</span>
+            <span class="prob-tag">par split · 3 accounts</span>
+            <span class="prob-go" id="lk-csiso">→</span>
+          </div>
+          <div class="prob-r" onclick="loadIfUnlocked('psiso')">
+            <span class="prob-badge">concept</span>
+            <span class="prob-name">Preferred Stock Issuance</span>
+            <span class="prob-tag">separate APIC-Preferred</span>
+            <span class="prob-go" id="lk-psiso">→</span>
+          </div>
+          <div class="prob-r" id="locked-problem-shelby" onclick="loadIfUnlocked('shelby')">
+            <span class="prob-ref-pill">E11-4</span>
+            <span class="prob-name">Shelby Corporation</span>
+            <span class="prob-tag">common + preferred · dividends · first year</span>
+            <span class="prob-go" id="lk-shelby">→</span>
+          </div>
+          <div class="prob-r" id="locked-problem-insideinc" onclick="loadIfUnlocked('insideinc')">
+            <span class="prob-ref-pill">E11-5</span>
+            <span class="prob-name">Inside Incorporated</span>
+            <span class="prob-tag">common ($6 par) + preferred · no dividends</span>
+            <span class="prob-go" id="lk-insideinc">→</span>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
 
-          <!-- Shelby E11-4 -->
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:0">
-            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-              <div style="font-size:12px;font-weight:700">Shelby Corporation</div>
-              <div style="font-size:9px;color:var(--text3)">E11-4</div>
-            </div>
-            <div style="font-size:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 9px;margin-bottom:8px;line-height:1.65;color:var(--text2);font-family:var(--mono)">
-              Common stock, $1 par, 200,000 auth.<br>
-              Preferred stock, $10 par, 6%, 50,000 auth.<br>
-              <span style="color:var(--text3)">─────────────────────</span><br>
-              a. Issued 20,000 common — $400,000 cash<br>
-              b. Issued 15,000 pref @ $30/share<br>
-              c. Net income $50,000; divs declared &amp; paid $10,000
-            </div>
-            <div style="font-size:10px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.4">Required: Prepare the stockholders' equity section at December 31.</div>
-            <button id="welcome-shelby" class="btn btn-secondary btn-sm" onclick="loadIfUnlocked('shelby')" style="font-size:11px;margin-top:auto">Load →</button>
+        <!-- FULL EQUITY PROBLEMS -->
+        <div style="margin-bottom:18px">
+          <div class="topic-hd">Full Equity Problems</div>
+          <div class="prob-r" id="locked-problem-malibu" onclick="loadIfUnlocked('malibu')">
+            <span class="prob-ref-pill">E11-9</span>
+            <span class="prob-name">Malibu Beachwear</span>
+            <span class="prob-tag">treasury · dividends · new issuance · close</span>
+            <span class="prob-go" id="lk-malibu">→</span>
           </div>
-
-          <!-- Inside Inc E11-5 -->
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:0">
-            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-              <div style="font-size:12px;font-weight:700">Inside Incorporated</div>
-              <div style="font-size:9px;color:var(--text3)">E11-5</div>
-            </div>
-            <div style="font-size:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 9px;margin-bottom:8px;line-height:1.65;color:var(--text2);font-family:var(--mono)">
-              Common stock, $6 par, 100,000 auth.<br>
-              Preferred stock, 7%, $10 par, 5,000 auth.<br>
-              <span style="color:var(--text3)">─────────────────────</span><br>
-              a. Issued 20,000 common @ $18/share<br>
-              b. Issued 3,000 preferred @ $22/share<br>
-              c. Net income $38,000. No dividends declared.
-            </div>
-            <div style="font-size:10px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.4">Required: Prepare the stockholders' equity section at December 31.</div>
-            <button id="welcome-insideinc" class="btn btn-secondary btn-sm" onclick="loadIfUnlocked('insideinc')" style="font-size:11px;margin-top:auto">Load →</button>
+          <div class="prob-r" id="locked-problem-alpha" onclick="loadIfUnlocked('alpha')">
+            <span class="prob-ref-pill">CP11</span>
+            <span class="prob-name">Comprehensive Problem #1</span>
+            <span class="prob-tag">all transaction types · exam level</span>
+            <span class="prob-go" id="lk-alpha">→</span>
           </div>
-
-          <!-- Blank start -->
-          <div style="background:var(--surface2);border:1px dashed var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;text-align:center">
-            <div style="font-size:11px;color:var(--text3);line-height:1.5">Working from a problem<br>not listed here?</div>
-            <button class="btn btn-secondary btn-sm" onclick="startBlank('setup')" style="font-size:11px">Start blank →</button>
-          </div>
-
         </div>
-      </div>
 
-      <!-- ═══ PROBLEM TYPE: JOURNAL ENTRIES + BALANCE SHEET ═══ -->
-      <div style="margin-bottom:20px">
-        <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px">
-          Record transactions, prepare journal entries + balance sheet
+      </div><!-- /left col -->
+
+      <!-- ═══ RIGHT COLUMN ═══ -->
+      <div>
+
+        <!-- TREASURY STOCK -->
+        <div style="margin-bottom:18px">
+          <div class="topic-hd">Treasury Stock</div>
+          <div class="prob-r" onclick="loadIfUnlocked('tsscenario')">
+            <span class="prob-badge">concept</span>
+            <span class="prob-name">Buy &amp; Reissue</span>
+            <span class="prob-tag">avg cost · above → APIC · below → RE</span>
+            <span class="prob-go" id="lk-tsscenario">→</span>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
 
-          <!-- Malibu E11-9 -->
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:0">
-            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-              <div style="font-size:12px;font-weight:700">Malibu Beachwear</div>
-              <div style="font-size:9px;color:var(--text3)">E11-9</div>
-            </div>
-            <div style="font-size:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 9px;margin-bottom:8px;line-height:1.65;color:var(--text2);font-family:var(--mono)">
-              Opening: CS $12,500 · APIC $300,000 · RE $150,000<br>
-              <span style="color:var(--text3)">─────────────────────</span><br>
-              a. Repurchased $350,000 of common stock<br>
-              b. Declared cash dividends of $260,000<br>
-              c. Paid the dividends in (b)<br>
-              d. Issued 100,000 shares @ $2 ($0.10 par)<br>
-              e. Closed the Dividends account
-            </div>
-            <div style="font-size:10px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.4">Required: Journal entries for (a)–(e). Prepare the S/E section. Net income: $270,000.</div>
-            <button id="welcome-malibu" class="btn btn-secondary btn-sm" onclick="loadIfUnlocked('malibu')" style="font-size:11px;margin-top:auto">🔒 Load →</button>
+        <!-- DIVIDENDS -->
+        <div style="margin-bottom:18px">
+          <div class="topic-hd">Dividends</div>
+          <div class="prob-r" id="locked-problem-fostergrant" onclick="loadIfUnlocked('fostergrant')">
+            <span class="prob-ref-pill">calc</span>
+            <span class="prob-name">Foster Grant Company</span>
+            <span class="prob-tag">cumulative preferred · 2 yrs arrears</span>
+            <span class="prob-go" id="lk-fostergrant">→</span>
           </div>
-
-          <!-- Comprehensive #1 -->
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:0">
-            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-              <div style="font-size:12px;font-weight:700">Comprehensive Problem #1</div>
-              <div style="font-size:9px;color:var(--text3)">CP11-4</div>
-            </div>
-            <div style="font-size:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 9px;margin-bottom:8px;line-height:1.65;color:var(--text2);font-family:var(--mono)">
-              CS $2 par · PS 7% $100 par (cumulative)<br>
-              Opening TS: 25,000 sh · RE: $900,000<br>
-              <span style="color:var(--text3)">─────────────────────</span><br>
-              a. Repurchased 1,000 shares @ $7<br>
-              b. Issued 4,000 common @ $4.65<br>
-              c. Declared common div $0.60/share<br>
-              d. Paid common dividends<br>
-              e. Declared + paid preferred dividend<br>
-              f. Closed dividends
-            </div>
-            <div style="font-size:10px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.4">Required: Journal entries + complete S/E section.</div>
-            <button class="btn btn-secondary btn-sm" onclick="loadAlpha();showPage('setup')" style="font-size:11px;margin-top:auto">Load →</button>
+          <div class="prob-r" id="locked-problem-totaldiv" onclick="loadIfUnlocked('totaldiv')">
+            <span class="prob-ref-pill">calc</span>
+            <span class="prob-name">Total Dividend Declaration</span>
+            <span class="prob-tag">non-cumulative preferred · two years</span>
+            <span class="prob-go" id="lk-totaldiv">→</span>
           </div>
-
-          <!-- Blank -->
-          <div style="background:var(--surface2);border:1px dashed var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;text-align:center">
-            <div style="font-size:11px;color:var(--text3);line-height:1.5">Working on a different<br>problem from class?</div>
-            <button class="btn btn-secondary btn-sm" onclick="startBlank('setup')" style="font-size:11px">Start blank →</button>
+          <div class="prob-r prob-r-blank" onclick="startBlank('dividends')">
+            <span class="prob-badge" style="background:transparent;border-color:var(--border)">blank</span>
+            <span class="prob-name" style="color:var(--text2)">Open allocator blank</span>
+            <span class="prob-go">→</span>
           </div>
-
         </div>
-      </div>
 
-      <!-- ═══ PROBLEM TYPE: DIVIDEND ALLOCATION ═══ -->
-      <div style="margin-bottom:20px">
-        <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px">
-          Dividend allocation — cumulative preferred
+        <!-- STOCK SPLITS -->
+        <div style="margin-bottom:18px">
+          <div class="topic-hd">Stock Splits</div>
+          <div class="prob-r" id="locked-problem-stanley" onclick="loadIfUnlocked('stanley')">
+            <span class="prob-ref-pill">split</span>
+            <span class="prob-name">Stanley Corp</span>
+            <span class="prob-tag">2-for-1 · before &amp; after equity section</span>
+            <span class="prob-go" id="lk-stanley">→</span>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
 
-          <!-- Foster Grant -->
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:0">
-            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-              <div style="font-size:12px;font-weight:700">Foster Grant Company</div>
-              <div style="font-size:9px;color:var(--text3)">Dividend calc</div>
-            </div>
-            <div style="font-size:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 9px;margin-bottom:8px;line-height:1.65;color:var(--text2);font-family:var(--mono)">
-              Common: $1 par · 205,000 issued<br>
-              Preferred: $80 par · 5% cumulative<br>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;29,000 shares issued<br>
-              Treasury: 25,000 common shares<br>
-              <span style="color:var(--text3)">─────────────────────</span><br>
-              2024: $600,000 total declared<br>
-              No pref divs paid in 2022 or 2023
-            </div>
-            <div style="font-size:10px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.4">1. Total to common shareholders?  2. Per-share amount to common?</div>
-            <button id="welcome-fostergrant" class="btn btn-secondary btn-sm" onclick="loadIfUnlocked('fostergrant')" style="font-size:11px;margin-top:auto">🔒 Load →</button>
-          </div>
-
-          <!-- Blank allocator -->
-          <div style="background:var(--surface2);border:1px dashed var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;text-align:center">
-            <div style="font-size:11px;color:var(--text3);line-height:1.5">Need to work through<br>a different dividend problem?</div>
-            <button class="btn btn-secondary btn-sm" onclick="startBlank('dividends')" style="font-size:11px">Open allocator →</button>
-          </div>
-
-          <div></div>
-
+        <!-- START BLANK -->
+        <div class="prob-r prob-r-blank" onclick="startBlank('setup')">
+          <span class="prob-badge" style="background:transparent;border-color:var(--border)">blank</span>
+          <span class="prob-name" style="color:var(--text2)">Start a blank problem</span>
+          <span class="prob-go">→</span>
         </div>
-      </div>
 
-      <!-- ═══ PROBLEM TYPE: STOCK SPLIT ═══ -->
-      <div style="margin-bottom:20px">
-        <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px">
-          Stock split — effect on the equity section
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+      </div><!-- /right col -->
 
-          <!-- Stanley Corp -->
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:0">
-            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-              <div style="font-size:12px;font-weight:700">Stanley Corp</div>
-              <div style="font-size:9px;color:var(--text3)">2-for-1 split</div>
-            </div>
-            <div style="font-size:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 9px;margin-bottom:8px;line-height:1.65;color:var(--text2);font-family:var(--mono)">
-              CS $0.50 par · 4,500,000 auth · 300,000 issued<br>
-              APIC-Common: $16,850,000<br>
-              Preferred: $100 par · 6.5% · 500 issued<br>
-              TS: 15,000 shares · RE: $11,500,000<br>
-              Market price: $86/share (pre-split)<br>
-              <span style="color:var(--text3)">─────────────────────</span><br>
-              Enacts a 2-for-1 stock split.
-            </div>
-            <div style="font-size:10px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.4">Required: Prepare the updated S/E section after the split. What is the new market price?</div>
-            <button id="welcome-stanley" class="btn btn-secondary btn-sm" onclick="loadIfUnlocked('stanley')" style="font-size:11px;margin-top:auto">🔒 Load →</button>
-          </div>
+    </div><!-- /grid -->
 
-          <div style="background:var(--surface2);border:1px dashed var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;text-align:center">
-            <div style="font-size:11px;color:var(--text3);line-height:1.5">Enter any opening balances<br>to see the equity section instantly.<br>Add a split transaction to<br>see the before &amp; after.</div>
-            <button class="btn btn-secondary btn-sm" onclick="startBlank('setup')" style="font-size:11px">Start blank →</button>
-          </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:12px">🔒 = I've locked this one · <button onclick="resetAll()" style="background:none;border:none;color:var(--text3);font-size:10px;cursor:pointer;text-decoration:underline;padding:0">clear all data</button></div>
 
-          <div></div>
-
-        </div>
-      </div>
-
-      <!-- ═══ BUILDING BLOCK SCENARIOS ═══ -->
-      <div style="margin-bottom:12px">
-        <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px">
-          Concept scenarios — the mechanics behind every transaction type
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:6px">
-            <div style="font-size:11px;font-weight:700">Common Stock Issuance</div>
-            <div style="font-size:10px;color:var(--text2);line-height:1.5;flex:1">10,000 shares @ $15, $5 par. The three-account split — par to Common Stock, excess to APIC. The mechanic behind every issuance.</div>
-            <button class="btn btn-secondary btn-sm" onclick="loadIfUnlocked('csiso')" style="font-size:11px">Load →</button>
-          </div>
-
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:6px">
-            <div style="font-size:11px;font-weight:700">Preferred Stock Issuance</div>
-            <div style="font-size:10px;color:var(--text2);line-height:1.5;flex:1">Same par-split logic as common, but APIC-Preferred is a separate account. Prior common equity pre-loaded for comparison.</div>
-            <button class="btn btn-secondary btn-sm" onclick="loadIfUnlocked('psiso')" style="font-size:11px">Load →</button>
-          </div>
-
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:6px">
-            <div style="font-size:11px;font-weight:700">Treasury: Buy &amp; Reissue</div>
-            <div style="font-size:10px;color:var(--text2);line-height:1.5;flex:1">Two buybacks at different prices, then reissue above cost (→ APIC) then below cost (→ APIC first, then RE if needed). Average cost calculated automatically.</div>
-            <button class="btn btn-secondary btn-sm" onclick="loadIfUnlocked('tsscenario')" style="font-size:11px">Load →</button>
-          </div>
-
-        </div>
-      </div>
-
-      <div style="font-size:10px;color:var(--text3);line-height:1.5;padding-top:6px;border-top:1px solid var(--border)">
-        🔒 = I've locked this one for now &nbsp;·&nbsp; Tabs 3–7 update as you type &nbsp;·&nbsp; Tab 5 (Dividends) works on its own without any other tabs filled in
-      </div>
-
-    </div>
-  </div>
+  </div><!-- /max-width -->
 </div><!-- /page-welcome -->
 
 
@@ -2546,13 +2394,13 @@ function applyLockState(){
   Object.keys(PROBLEM_NAMES).forEach(name=>{
     const el=document.getElementById('locked-problem-'+name);
     const btn=document.getElementById('pbtn-'+name);
-    const locked=lockState.problems[name];
+    const lkIcon=document.getElementById('lk-'+name);
+    const locked=lockState.problems[name]&&!instructorMode;
     if(el){
-      el.style.opacity=locked?'0.4':'0.9';
-      el.style.cursor=locked?'not-allowed':'pointer';
-      const badge=el.querySelector('.lock-badge');
-      if(badge)badge.textContent=locked?'🔒':'🔓';
+      el.style.opacity=locked?'0.38':'1';
+      el.style.cursor=locked?'default':'pointer';
     }
+    if(lkIcon)lkIcon.textContent=locked?'🔒':'→';
     if(btn){
       btn.textContent=(locked?'🔒 ':'🔓 ')+PROBLEM_NAMES[name];
       btn.style.color=locked?'rgba(255,160,0,0.7)':'rgba(100,220,100,0.8)';
@@ -3324,6 +3172,16 @@ const toggleLbl=document.getElementById('explain-label');
 if(toggleBtn)toggleBtn.style.background='var(--text3)';
 if(toggleLbl)toggleLbl.textContent='OFF';
 showPage('welcome');
+
+function toggleHowItWorks(){
+  const panel=document.getElementById('how-it-works-panel');
+  const arrow=document.getElementById('how-arrow');
+  const btn=document.getElementById('how-it-works-btn');
+  if(!panel)return;
+  const open=panel.style.display==='none';
+  panel.style.display=open?'block':'none';
+  if(arrow)arrow.style.transform=open?'rotate(90deg)':'rotate(0deg)';
+}
 </script>
 </body>
 </html>
