@@ -190,8 +190,8 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
 .toast-progress{height:2px;background:rgba(255,255,255,0.12);border-radius:1px;margin-top:10px;overflow:hidden;}
 .toast-bar{height:100%;background:rgba(255,255,255,0.4);border-radius:1px;animation:toastProgress 10s linear forwards;}
 
-.nav-item.tab-dim{opacity:0.25;transition:opacity 0.15s;pointer-events:none;}
-.nav-item.tab-dim:hover{opacity:0.45;}
+.nav-item.tab-dim{opacity:0.22;transition:opacity 0.15s;}
+.nav-item.tab-dim:hover{opacity:0.55;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -247,32 +247,32 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
       <div id="locked-problem-totaldiv" onclick="loadIfUnlocked('totaldiv')" style="padding:3px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:3px;display:flex;justify-content:space-between">
         <div>Total Div Declaration</div><span id="lk-totaldiv" style="font-size:9px"></span></div>
     </div>
+  </div><!-- /class-problems -->
 
   <div class="sidebar-footer">
-        </div>
     <button class="btn btn-danger btn-full" onclick="resetAll()" style="font-size:12px;">Clear everything</button>
-    <!-- Global lock toggle — triple-click to reveal -->
-    <div id="teacher-btn" style="margin-top:8px;text-align:center;font-size:10px;color:rgba(255,255,255,0.2);cursor:pointer;padding:4px" onclick="teacherClick()" title="Instructor access">• • •</div>
-    <div id="teacher-unlock-wrap" style="display:none;margin-top:6px">
-      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">Instructor password</div>
+    <!-- Triple-click ••• to reveal teacher controls -->
+    <div id="teacher-btn" style="text-align:center;font-size:10px;color:rgba(255,255,255,0.18);cursor:pointer;padding:4px;margin-top:2px;user-select:none" onclick="teacherClick()" title="My controls">• • •</div>
+    <div id="teacher-unlock-wrap" style="display:none;margin-top:4px">
+      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px">My password</div>
       <input id="teacher-code" type="password" placeholder="password" style="width:100%;font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:#fff;box-sizing:border-box" onkeydown="if(event.key==='Enter')checkTeacherCode()">
     </div>
-    <div id="instructor-controls" style="display:none;margin-top:8px">
-      <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:6px">Instructor controls</div>
-      <div id="global-lock-status" style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px"></div>
-      <button id="global-lock-btn" onclick="toggleGlobalLock()" style="width:100%;font-size:12px;padding:6px;border-radius:4px;border:none;cursor:pointer;font-weight:600"></button>
-      <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px">Per-problem locks:</div>
-      <div style="display:flex;flex-direction:column;gap:3px;margin-top:4px">
-        <button onclick="toggleProblemLock('totaldiv')" id="pbtn-totaldiv" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Tot Div Declaration Prob</button>
-        <button onclick="toggleProblemLock('alpha')" id="pbtn-alpha" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Comprehensive Problem #1</button>
-        <button onclick="toggleProblemLock('insideinc')" id="pbtn-insideinc" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Inside Inc (E11-5)</button>
-        <button onclick="toggleProblemLock('shelby')" id="pbtn-shelby" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Shelby Corporation</button>
-        <button onclick="toggleProblemLock('malibu')" id="pbtn-malibu" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left">🔒 Malibu Beachwear</button>
-        <button onclick="toggleProblemLock('stanley')" id="pbtn-stanley" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left">🔒 Stanley Corp</button>
-        <button onclick="toggleProblemLock('csiso')" id="pbtn-csiso" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Common Stock Issuance</button>
-        <button onclick="toggleProblemLock('psiso')" id="pbtn-psiso" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Preferred Stock Issuance</button>
-        <button onclick="toggleProblemLock('tsscenario')" id="pbtn-tsscenario" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Treasury Buy &amp; Reissue</button>
-        <button onclick="toggleProblemLock('fostergrant')" id="pbtn-fostergrant"  style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left">🔒 Foster Grant</button>
+    <div id="instructor-controls" style="display:none;margin-top:6px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.3);margin-bottom:5px">My controls</div>
+      <div id="global-lock-status" style="font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:5px"></div>
+      <button id="global-lock-btn" onclick="toggleGlobalLock()" style="width:100%;font-size:11px;padding:5px;border-radius:4px;border:none;cursor:pointer;font-weight:600;margin-bottom:6px"></button>
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.3);margin-bottom:4px">Lock / unlock problems</div>
+      <div style="display:flex;flex-direction:column;gap:3px">
+        <button onclick="toggleProblemLock('shelby')" id="pbtn-shelby" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Shelby Corp (E11-4)</button>
+        <button onclick="toggleProblemLock('insideinc')" id="pbtn-insideinc" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Inside Inc (E11-5)</button>
+        <button onclick="toggleProblemLock('malibu')" id="pbtn-malibu" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left;line-height:1.4">🔒 Malibu Beachwear</button>
+        <button onclick="toggleProblemLock('fostergrant')" id="pbtn-fostergrant" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left;line-height:1.4">🔒 Foster Grant</button>
+        <button onclick="toggleProblemLock('alpha')" id="pbtn-alpha" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Comprehensive #1</button>
+        <button onclick="toggleProblemLock('stanley')" id="pbtn-stanley" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left;line-height:1.4">🔒 Stanley Corp</button>
+        <button onclick="toggleProblemLock('totaldiv')" id="pbtn-totaldiv" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Total Div Declaration</button>
+        <button onclick="toggleProblemLock('csiso')" id="pbtn-csiso" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Common Stock Issuance</button>
+        <button onclick="toggleProblemLock('psiso')" id="pbtn-psiso" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Preferred Stock Issuance</button>
+        <button onclick="toggleProblemLock('tsscenario')" id="pbtn-tsscenario" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Treasury Buy & Reissue</button>
       </div>
     </div>
   </div>
@@ -2457,7 +2457,7 @@ function applyLockState(){
       el.style.opacity=locked?'0.38':'1';
       el.style.cursor=locked?'default':'pointer';
     }
-    if(lkIcon)lkIcon.textContent=locked?'🔒':'';
+    if(lkIcon)lkIcon.textContent=locked?'🔒':'🔓';
     if(btn){
       // pbtn always reflects actual lock state so teacher can see and toggle it
       const actuallyLocked=lockState.problems[name];
@@ -2994,7 +2994,7 @@ function loadShelby(){
   renderAllocYearList();renderAllocator();
   resetTabRelevance();
   renderProbNote('Shelby Corp E11-4','First year of operations — opening RE = $0. Both common ($400,000 total) and preferred ($30/share) are issued. Dividends declared and paid — watch what triggers the RE decrease.');
-  renderTxList();recalcAndSave();showPage('setup');
+  renderTxList();recalcAndSave();showPage('transactions');
 }
 
 function loadMalibu(){
@@ -3023,7 +3023,7 @@ function loadMalibu(){
   renderAllocYearList();renderAllocator();
   resetTabRelevance();
   renderProbNote('Malibu Beachwear E11-9','Five transactions: treasury repurchase, dividend declaration, payment, new issuance, and closing. Opening balances provided. Note: only the total cost ($350,000) for the buyback was given — no per-share price.');
-  renderTxList();recalcAndSave();showPage('setup');
+  renderTxList();recalcAndSave();showPage('transactions');
 }
 
 function loadStanley(){
@@ -3039,7 +3039,7 @@ function loadStanley(){
   renderAllocYearList();renderAllocator();
   applyTabRelevance({'dividends':'skip'});
   renderProbNote('Stanley Corp — Stock Split','2-for-1 split: par halves ($0.50→$0.25), authorized and issued shares double, treasury shares double. Dollar balances are completely unchanged. No journal entry — memo only.');
-  renderTxList();recalcAndSave();showPage('setup');
+  renderTxList();recalcAndSave();showPage('bs');
 }
 
 function loadFosterGrant(){
@@ -3080,7 +3080,7 @@ function loadInsideInc(){
   ].forEach(t=>transactions.push({id:txId++,...t}));
   applyTabRelevance({'dividends':'skip'});
   renderProbNote('Inside Inc E11-5','First year — no opening RE. Common has a $6 par value (higher than typical). No dividends declared, so RE equals net income exactly. Transaction (c) requires no journal entry.');
-  renderAllocYearList();renderAllocator();renderTxList();recalcAndSave();showPage('setup');
+  renderAllocYearList();renderAllocator();renderTxList();recalcAndSave();showPage('transactions');
 }
 
 function loadCommonIssuance(){
