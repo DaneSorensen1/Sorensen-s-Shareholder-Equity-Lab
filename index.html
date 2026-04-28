@@ -2428,13 +2428,11 @@ const PROBLEM_NAMES={
 let lockBC=null;
 try{lockBC=new BroadcastChannel('equity-lab-lock');lockBC.onmessage=e=>{if(!instructorMode){lockState=e.data;applyLockState();}};}catch(e){}
 
-async function saveLockState(){
+function saveLockState(){
   try{lockBC?.postMessage(lockState);}catch(e){}
   try{localStorage.setItem(LOCK_KEY,JSON.stringify(lockState));}catch(e){}
-  try{await window.storage.set(LOCK_KEY,JSON.stringify(lockState),true);}catch(e){}
 }
-async function loadLockState(){
-  try{const r=await window.storage.get(LOCK_KEY,true);if(r&&r.value)return JSON.parse(r.value);}catch(e){}
+function loadLockState(){
   try{const r=localStorage.getItem(LOCK_KEY);if(r)return JSON.parse(r);}catch(e){}
   return null;
 }
@@ -2475,12 +2473,13 @@ function applyLockState(){
   if(gls)gls.textContent=lockState.global?'⚠️ Tool locked for students':'✓ Tool accessible to students';
 }
 
-async async function initLocks(){
-  const saved=await loadLockState();
+function initLocks(){
+  const saved=loadLockState();
   if(saved)lockState=saved;
   applyLockState();
-  setInterval(async()=>{
-    if(!instructorMode){const s=await loadLockState();if(s){lockState=s;applyLockState();}}
+  // Poll localStorage every 3s so students see lock changes made on another tab
+  setInterval(function(){
+    if(!instructorMode){const s=loadLockState();if(s){lockState=s;applyLockState();}}
   },3000);
 }
 
@@ -2516,15 +2515,15 @@ function checkTeacherCode(){
   }
 }
 
-async async function toggleGlobalLock(){
+function toggleGlobalLock(){
   lockState.global=!lockState.global;
-  await saveLockState();
+  saveLockState();
   applyLockState();
 }
 
-async function toggleProblemLock(name){
+function toggleProblemLock(name){
   lockState.problems[name]=!lockState.problems[name];
-  await saveLockState();
+  saveLockState();
   applyLockState();
 }
 
