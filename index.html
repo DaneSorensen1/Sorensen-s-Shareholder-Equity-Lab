@@ -269,7 +269,10 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
         <button onclick="toggleProblemLock('shelby')" id="pbtn-shelby" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Shelby Corporation</button>
         <button onclick="toggleProblemLock('malibu')" id="pbtn-malibu" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left">🔒 Malibu Beachwear</button>
         <button onclick="toggleProblemLock('stanley')" id="pbtn-stanley" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left">🔒 Stanley Corp</button>
-        <button onclick="toggleProblemLock('fostergrant')" id="pbtn-fostergrant" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left">🔒 Foster Grant</button>
+        <button onclick="toggleProblemLock('csiso')" id="pbtn-csiso" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Common Stock Issuance</button>
+        <button onclick="toggleProblemLock('psiso')" id="pbtn-psiso" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Preferred Stock Issuance</button>
+        <button onclick="toggleProblemLock('tsscenario')" id="pbtn-tsscenario" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Treasury Buy &amp; Reissue</button>
+        <button onclick="toggleProblemLock('fostergrant')" id="pbtn-fostergrant"  style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left">🔒 Foster Grant</button>
       </div>
     </div>
   </div>
@@ -402,15 +405,17 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
         <div style="margin-bottom:18px">
           <div style="font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--amber);border-bottom:1.5px solid var(--amber-border);padding-bottom:4px;margin-bottom:8px">Stock Issuances</div>
           <div style="font-size:10.5px;color:var(--text2);margin-bottom:10px;line-height:1.5">Proceeds always split two ways: par value → stock account, everything above par → APIC. Tabs 2, 3, 6, 7 are key.</div>
-          <div onclick="loadCommonIssuance()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
+          <div id="locked-problem-csiso" onclick="loadIfUnlocked('csiso')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
             <span style="font-size:9px;font-weight:700;text-transform:uppercase;padding:1px 6px;border-radius:3px;background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber);flex-shrink:0">example</span>
             <span style="font-size:12px;font-weight:600;color:var(--text)">Common Stock Issuance</span>
             <span style="font-size:10px;color:var(--text3);flex:1;text-align:right">par split · 3 accounts</span>
+            <span id="lk-csiso" style="font-size:11px;flex-shrink:0;min-width:14px"></span>
           </div>
-          <div onclick="loadPreferredIssuance()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
+          <div id="locked-problem-psiso" onclick="loadIfUnlocked('psiso')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
             <span style="font-size:9px;font-weight:700;text-transform:uppercase;padding:1px 6px;border-radius:3px;background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber);flex-shrink:0">example</span>
             <span style="font-size:12px;font-weight:600;color:var(--text)">Preferred Stock Issuance</span>
             <span style="font-size:10px;color:var(--text3);flex:1;text-align:right">separate APIC-Preferred</span>
+            <span id="lk-psiso" style="font-size:11px;flex-shrink:0;min-width:14px"></span>
           </div>
           <div id="locked-problem-shelby" onclick="loadIfUnlocked('shelby')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
             <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text3);flex-shrink:0">E11-4</span>
@@ -459,10 +464,11 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
         <div style="margin-bottom:18px">
           <div style="font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--amber);border-bottom:1.5px solid var(--amber-border);padding-bottom:4px;margin-bottom:8px">Treasury Stock</div>
           <div style="font-size:10.5px;color:var(--text2);margin-bottom:10px;line-height:1.5">Cost method — no par split. Reissue above cost → APIC. Reissue below cost → APIC first, then RE.</div>
-          <div onclick="loadTreasuryScenario()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
+          <div id="locked-problem-tsscenario" onclick="loadIfUnlocked('tsscenario')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
             <span style="font-size:9px;font-weight:700;text-transform:uppercase;padding:1px 6px;border-radius:3px;background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber);flex-shrink:0">example</span>
             <span style="font-size:12px;font-weight:600;color:var(--text)">Buy &amp; Reissue</span>
             <span style="font-size:10px;color:var(--text3);flex:1;text-align:right">avg cost · above/below cost rules</span>
+            <span id="lk-tsscenario" style="font-size:11px;flex-shrink:0;min-width:14px"></span>
           </div>
           <div onclick="startBlank('transactions')" style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border:1px dashed var(--border);border-radius:var(--radius-sm);cursor:pointer" onmouseover="this.style.borderColor='var(--amber-border)'" onmouseout="this.style.borderColor='var(--border)'">
             <span style="font-size:11px;color:var(--text2)">Start blank</span>
@@ -2453,8 +2459,10 @@ function applyLockState(){
     }
     if(lkIcon)lkIcon.textContent=locked?'🔒':'';
     if(btn){
-      btn.textContent=(locked?'🔒 ':'🔓 ')+PROBLEM_NAMES[name];
-      btn.style.color=locked?'rgba(255,160,0,0.7)':'rgba(100,220,100,0.8)';
+      // pbtn always reflects actual lock state so teacher can see and toggle it
+      const actuallyLocked=lockState.problems[name];
+      btn.textContent=(actuallyLocked?'🔒 ':'🔓 ')+PROBLEM_NAMES[name];
+      btn.style.color=actuallyLocked?'rgba(255,160,0,0.7)':'rgba(100,220,100,0.8)';
     }
   });
 
@@ -2508,7 +2516,7 @@ function checkTeacherCode(){
   }
 }
 
-async function toggleGlobalLock(){
+async async function toggleGlobalLock(){
   lockState.global=!lockState.global;
   await saveLockState();
   applyLockState();
