@@ -190,9 +190,8 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
 .toast-progress{height:2px;background:rgba(255,255,255,0.12);border-radius:1px;margin-top:10px;overflow:hidden;}
 .toast-bar{height:100%;background:rgba(255,255,255,0.4);border-radius:1px;animation:toastProgress 10s linear forwards;}
 
-.nav-item.tab-dim{opacity:0.32;transition:opacity 0.15s;}
-.nav-item.tab-dim:hover{opacity:0.75;}
-.nav-item.tab-dim .nav-label::after{content:' — not used';font-size:8px;color:rgba(255,255,255,0.35);font-style:italic;}
+.nav-item.tab-dim{opacity:0.25;transition:opacity 0.15s;pointer-events:none;}
+.nav-item.tab-dim:hover{opacity:0.45;}
 </style>
 </head>
 <body>
@@ -207,17 +206,17 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
 
   <div style="margin:10px 20px 0;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1)">
     <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:#e8a020;text-transform:uppercase;margin-bottom:6px">You enter</div>
-    <div class="nav-item" onclick="showPage('setup')" style="padding-left:0;margin-left:0"><span class="num" style="background:#e8a020;color:#fff;">1</span>Opening Balances</div>
-    <div class="nav-item" onclick="showPage('transactions')" style="padding-left:0;margin-left:0"><span class="num" style="background:#e8a020;color:#fff;">2</span>Add Transactions</div>
+    <div class="nav-item" id="nav-setup" onclick="showPage('setup')" style="padding-left:0;margin-left:0"><span class="num" style="background:#e8a020;color:#fff;">1</span>Opening Balances</div>
+    <div class="nav-item" id="nav-transactions" onclick="showPage('transactions')" style="padding-left:0;margin-left:0"><span class="num" style="background:#e8a020;color:#fff;">2</span>Add Transactions</div>
   </div>
 
   <div style="margin:10px 20px 0;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1)">
     <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:6px">Auto-generated</div>
-    <div class="nav-item" onclick="showPage('journals')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">3</span>Journal Entries</div>
-    <div class="nav-item" onclick="showPage('shares')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">4</span>Share Tracker</div>
-    <div class="nav-item" onclick="showPage('dividends')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">5</span>Dividend Calculator</div>
-    <div class="nav-item" onclick="showPage('taccounts')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">6</span>T-Accounts</div>
-    <div class="nav-item" onclick="showPage('bs')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">7</span>Balance Sheet</div>
+    <div class="nav-item" id="nav-journals" onclick="showPage('journals')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">3</span>Journal Entries</div>
+    <div class="nav-item" id="nav-shares" onclick="showPage('shares')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">4</span>Share Tracker</div>
+    <div class="nav-item" id="nav-dividends" onclick="showPage('dividends')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">5</span>Dividend Calculator</div>
+    <div class="nav-item" id="nav-taccounts" onclick="showPage('taccounts')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">6</span>T-Accounts</div>
+    <div class="nav-item" id="nav-bs" onclick="showPage('bs')" style="padding-left:0;margin-left:0"><span class="num" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);">7</span>Balance Sheet</div>
   </div>
 
   <!-- CLASS PROBLEMS -->
@@ -266,6 +265,7 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
       <div style="display:flex;flex-direction:column;gap:3px;margin-top:4px">
         <button onclick="toggleProblemLock('totaldiv')" id="pbtn-totaldiv" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Tot Div Declaration Prob</button>
         <button onclick="toggleProblemLock('alpha')" id="pbtn-alpha" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Comprehensive Problem #1</button>
+        <button onclick="toggleProblemLock('insideinc')" id="pbtn-insideinc" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Inside Inc (E11-5)</button>
         <button onclick="toggleProblemLock('shelby')" id="pbtn-shelby" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left">🔓 Shelby Corporation</button>
         <button onclick="toggleProblemLock('malibu')" id="pbtn-malibu" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left">🔒 Malibu Beachwear</button>
         <button onclick="toggleProblemLock('stanley')" id="pbtn-stanley" style="width:100%;font-size:10px;padding:4px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left">🔒 Stanley Corp</button>
@@ -2467,7 +2467,7 @@ function applyLockState(){
   if(gls)gls.textContent=lockState.global?'⚠️ Tool locked for students':'✓ Tool accessible to students';
 }
 
-async function initLocks(){
+async async function initLocks(){
   const saved=await loadLockState();
   if(saved)lockState=saved;
   applyLockState();
@@ -2945,6 +2945,7 @@ function loadTotalDiv(){
   allocYears=[{id:0,year:'2024',total:'1400000'},{id:1,year:'2025',total:'1500000'}];
   allocYearId=2;
   renderAllocYearList();renderAllocator();
+  applyTabRelevance({'setup':'skip','transactions':'skip','journals':'skip','shares':'skip','taccounts':'skip','bs':'skip'});
   renderTxList();recalcAndSave();showPage('dividends');
 }
 
@@ -2964,6 +2965,7 @@ function loadAlpha(){
    {type:'close_dividends',date:'2024-12-31',fields:{}}
   ].forEach(t=>transactions.push({id:txId++,...t}));
   renderAllocYearList();renderAllocator();
+  resetTabRelevance();
   renderTxList();recalcAndSave();showPage('setup');
 }
 
@@ -2982,6 +2984,8 @@ function loadShelby(){
    {type:'close_dividends',date:'2024-12-31',fields:{}}
   ].forEach(t=>transactions.push({id:txId++,...t}));
   renderAllocYearList();renderAllocator();
+  resetTabRelevance();
+  renderProbNote('Shelby Corp E11-4','First year of operations — opening RE = $0. Both common ($400,000 total) and preferred ($30/share) are issued. Dividends declared and paid — watch what triggers the RE decrease.');
   renderTxList();recalcAndSave();showPage('setup');
 }
 
@@ -3009,6 +3013,8 @@ function loadMalibu(){
    {type:'close_dividends',    date:'2024-12-31',fields:{}}
   ].forEach(t=>transactions.push({id:txId++,...t}));
   renderAllocYearList();renderAllocator();
+  resetTabRelevance();
+  renderProbNote('Malibu Beachwear E11-9','Five transactions: treasury repurchase, dividend declaration, payment, new issuance, and closing. Opening balances provided. Note: only the total cost ($350,000) for the buyback was given — no per-share price.');
   renderTxList();recalcAndSave();showPage('setup');
 }
 
@@ -3023,6 +3029,8 @@ function loadStanley(){
   [{type:'stock_split',date:'2024-06-01',fields:{newshares:'2'}}
   ].forEach(t=>transactions.push({id:txId++,...t}));
   renderAllocYearList();renderAllocator();
+  applyTabRelevance({'dividends':'skip'});
+  renderProbNote('Stanley Corp — Stock Split','2-for-1 split: par halves ($0.50→$0.25), authorized and issued shares double, treasury shares double. Dollar balances are completely unchanged. No journal entry — memo only.');
   renderTxList();recalcAndSave();showPage('setup');
 }
 
@@ -3046,6 +3054,8 @@ function loadFosterGrant(){
   allocYears=[{id:0,year:'2024',total:'600000'}];
   allocYearId=1;
   renderAllocYearList();renderAllocator();
+  applyTabRelevance({'setup':'skip','transactions':'skip','journals':'skip','shares':'skip','taccounts':'skip','bs':'skip'});
+  renderProbNote('Foster Grant — Dividend Allocation','Cumulative preferred with 2 years in arrears (2022 & 2023). Priority: arrears first, then current year preferred, then common gets the remainder. Outstanding common = 205,000 − 25,000 treasury = 180,000.');
   renderTxList();recalcAndSave();showPage('dividends');
 }
 
@@ -3060,6 +3070,8 @@ function loadInsideInc(){
    {type:'issue_preferred',date:'2024-02-10',fields:{shares:'3000', price:'22'}},
    {type:'net_income',     date:'2024-12-31',fields:{amount:'38000'}}
   ].forEach(t=>transactions.push({id:txId++,...t}));
+  applyTabRelevance({'dividends':'skip'});
+  renderProbNote('Inside Inc E11-5','First year — no opening RE. Common has a $6 par value (higher than typical). No dividends declared, so RE equals net income exactly. Transaction (c) requires no journal entry.');
   renderAllocYearList();renderAllocator();renderTxList();recalcAndSave();showPage('setup');
 }
 
@@ -3071,6 +3083,8 @@ function loadCommonIssuance(){
     'arrears':0,'re-open':0,'co-name':'Common Stock Issuance — Example'});
   [{type:'issue_common',date:'2024-01-01',fields:{shares:'10000',price:'15'}}
   ].forEach(t=>transactions.push({id:txId++,...t}));
+  applyTabRelevance({'setup':'skip','dividends':'skip'});
+  renderProbNote('Common Stock Issuance — Concept','10,000 shares at $15/share, $5 par. Cash goes in, split two ways: 10,000 × $5 = $50,000 to Common Stock; the $100,000 excess goes to APIC. Check: Dr $150,000 = Cr $50,000 + $100,000.');
   renderAllocYearList();renderAllocator();renderTxList();recalcAndSave();showPage('transactions');
 }
 
@@ -3082,6 +3096,8 @@ function loadPreferredIssuance(){
     'arrears':0,'re-open':250000,'co-name':'Preferred Stock Issuance — Example'});
   [{type:'issue_preferred',date:'2024-03-01',fields:{shares:'2000',price:'115'}}
   ].forEach(t=>transactions.push({id:txId++,...t}));
+  applyTabRelevance({'setup':'skip','dividends':'skip'});
+  renderProbNote('Preferred Stock Issuance — Concept','Preferred uses its own APIC-Preferred account — never mixed with APIC-Common. Same par-split math, separate T-account. Prior common equity pre-loaded so you can compare the two side by side.');
   renderAllocYearList();renderAllocator();renderTxList();recalcAndSave();showPage('transactions');
 }
 
@@ -3097,16 +3113,52 @@ function loadTreasuryScenario(){
    {type:'reissue_treasury',date:'2024-07-01',fields:{shares:'2000',price:'12'}},
    {type:'reissue_treasury',date:'2024-10-01',fields:{shares:'2000',price:'7'}}
   ].forEach(t=>transactions.push({id:txId++,...t}));
+  applyTabRelevance({'setup':'skip','dividends':'skip'});
+  renderProbNote('Treasury Stock: Buy & Reissue — Concept','Two buybacks at different prices test avg cost calculation. First reissue is above cost → excess to APIC. Second reissue is below cost → APIC absorbed first, then RE. Watch the journal entries carefully.');
   renderAllocYearList();renderAllocator();renderTxList();recalcAndSave();showPage('transactions');
+}
+
+// ── Tab relevance: dim tabs not used by current problem ─────────────────────
+const ALL_TABS=['setup','transactions','journals','shares','dividends','taccounts','bs'];
+function applyTabRelevance(map){
+  window._tabRelevance=map||{};
+  ALL_TABS.forEach(tab=>{
+    const el=document.getElementById('nav-'+tab);
+    if(!el)return;
+    el.classList.toggle('tab-dim',(map&&map[tab]==='skip'));
+  });
+}
+function resetTabRelevance(){
+  ALL_TABS.forEach(tab=>{
+    const el=document.getElementById('nav-'+tab);
+    if(el)el.classList.remove('tab-dim');
+  });
+  window._tabRelevance=null;
+}
+
+function renderProbNote(title,note){
+  // Show a context banner at the top of page-setup explaining the problem
+  let box=document.getElementById('prob-note-box');
+  if(!box){
+    box=document.createElement('div');box.id='prob-note-box';
+    const setup=document.getElementById('page-setup');
+    if(setup)setup.insertBefore(box,setup.firstChild);
+  }
+  if(!title){box.style.display='none';return;}
+  box.style.cssText='display:block;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);padding:9px 14px;margin-bottom:14px;font-size:11.5px;line-height:1.6';
+  box.innerHTML='<strong style="color:var(--amber)">'+title+'</strong> — '+note;
 }
 
 function resetAll(){
   if(!confirm('Clear all data and start fresh?'))return;
+  resetTabRelevance();
   startBlank('setup');
 }
 
 function startBlank(dest){
   clearAllData();
+  renderProbNote(null,null);
+  resetTabRelevance();
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
   renderAllocYearList();renderAllocator();
   renderTxList();recalc();
