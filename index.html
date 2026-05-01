@@ -242,8 +242,8 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
         <div>Foster Grant</div><span id="lk-fostergrant" style="font-size:9px"></span></div>
       <div id="locked-problem-alpha" onclick="loadIfUnlocked('alpha')" style="padding:3px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:3px;display:flex;justify-content:space-between">
         <div>Comprehensive #1</div><span id="lk-alpha" style="font-size:9px"></span></div>
-      <div id="locked-problem-stanley" onclick="loadIfUnlocked('stanley')" style="padding:3px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.5);line-height:1.3;margin-bottom:3px;display:flex;justify-content:space-between">
-        <div>Stanley Corp (split)</div><span id="lk-stanley" style="font-size:9px"></span></div>
+      <div id="locked-problem-betacorp" onclick="loadIfUnlocked('betacorp')" style="padding:3px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:3px;display:flex;justify-content:space-between">
+        <div>Beta Corp <span style="font-size:9px;opacity:0.5">CP#2</span></div><span id="lk-betacorp" style="font-size:9px"></span></div>
       <div id="locked-problem-totaldiv" onclick="loadIfUnlocked('totaldiv')" style="padding:3px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:3px;display:flex;justify-content:space-between">
         <div>Total Div Declaration</div><span id="lk-totaldiv" style="font-size:9px"></span></div>
     </div>
@@ -268,7 +268,7 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
         <button onclick="toggleProblemLock('malibu')" id="pbtn-malibu" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left;line-height:1.4">🔒 Malibu Beachwear</button>
         <button onclick="toggleProblemLock('fostergrant')" id="pbtn-fostergrant" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left;line-height:1.4">🔒 Foster Grant</button>
         <button onclick="toggleProblemLock('alpha')" id="pbtn-alpha" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Comprehensive #1</button>
-        <button onclick="toggleProblemLock('stanley')" id="pbtn-stanley" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left;line-height:1.4">🔒 Stanley Corp</button>
+        <button onclick="toggleProblemLock('betacorp')" id="pbtn-betacorp" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Beta Corp (CP#2)</button>
         <button onclick="toggleProblemLock('totaldiv')" id="pbtn-totaldiv" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Total Div Declaration</button>
                               </div>
     </div>
@@ -495,17 +495,17 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
         </div>
 
         <div style="margin-bottom:10px">
-          <div style="font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--amber);border-bottom:1.5px solid var(--amber-border);padding-bottom:4px;margin-bottom:8px">Stock Splits</div>
-          <div style="font-size:10.5px;color:var(--text2);margin-bottom:10px;line-height:1.5">Par, authorized, and shares change — dollar balances never change. Tab 7 shows before-and-after clearly.</div>
-          <div id="locked-problem-stanley" onclick="loadIfUnlocked('stanley')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
-            <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text3);flex-shrink:0">split</span>
-            <span style="font-size:12px;font-weight:600;color:var(--text)">Stanley Corp</span>
-            <span style="font-size:10px;color:var(--text3);flex:1;text-align:right">2-for-1 · before &amp; after equity section</span>
-            <span id="wlk-stanley" style="font-size:11px;flex-shrink:0"></span>
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--amber);border-bottom:1.5px solid var(--amber-border);padding-bottom:4px;margin-bottom:8px">Comprehensive Problems</div>
+          <div style="font-size:10.5px;color:var(--text2);margin-bottom:10px;line-height:1.5">Full-year equity cycle — opening balances, multiple transaction types, T-accounts, and ending equity section all in one problem.</div>
+          <div id="locked-problem-betacorp" onclick="loadIfUnlocked('betacorp')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
+            <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text3);flex-shrink:0">CP#2</span>
+            <span style="font-size:12px;font-weight:600;color:var(--text)">Beta Corp</span>
+            <span style="font-size:10px;color:var(--text3);flex:1;text-align:right">treasury · issuance · dividends · T-accounts · BS</span>
+            <span id="wlk-betacorp" style="font-size:11px;flex-shrink:0"></span>
           </div>
           <div onclick="startBlank('setup')" style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border:1px dashed var(--border);border-radius:var(--radius-sm);cursor:pointer" onmouseover="this.style.borderColor='var(--amber-border)'" onmouseout="this.style.borderColor='var(--border)'">
             <span style="font-size:11px;color:var(--text2)">Start blank</span>
-            <span style="font-size:10px;color:var(--text3);flex:1;text-align:right">enter balances → see equity section instantly</span>
+            <span style="font-size:10px;color:var(--text3);flex:1;text-align:right">enter your own problem</span>
           </div>
         </div>
 
@@ -2410,13 +2410,13 @@ let instructorMode=false;
 let lockState={
   global:false,
   problems:{totaldiv:false,alpha:false,shelby:false,insideinc:false,
-            malibu:true,fostergrant:true,stanley:true}
+            malibu:true,fostergrant:true,betacorp:false}
 };
 
 const PROBLEM_NAMES={
   totaldiv:'Total Div Declaration',alpha:'Comprehensive Problem #1',
   shelby:'Shelby Corp (E11-4)',insideinc:'Inside Inc (E11-5)',
-  malibu:'Malibu Beachwear (E11-9)',fostergrant:'Foster Grant',stanley:'Stanley Corp'
+  malibu:'Malibu Beachwear (E11-9)',fostergrant:'Foster Grant',betacorp:'Beta Corp (CP#2)'
 };
 
 // BroadcastChannel: instant same-device cross-tab sync
@@ -2531,7 +2531,7 @@ function loadIfUnlocked(name){
   else if(name==='shelby')loadShelby();
   else if(name==='insideinc')loadInsideInc();
   else if(name==='malibu')loadMalibu();
-  else if(name==='stanley')loadStanley();
+  else if(name==='betacorp')loadBetaCorp();
   else if(name==='fostergrant')loadFosterGrant();
   else if(name==='csiso')loadCommonIssuance();
   else if(name==='psiso')loadPreferredIssuance();
@@ -3022,20 +3022,39 @@ function loadMalibu(){
   renderTxList();recalcAndSave();showPage('transactions');
 }
 
-function loadStanley(){
-  // Stanley Corp — 2-for-1 stock split
-  // Preferred: 500 shares at $100 par, 6.5%; authorized count not given in problem
+function loadBetaCorp(){
+  // Beta Corporation — Comprehensive Practice #2
+  // Opening: PS 8% $100 par 8,000 auth 3,000 issued, CS $5 stated 400k auth 160k issued
+  // APIC-PS $45k, APIC-CS $350k, RE $600k, Treasury 20,000 sh $190k
   clearAllData();
-  setFields({'cs-par':0.50,'cs-auth':4500000,'cs-issued':300000,'apic-cs':16850000,
-    'ts-shares':15000,'ts-cost':990000,'ps-par':100,'ps-rate':6.5,
-    'ps-auth':0,'ps-issued':500,'apic-ps':2000,'ps-cumul':'no',
-    'arrears':0,'re-open':11500000,'co-name':'Stanley Corp'});
-  [{type:'stock_split',date:'2024-06-01',fields:{newshares:'2'}}
+  setFields({'cs-par':5,'cs-auth':400000,'cs-issued':160000,'apic-cs':350000,
+    'ts-shares':20000,'ts-cost':190000,'ps-par':100,'ps-rate':8,
+    'ps-auth':8000,'ps-issued':3000,'apic-ps':45000,'ps-cumul':'no',
+    'arrears':0,'re-open':600000,'co-name':'Beta Corporation'});
+  // Feb 2: Buy 2,000 treasury shares @ $11
+  // Feb 10: Issue 6,000 common shares for $50,000 total ($5 par)
+  // Jun 1: Declare $0.80/share common dividend (use outstanding at that date: 144,000)
+  // Jun 30: Pay common dividend
+  // Oct 15: Declare 8% preferred dividend on 3,000 shares
+  // Nov 15: Pay preferred dividend
+  // Dec 31: Close dividends to RE
+  [{type:'buy_treasury',    date:'2024-02-02',fields:{shares:'2000',price:'11'}},
+   {type:'issue_common',    date:'2024-02-10',fields:{shares:'6000',total:'50000'}},
+   {type:'declare_common',  date:'2024-06-01',fields:{rate:'0.80'}},
+   {type:'pay_dividends',   date:'2024-06-30',fields:{}},
+   {type:'declare_pref',    date:'2024-10-15',fields:{years:'1'}},
+   {type:'pay_dividends',   date:'2024-11-15',fields:{}},
+   {type:'close_dividends', date:'2024-12-31',fields:{}}
   ].forEach(t=>transactions.push({id:txId++,...t}));
-  renderAllocYearList();renderAllocator();
-  applyTabRelevance({'dividends':'skip'});
-  renderProbNote('Stanley Corp — Stock Split','2-for-1 split: par halves ($0.50→$0.25), authorized and issued shares double, treasury shares double. Dollar balances are completely unchanged. No journal entry — memo only.');
-  renderTxList();recalcAndSave();showPage('bs');
+  resetTabRelevance();
+  renderProbNote('Beta Corporation — CP#2',
+    'Opening balances given (Jan. 1). Seven transactions: treasury purchase (Feb 2) · ' +
+    'common stock issuance (Feb 10) · common dividend declared (Jun 1 — uses OUTSTANDING shares, ' +
+    'not issued) · common dividend paid (Jun 30) · preferred dividend declared (Oct 15) · ' +
+    'preferred dividend paid (Nov 15) · year-end close (Dec 31). ' +
+    'Key step: Jun 1 outstanding = 160,000 issued + 6,000 issued Feb 10 − 20,000 treasury − 2,000 treasury Feb 2 = 144,000 × $0.80 = $115,200. ' +
+    'Check ending equity: T-accounts → Balance Sheet.');
+  renderAllocYearList();renderAllocator();renderTxList();recalcAndSave();showPage('transactions');
 }
 
 function loadFosterGrant(){
