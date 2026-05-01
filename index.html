@@ -241,9 +241,9 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
       <div id="locked-problem-fostergrant" onclick="loadIfUnlocked('fostergrant')" style="padding:3px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.5);line-height:1.3;margin-bottom:3px;display:flex;justify-content:space-between">
         <div>Foster Grant</div><span id="lk-fostergrant" style="font-size:9px"></span></div>
       <div id="locked-problem-alpha" onclick="loadIfUnlocked('alpha')" style="padding:3px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:3px;display:flex;justify-content:space-between">
-        <div>Comprehensive #1</div><span id="lk-alpha" style="font-size:9px"></span></div>
+        <div>Comprehensive Problem #1</div><span id="lk-alpha" style="font-size:9px"></span></div>
       <div id="locked-problem-betacorp" onclick="loadIfUnlocked('betacorp')" style="padding:3px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:3px;display:flex;justify-content:space-between">
-        <div>Beta Corp <span style="font-size:9px;opacity:0.5">CP#2</span></div><span id="lk-betacorp" style="font-size:9px"></span></div>
+        <div>Comprehensive Problem #2</div><span id="lk-betacorp" style="font-size:9px"></span></div>
       <div id="locked-problem-totaldiv" onclick="loadIfUnlocked('totaldiv')" style="padding:3px 0;cursor:pointer;font-size:11.5px;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:3px;display:flex;justify-content:space-between">
         <div>Total Div Declaration</div><span id="lk-totaldiv" style="font-size:9px"></span></div>
     </div>
@@ -268,7 +268,7 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
         <button onclick="toggleProblemLock('malibu')" id="pbtn-malibu" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left;line-height:1.4">🔒 Malibu Beachwear</button>
         <button onclick="toggleProblemLock('fostergrant')" id="pbtn-fostergrant" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(255,160,0,0.7);cursor:pointer;text-align:left;line-height:1.4">🔒 Foster Grant</button>
         <button onclick="toggleProblemLock('alpha')" id="pbtn-alpha" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Comprehensive #1</button>
-        <button onclick="toggleProblemLock('betacorp')" id="pbtn-betacorp" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Beta Corp (CP#2)</button>
+        <button onclick="toggleProblemLock('betacorp')" id="pbtn-betacorp" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Comprehensive Problem #2 (Beta)</button>
         <button onclick="toggleProblemLock('totaldiv')" id="pbtn-totaldiv" style="width:100%;font-size:10px;padding:4px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:rgba(100,220,100,0.8);cursor:pointer;text-align:left;line-height:1.4">🔓 Total Div Declaration</button>
                               </div>
     </div>
@@ -433,7 +433,7 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
         </div>
 
         <div style="margin-bottom:18px">
-          <div style="font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--amber);border-bottom:1.5px solid var(--amber-border);padding-bottom:4px;margin-bottom:8px">Full Equity Problems</div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--amber);border-bottom:1.5px solid var(--amber-border);padding-bottom:4px;margin-bottom:8px">Full Equity Problems &amp; Comprehensive Problems</div>
           <div style="font-size:10.5px;color:var(--text2);margin-bottom:10px;line-height:1.5">Multiple transaction types combined — all 7 tabs are relevant. The complete picture from journal entry to balance sheet.</div>
           <div id="locked-problem-malibu" onclick="loadIfUnlocked('malibu')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
             <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text3);flex-shrink:0">E11-9</span>
@@ -442,10 +442,16 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
             <span id="wlk-malibu" style="font-size:11px;flex-shrink:0"></span>
           </div>
           <div id="locked-problem-alpha" onclick="loadIfUnlocked('alpha')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
-            <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text3);flex-shrink:0">CP11</span>
+            <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text3);flex-shrink:0">CP#1</span>
             <span style="font-size:12px;font-weight:600;color:var(--text)">Comprehensive Problem #1</span>
             <span style="font-size:10px;color:var(--text3);flex:1;text-align:right">all transaction types · exam level</span>
             <span id="wlk-alpha" style="font-size:11px;flex-shrink:0"></span>
+          </div>
+          <div id="locked-problem-betacorp" onclick="loadIfUnlocked('betacorp')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
+            <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text3);flex-shrink:0">CP#2</span>
+            <span style="font-size:12px;font-weight:600;color:var(--text)">Comprehensive Problem #2</span>
+            <span style="font-size:10px;color:var(--text3);flex:1;text-align:right">treasury · issuance · dividends · T-accounts · BS</span>
+            <span id="wlk-betacorp" style="font-size:11px;flex-shrink:0"></span>
           </div>
           <div onclick="startBlank('setup')" style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border:1px dashed var(--border);border-radius:var(--radius-sm);cursor:pointer" onmouseover="this.style.borderColor='var(--amber-border)'" onmouseout="this.style.borderColor='var(--border)'">
             <span style="font-size:11px;color:var(--text2)">Start blank</span>
@@ -494,20 +500,7 @@ background:rgba(30,27,20,0.97);color:#fff;border:1px solid var(--amber-border);b
           </div>
         </div>
 
-        <div style="margin-bottom:10px">
-          <div style="font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:var(--amber);border-bottom:1.5px solid var(--amber-border);padding-bottom:4px;margin-bottom:8px">Comprehensive Problems</div>
-          <div style="font-size:10.5px;color:var(--text2);margin-bottom:10px;line-height:1.5">Full-year equity cycle — opening balances, multiple transaction types, T-accounts, and ending equity section all in one problem.</div>
-          <div id="locked-problem-betacorp" onclick="loadIfUnlocked('betacorp')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer" onmouseover="this.style.background='var(--amber-bg)';this.style.borderColor='var(--amber-border)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
-            <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);color:var(--text3);flex-shrink:0">CP#2</span>
-            <span style="font-size:12px;font-weight:600;color:var(--text)">Beta Corp</span>
-            <span style="font-size:10px;color:var(--text3);flex:1;text-align:right">treasury · issuance · dividends · T-accounts · BS</span>
-            <span id="wlk-betacorp" style="font-size:11px;flex-shrink:0"></span>
-          </div>
-          <div onclick="startBlank('setup')" style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border:1px dashed var(--border);border-radius:var(--radius-sm);cursor:pointer" onmouseover="this.style.borderColor='var(--amber-border)'" onmouseout="this.style.borderColor='var(--border)'">
-            <span style="font-size:11px;color:var(--text2)">Start blank</span>
-            <span style="font-size:10px;color:var(--text3);flex:1;text-align:right">enter your own problem</span>
-          </div>
-        </div>
+
 
       </div><!-- /right -->
     </div><!-- /grid -->
@@ -2416,7 +2409,7 @@ let lockState={
 const PROBLEM_NAMES={
   totaldiv:'Total Div Declaration',alpha:'Comprehensive Problem #1',
   shelby:'Shelby Corp (E11-4)',insideinc:'Inside Inc (E11-5)',
-  malibu:'Malibu Beachwear (E11-9)',fostergrant:'Foster Grant',betacorp:'Beta Corp (CP#2)'
+  malibu:'Malibu Beachwear (E11-9)',fostergrant:'Foster Grant',betacorp:'Comprehensive Problem #2'
 };
 
 // BroadcastChannel: instant same-device cross-tab sync
@@ -3047,7 +3040,7 @@ function loadBetaCorp(){
    {type:'close_dividends', date:'2024-12-31',fields:{}}
   ].forEach(t=>transactions.push({id:txId++,...t}));
   resetTabRelevance();
-  renderProbNote('Beta Corporation — CP#2',
+  renderProbNote('Comprehensive Problem #2',
     'Opening balances given (Jan. 1). Seven transactions: treasury purchase (Feb 2) · ' +
     'common stock issuance (Feb 10) · common dividend declared (Jun 1 — uses OUTSTANDING shares, ' +
     'not issued) · common dividend paid (Jun 30) · preferred dividend declared (Oct 15) · ' +
