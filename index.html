@@ -1334,12 +1334,12 @@ function renderTxList(){
           </div>`).join('')}
         </div>
         <div id="tx-effect-${tx.id}" style="margin-top:10px"></div>
-        <div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px;display:flex;align-items:center;gap:6px">
-          <button onclick="toggleTxExplain(${tx.id},'${tx.type}')" id="tx-explain-btn-${tx.id}" style="font-size:11px;background:none;border:none;color:var(--text3);cursor:pointer;padding:2px 0;display:flex;align-items:center;gap:5px">
-            <span id="tx-explain-arrow-${tx.id}">▸</span> How to think through this transaction
+        <div style="margin-top:10px;border-top:2px solid var(--amber-border);padding-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+          <button onclick="toggleTxExplain(${tx.id},'${tx.type}')" id="tx-explain-btn-${tx.id}" style="font-size:13px;font-weight:600;background:var(--amber-bg);border:1.5px solid var(--amber-border);border-radius:var(--radius-sm);color:var(--amber);cursor:pointer;padding:7px 14px;display:flex;align-items:center;gap:7px;transition:all 0.15s;" onmouseover="this.style.background='var(--amber-border)'" onmouseout="this.style.background='var(--amber-bg)'">
+            <span id="tx-explain-arrow-${tx.id}" style="font-size:14px">▸</span> How to think through this transaction
           </button>
-          <button onclick="refreshTxExplain(${tx.id},'${tx.type}')" title="Refresh explanation with current values" style="font-size:10px;background:none;border:1px solid var(--border);border-radius:3px;color:var(--text3);cursor:pointer;padding:1px 6px;line-height:1.4">↻</button>
-          <div id="tx-explain-${tx.id}" style="display:none;margin-top:8px;width:100%"></div>
+          <button onclick="refreshTxExplain(${tx.id},'${tx.type}')" title="Refresh explanation with current values" style="font-size:11px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text3);cursor:pointer;padding:5px 10px;line-height:1.4">↻ refresh</button>
+          <div id="tx-explain-${tx.id}" style="display:none;margin-top:10px;width:100%"></div>
         </div>
       </div>
     </div>`;
